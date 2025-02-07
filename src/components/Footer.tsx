@@ -8,7 +8,13 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo e Copyright */}
           <div className="text-center md:text-left">
-            <h3 className="font-bold text-xl mb-4">TicketWave</h3>
+            <h3 className="font-bold text-xl mb-4">
+              <img 
+                src="/photo-1486312338219-ce68d2c6f44d" 
+                alt="IsaPass" 
+                className="h-8 w-auto"
+              />
+            </h3>
             <p className="text-gray-600 text-sm">
               © 2024 rodrigodev.shop<br />
               Todos os direitos reservados.
@@ -48,3 +54,4 @@ export const Footer = () => {
     </footer>
   );
 };
+
