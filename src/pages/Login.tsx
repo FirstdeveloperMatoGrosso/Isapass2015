@@ -31,16 +31,16 @@ const Login = () => {
             <Button className="w-full">
               {isLogin ? "Entrar" : "Cadastrar"}
             </Button>
-            <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex flex-col items-center gap-2 text-sm">
               <button
                 onClick={() => setIsAdmin(!isAdmin)}
-                className="hover:text-primary transition-colors"
+                className="text-primary hover:text-primary/80 transition-colors"
               >
                 {isAdmin ? "Área do Cliente" : "Área Administrativa"}
               </button>
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="hover:text-primary transition-colors"
+                className="text-primary hover:text-primary/80 transition-colors"
               >
                 {isLogin 
                   ? "Não tem uma conta? Cadastre-se" 
