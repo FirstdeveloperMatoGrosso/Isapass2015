@@ -1,4 +1,3 @@
-
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +13,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    cpf: "",
     password: "",
     confirmPassword: ""
   });
@@ -30,8 +30,7 @@ const Login = () => {
     e.preventDefault();
 
     if (!isLogin) {
-      // Validações para o cadastro
-      if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      if (!formData.name || !formData.email || !formData.cpf || !formData.password || !formData.confirmPassword) {
         toast.error("Por favor, preencha todos os campos");
         return;
       }
@@ -46,23 +45,36 @@ const Login = () => {
         return;
       }
 
-      // Simulando o cadastro bem-sucedido
+      // Simulating successful registration
+      localStorage.setItem('userData', JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        cpf: formData.cpf
+      }));
+      
       toast.success("Conta criada com sucesso!");
       setIsLogin(true);
       setFormData({
         name: "",
         email: "",
+        cpf: "",
         password: "",
         confirmPassword: ""
       });
     } else {
-      // Validações para o login
       if (!formData.email || !formData.password) {
         toast.error("Por favor, preencha todos os campos");
         return;
       }
 
-      // Simulando o login bem-sucedido
+      // Simulating successful login
+      const mockUserData = {
+        name: "Usuário Teste",
+        email: formData.email,
+        cpf: "123.456.789-00"
+      };
+      localStorage.setItem('userData', JSON.stringify(mockUserData));
+      
       toast.success("Login realizado com sucesso!");
       navigate("/");
     }
@@ -73,6 +85,7 @@ const Login = () => {
     setFormData({
       name: "",
       email: "",
+      cpf: "",
       password: "",
       confirmPassword: ""
     });
@@ -91,13 +104,22 @@ const Login = () => {
           <CardContent className="space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
-                <Input 
-                  type="text" 
-                  placeholder="Nome completo" 
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                />
+                <>
+                  <Input 
+                    type="text" 
+                    placeholder="Nome completo" 
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                  />
+                  <Input 
+                    type="text" 
+                    placeholder="CPF" 
+                    name="cpf"
+                    value={formData.cpf}
+                    onChange={handleInputChange}
+                  />
+                </>
               )}
               <Input 
                 type="email" 

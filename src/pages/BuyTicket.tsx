@@ -6,12 +6,15 @@ import { Navbar } from "@/components/Navbar";
 import { toast } from "sonner";
 import { Calendar, MapPin, CreditCard, Scan, DollarSign } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DigitalTicket } from "@/components/DigitalTicket";
 
 const BuyTicket = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("credit");
+  const [showTicket, setShowTicket] = useState(false);
+  const [ticketData, setTicketData] = useState<any>(null);
 
   // Mock data - In a real application, this would come from an API
   const eventData = {
@@ -33,12 +36,53 @@ const BuyTicket = () => {
     }
   };
 
+  const generateTicketData = () => {
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    if (!userData.name || !userData.cpf) {
+      toast.error("Por favor, faça login novamente com seus dados completos");
+      navigate("/login");
+      return null;
+    }
+
+    const now = new Date();
+    return {
+      ticketId: `TK${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      securityCode: Math.random().toString(36).substr(2, 8).toUpperCase(),
+      purchaseDate: now.toLocaleString('pt-BR'),
+      eventTitle: eventData.title,
+      eventDate: new Date(eventData.date).toLocaleDateString('pt-BR'),
+      eventTime: eventData.time,
+      location: eventData.location,
+      area: eventData.area,
+      buyerName: userData.name,
+      buyerCpf: userData.cpf
+    };
+  };
+
   const handlePurchase = () => {
-    toast.success("Compra realizada com sucesso!");
-    navigate("/");
+    const ticket = generateTicketData();
+    if (ticket) {
+      setTicketData(ticket);
+      setShowTicket(true);
+      toast.success("Compra realizada com sucesso!");
+    }
   };
 
   const totalPrice = eventData.price * quantity;
+
+  if (showTicket && ticketData) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="container mx-auto px-4 pt-24 pb-12">
+          <DigitalTicket {...ticketData} />
+          <div className="flex justify-center mt-6">
+            <Button onClick={() => navigate("/")}>Voltar para Home</Button>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
