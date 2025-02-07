@@ -3,7 +3,6 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 
 interface EventCardProps {
   id: string;
@@ -16,33 +15,10 @@ interface EventCardProps {
 
 export const EventCard = ({ id, title, date, location, imageUrl, price }: EventCardProps) => {
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleBuyClick = (e: React.MouseEvent) => {
     e.preventDefault(); // Previne a navegação do Link
-    // Aqui você pode adicionar a lógica para verificar se o usuário está logado
-    // Por enquanto, vamos simular que o usuário não está logado
-    const isLoggedIn = false;
-
-    if (!isLoggedIn) {
-      toast({
-        title: "Acesso Restrito",
-        description: "Você precisa estar logado para comprar ingressos. Faça login ou cadastre-se.",
-        variant: "destructive",
-        action: (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </Button>
-        ),
-      });
-      return;
-    }
-
-    // Se estiver logado, navegue para a página de compra
+    // Navegue diretamente para a página de compra
     navigate(`/events/${id}/buy`);
   };
 
