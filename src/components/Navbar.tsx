@@ -15,8 +15,10 @@ export const Navbar = () => {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 text-2xl font-bold">
           <Ticket className="h-6 w-6 text-[#D946EF]" />
-          <span className="text-[#D946EF]">Isa</span>
-          <span className="text-[#0EA5E9]">Pass</span>
+          <div className="flex">
+            <span className="text-[#D946EF]">Isa</span>
+            <span className="text-[#0EA5E9]">Pass</span>
+          </div>
         </Link>
         
         <div className="flex items-center gap-4">
