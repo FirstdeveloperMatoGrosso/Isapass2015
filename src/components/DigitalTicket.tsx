@@ -1,6 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { QrCode, Barcode } from "lucide-react";
+import { Barcode } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 
 interface DigitalTicketProps {
   ticketId: string;
@@ -29,6 +30,21 @@ export const DigitalTicket = ({
   buyerCpf,
   buyerPhone
 }: DigitalTicketProps) => {
+  // Criando um objeto com os dados que queremos no QR Code
+  const ticketData = {
+    ticketId,
+    securityCode,
+    buyerName,
+    buyerCpf,
+    buyerPhone,
+    eventTitle,
+    eventDate,
+    eventTime
+  };
+
+  // Convertendo o objeto para string JSON
+  const qrCodeValue = JSON.stringify(ticketData);
+
   return (
     <Card className="w-full max-w-2xl mx-auto bg-white">
       <CardContent className="p-6 space-y-6">
@@ -92,7 +108,12 @@ export const DigitalTicket = ({
 
         <div className="flex justify-center gap-8 pt-4">
           <div className="text-center">
-            <QrCode className="w-32 h-32 mx-auto" />
+            <QRCodeSVG 
+              value={qrCodeValue}
+              size={128}
+              level="H"
+              className="mx-auto"
+            />
             <p className="text-sm text-muted-foreground mt-2">QR Code</p>
           </div>
           <div className="text-center">
