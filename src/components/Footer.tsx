@@ -1,5 +1,5 @@
 
-import { Instagram, Linkedin, Ticket, WhatsApp, MessageCircle } from "lucide-react";
+import { Instagram, Linkedin, Ticket, MessageSquare, MessageCircle } from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -19,7 +19,7 @@ export const Footer = () => {
               Rodrigo Dev MT<br />
               www.rodrigodev.shop<br />
               <span className="flex items-center gap-2 justify-center md:justify-start mt-2">
-                <WhatsApp className="h-4 w-4" />
+                <MessageSquare className="h-4 w-4" />
                 +55 (66) 99225-8469
               </span>
               © 2024 rodrigodev.shop<br />
@@ -54,7 +54,7 @@ export const Footer = () => {
                 <Linkedin className="w-6 h-6" />
               </a>
               <a href="https://wa.me/5566992258469" className="text-gray-600 hover:text-gray-900">
-                <WhatsApp className="w-6 h-6" />
+                <MessageSquare className="w-6 h-6" />
               </a>
               <a href="#" className="text-gray-600 hover:text-gray-900">
                 <MessageCircle className="w-6 h-6" />
