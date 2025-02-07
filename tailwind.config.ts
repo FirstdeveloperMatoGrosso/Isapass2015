@@ -26,11 +26,11 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: '#efac41',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: '#330a04'
 				},
 				secondary: {
 					DEFAULT: '#de8531',
-					foreground: 'hsl(var(--secondary-foreground))'
+					foreground: '#330a04'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
@@ -38,27 +38,27 @@ export default {
 				},
 				muted: {
 					DEFAULT: '#330a04',
-					foreground: 'hsl(var(--muted-foreground))'
+					foreground: '#efac41'
 				},
 				accent: {
 					DEFAULT: '#b32900',
-					foreground: 'hsl(var(--accent-foreground))'
+					foreground: '#efac41'
 				},
 				popover: {
-					DEFAULT: 'hsl(var(--popover))',
-					foreground: 'hsl(var(--popover-foreground))'
+					DEFAULT: '#330a04',
+					foreground: '#efac41'
 				},
 				card: {
-					DEFAULT: 'hsl(var(--card))',
-					foreground: 'hsl(var(--card-foreground))'
+					DEFAULT: '#330a04',
+					foreground: '#efac41'
 				},
 				sidebar: {
 					DEFAULT: '#6c1305',
-					foreground: '#ffffff',
+					foreground: '#efac41',
 					primary: '#efac41',
-					'primary-foreground': '#ffffff',
+					'primary-foreground': '#330a04',
 					accent: '#b32900',
-					'accent-foreground': '#ffffff',
+					'accent-foreground': '#efac41',
 					border: '#de8531',
 					ring: '#efac41'
 				}

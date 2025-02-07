@@ -4,22 +4,22 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 15 85% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 15 85% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 15 85% 11%;
+    --background: 15 85% 11%;
+    --foreground: 32 84% 59%;
+    --card: 15 85% 11%;
+    --card-foreground: 32 84% 59%;
+    --popover: 15 85% 11%;
+    --popover-foreground: 32 84% 59%;
     --primary: 32 84% 59%;
-    --primary-foreground: 210 40% 98%;
+    --primary-foreground: 15 85% 11%;
     --secondary: 20 77% 53%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary-foreground: 15 85% 11%;
     --muted: 15 85% 11%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted-foreground: 32 84% 59%;
     --accent: 14 100% 35%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent-foreground: 32 84% 59%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 15 85% 11%;
     --border: 20 77% 53%;
     --input: 20 77% 53%;
     --ring: 32 84% 59%;
@@ -32,13 +32,13 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-muted text-foreground;
   }
 }
 
 .event-card {
   @apply relative overflow-hidden rounded-lg transition-all duration-300 hover:shadow-xl;
-  background: linear-gradient(135deg, #efac41 0%, #b32900 100%);
+  background: linear-gradient(135deg, #efac41 0%, #6c1305 100%);
 }
 
 .event-card:hover {
