@@ -27,30 +27,30 @@ const Dashboard = () => {
       const parsedData = JSON.parse(storedUserData);
       setUserData(parsedData);
       setFormData(parsedData);
-    }
 
-    // Mock purchase data - In a real app, this would come from an API
-    const mockPurchases = [
-      {
-        id: "TK123456",
-        eventTitle: "Show do Metallica",
-        date: "2024-05-15",
-        price: 450.00,
-        ticket: {
-          ticketId: "TK123456",
-          securityCode: "ABC123",
-          purchaseDate: "2024-02-20 14:30",
+      // Mock purchase data - In a real app, this would come from an API
+      const mockPurchases = [
+        {
+          id: "TK123456",
           eventTitle: "Show do Metallica",
-          eventDate: "15/05/2024",
-          eventTime: "20:00",
-          location: "Allianz Parque - São Paulo, SP",
-          area: "Pista Premium",
-          buyerName: parsedData?.name,
-          buyerCpf: parsedData?.cpf
+          date: "2024-05-15",
+          price: 450.00,
+          ticket: {
+            ticketId: "TK123456",
+            securityCode: "ABC123",
+            purchaseDate: "2024-02-20 14:30",
+            eventTitle: "Show do Metallica",
+            eventDate: "15/05/2024",
+            eventTime: "20:00",
+            location: "Allianz Parque - São Paulo, SP",
+            area: "Pista Premium",
+            buyerName: parsedData?.name,
+            buyerCpf: parsedData?.cpf
+          }
         }
-      }
-    ];
-    setPurchases(mockPurchases);
+      ];
+      setPurchases(mockPurchases);
+    }
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
