@@ -28,7 +28,7 @@ const Login = () => {
             {!isLogin && (
               <Input type="password" placeholder="Confirme a senha" />
             )}
-            <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button variant="default" className="w-full">
               {isLogin ? "Entrar" : "Cadastrar"}
             </Button>
             <div className="flex flex-col items-center gap-2 text-sm">
