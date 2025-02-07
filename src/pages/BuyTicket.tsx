@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,20 @@ const BuyTicket = () => {
     if (ticket) {
       setTicketData(ticket);
       setShowTicket(true);
+      
+      // Salvar a compra no localStorage
+      const purchase = {
+        id: ticket.ticketId,
+        eventTitle: eventData.title,
+        date: eventData.date,
+        price: eventData.price,
+        ticket: ticket
+      };
+      
+      const existingPurchases = JSON.parse(localStorage.getItem('purchases') || '[]');
+      const updatedPurchases = [...existingPurchases, purchase];
+      localStorage.setItem('purchases', JSON.stringify(updatedPurchases));
+      
       toast.success("Compra realizada com sucesso!");
     }
   };
