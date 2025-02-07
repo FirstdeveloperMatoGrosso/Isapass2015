@@ -19,6 +19,22 @@ export const Navbar = () => {
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
     setIsLoggedIn(loggedIn);
+
+    // Add event listener for when user leaves/closes the page
+    const handleTabClose = () => {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userData');
+    };
+
+    window.addEventListener('beforeunload', handleTabClose);
+
+    // Add event listener for when user navigates away
+    window.addEventListener('unload', handleTabClose);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleTabClose);
+      window.removeEventListener('unload', handleTabClose);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -99,3 +115,4 @@ export const Navbar = () => {
     </nav>
   );
 };
+
