@@ -8,6 +8,37 @@ import { useState } from "react";
 const Login = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form submitted:", formData);
+    // Aqui você pode adicionar a lógica de autenticação/cadastro
+  };
+
+  const toggleMode = () => {
+    setIsLogin(!isLogin);
+    // Limpa os campos do formulário ao alternar
+    setFormData({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: ""
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -20,17 +51,43 @@ const Login = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {!isLogin && (
-              <Input type="text" placeholder="Nome completo" />
-            )}
-            <Input type="email" placeholder="Email" />
-            <Input type="password" placeholder="Senha" />
-            {!isLogin && (
-              <Input type="password" placeholder="Confirme a senha" />
-            )}
-            <Button variant="default" className="w-full">
-              {isLogin ? "Entrar" : "Cadastrar"}
-            </Button>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {!isLogin && (
+                <Input 
+                  type="text" 
+                  placeholder="Nome completo" 
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                />
+              )}
+              <Input 
+                type="email" 
+                placeholder="Email" 
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+              />
+              <Input 
+                type="password" 
+                placeholder="Senha" 
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+              />
+              {!isLogin && (
+                <Input 
+                  type="password" 
+                  placeholder="Confirme a senha" 
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                />
+              )}
+              <Button type="submit" variant="default" className="w-full">
+                {isLogin ? "Entrar" : "Cadastrar"}
+              </Button>
+            </form>
             <div className="flex flex-col items-center gap-2 text-sm">
               <button
                 onClick={() => setIsAdmin(!isAdmin)}
@@ -39,7 +96,7 @@ const Login = () => {
                 {isAdmin ? "Área do Cliente" : "Área Administrativa"}
               </button>
               <button
-                onClick={() => setIsLogin(!isLogin)}
+                onClick={toggleMode}
                 className="text-primary hover:text-primary/80 transition-colors"
               >
                 {isLogin 
