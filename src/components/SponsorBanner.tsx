@@ -46,7 +46,7 @@ export const SponsorBanner = () => {
   }, []);
 
   return (
-    <div className="w-full h-48 md:h-64 mb-8 overflow-hidden">
+    <div className="w-full h-48 md:h-64 mb-8 overflow-hidden rounded-xl">
       <img
         src={sponsors[currentIndex].imageUrl}
         alt={sponsors[currentIndex].alt}
