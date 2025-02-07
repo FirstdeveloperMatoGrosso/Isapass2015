@@ -33,11 +33,11 @@ const mockEvents = [
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9]">
+    <div className="min-h-screen bg-white">
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <SponsorBanner />
-        <h1 className="text-4xl font-bold text-center mb-8 text-white drop-shadow-lg">
+        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
           Encontre os melhores eventos
         </h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
