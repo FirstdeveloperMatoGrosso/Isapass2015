@@ -14,6 +14,8 @@ const Login = () => {
     name: "",
     email: "",
     cpf: "",
+    phone: "",
+    address: "",
     password: "",
     confirmPassword: ""
   });
@@ -30,7 +32,7 @@ const Login = () => {
     e.preventDefault();
 
     if (!isLogin) {
-      if (!formData.name || !formData.email || !formData.cpf || !formData.password || !formData.confirmPassword) {
+      if (!formData.name || !formData.email || !formData.cpf || !formData.phone || !formData.address || !formData.password || !formData.confirmPassword) {
         toast.error("Por favor, preencha todos os campos");
         return;
       }
@@ -49,7 +51,9 @@ const Login = () => {
       localStorage.setItem('userData', JSON.stringify({
         name: formData.name,
         email: formData.email,
-        cpf: formData.cpf
+        cpf: formData.cpf,
+        phone: formData.phone,
+        address: formData.address
       }));
       
       toast.success("Conta criada com sucesso!");
@@ -58,6 +62,8 @@ const Login = () => {
         name: "",
         email: "",
         cpf: "",
+        phone: "",
+        address: "",
         password: "",
         confirmPassword: ""
       });
@@ -71,7 +77,9 @@ const Login = () => {
       const mockUserData = {
         name: "Usuário Teste",
         email: formData.email,
-        cpf: "123.456.789-00"
+        cpf: "123.456.789-00",
+        phone: "(11) 99999-9999",
+        address: "Rua Teste, 123"
       };
       localStorage.setItem('userData', JSON.stringify(mockUserData));
       
@@ -86,6 +94,8 @@ const Login = () => {
       name: "",
       email: "",
       cpf: "",
+      phone: "",
+      address: "",
       password: "",
       confirmPassword: ""
     });
@@ -117,6 +127,20 @@ const Login = () => {
                     placeholder="CPF" 
                     name="cpf"
                     value={formData.cpf}
+                    onChange={handleInputChange}
+                  />
+                  <Input 
+                    type="tel" 
+                    placeholder="Telefone" 
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                  />
+                  <Input 
+                    type="text" 
+                    placeholder="Endereço completo" 
+                    name="address"
+                    value={formData.address}
                     onChange={handleInputChange}
                   />
                 </>
