@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,16 +9,10 @@ import { Calendar, MapPin, CreditCard, Scan, DollarSign } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DigitalTicket } from "@/components/DigitalTicket";
 
-const BuyTicket = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [quantity, setQuantity] = useState(1);
-  const [paymentMethod, setPaymentMethod] = useState("credit");
-  const [showTicket, setShowTicket] = useState(false);
-  const [ticketData, setTicketData] = useState<any>(null);
-
-  // Mock data - In a real application, this would come from an API
-  const eventData = {
+// Mock events data - In a real app this would come from an API
+const mockEvents = [
+  {
+    id: "1",
     title: "Show do Metallica",
     date: "2024-05-15",
     time: "20:00",
@@ -28,7 +22,51 @@ const BuyTicket = () => {
     attraction: "Metallica",
     price: 450.00,
     imageUrl: "/placeholder.svg"
-  };
+  },
+  {
+    id: "2",
+    title: "Show do Iron Maiden",
+    date: "2024-06-20",
+    time: "21:00",
+    location: "Morumbi - São Paulo, SP",
+    area: "Pista VIP",
+    classification: "16 anos",
+    attraction: "Iron Maiden",
+    price: 500.00,
+    imageUrl: "/placeholder.svg"
+  }
+];
+
+const BuyTicket = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [quantity, setQuantity] = useState(1);
+  const [paymentMethod, setPaymentMethod] = useState("credit");
+  const [showTicket, setShowTicket] = useState(false);
+  const [ticketData, setTicketData] = useState<any>(null);
+  const [eventData, setEventData] = useState<any>(null);
+
+  useEffect(() => {
+    // Find the event in our mock data
+    const event = mockEvents.find(event => event.id === id);
+    if (!event) {
+      toast.error("Evento não encontrado");
+      navigate("/");
+      return;
+    }
+    setEventData(event);
+  }, [id, navigate]);
+
+  if (!eventData) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="container mx-auto px-4 pt-24 pb-12">
+          <div className="text-center">Carregando...</div>
+        </main>
+      </div>
+    );
+  }
 
   const handleQuantityChange = (change: number) => {
     const newQuantity = quantity + change;
