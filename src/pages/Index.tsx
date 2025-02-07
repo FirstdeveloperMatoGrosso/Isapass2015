@@ -12,7 +12,10 @@ const mockEvents = [
     date: "15 Mar 2024",
     location: "Praia de Copacabana",
     imageUrl: "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3",
-    price: 150.00
+    price: 150.00,
+    classification: "16 anos",
+    areas: ["Pista", "Área VIP", "Camarote"],
+    attractions: ["Ivete Sangalo", "Anitta", "Jorge & Mateus"]
   },
   {
     id: "2",
@@ -20,7 +23,10 @@ const mockEvents = [
     date: "20 Mar 2024",
     location: "Club XYZ",
     imageUrl: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7",
-    price: 80.00
+    price: 80.00,
+    classification: "18 anos",
+    areas: ["Pista", "Front Stage", "Camarote Premium"],
+    attractions: ["Alok", "Chemical Surf", "Vintage Culture"]
   },
   {
     id: "3",
@@ -28,7 +34,10 @@ const mockEvents = [
     date: "25 Mar 2024",
     location: "Arena Show",
     imageUrl: "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b",
-    price: 120.00
+    price: 120.00,
+    classification: "14 anos",
+    areas: ["Pista", "Pista Premium", "Arquibancada"],
+    attractions: ["CPM 22", "Pitty", "Fresno"]
   }
 ];
 
