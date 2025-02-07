@@ -1,6 +1,8 @@
+
 import { Navbar } from "@/components/Navbar";
 import { EventCard } from "@/components/EventCard";
 import { SponsorBanner } from "@/components/SponsorBanner";
+import { CookieConsent } from "@/components/CookieConsent";
 
 const mockEvents = [
   {
@@ -44,6 +46,7 @@ const Index = () => {
           ))}
         </div>
       </main>
+      <CookieConsent />
     </div>
   );
 };
