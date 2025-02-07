@@ -32,7 +32,8 @@
     @apply border-border;
   }
   body {
-    @apply bg-muted text-foreground;
+    @apply bg-background text-foreground;
+    background-color: #f59982;
   }
 }
 
