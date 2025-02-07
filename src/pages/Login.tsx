@@ -1,11 +1,14 @@
 
-import { Navbar } from "@/components/Navbar";
+import { Navbar } from "@/components/ui/navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
@@ -23,15 +26,50 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Aqui você pode adicionar a lógica de autenticação/cadastro
+
+    if (!isLogin) {
+      // Validações para o cadastro
+      if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+        toast.error("Por favor, preencha todos os campos");
+        return;
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        toast.error("As senhas não coincidem");
+        return;
+      }
+
+      if (formData.password.length < 6) {
+        toast.error("A senha deve ter pelo menos 6 caracteres");
+        return;
+      }
+
+      // Simulando o cadastro bem-sucedido
+      toast.success("Conta criada com sucesso!");
+      setIsLogin(true);
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: ""
+      });
+    } else {
+      // Validações para o login
+      if (!formData.email || !formData.password) {
+        toast.error("Por favor, preencha todos os campos");
+        return;
+      }
+
+      // Simulando o login bem-sucedido
+      toast.success("Login realizado com sucesso!");
+      navigate("/");
+    }
   };
 
   const toggleMode = () => {
     setIsLogin(!isLogin);
-    // Limpa os campos do formulário ao alternar
     setFormData({
       name: "",
       email: "",
