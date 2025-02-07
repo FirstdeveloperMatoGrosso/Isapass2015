@@ -56,7 +56,8 @@ const BuyTicket = () => {
       location: eventData.location,
       area: eventData.area,
       buyerName: userData.name,
-      buyerCpf: userData.cpf
+      buyerCpf: userData.cpf,
+      buyerPhone: userData.phone
     };
   };
 

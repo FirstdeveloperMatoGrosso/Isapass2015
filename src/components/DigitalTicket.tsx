@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { QrCode, Barcode } from "lucide-react";
 
@@ -12,6 +13,7 @@ interface DigitalTicketProps {
   area: string;
   buyerName: string;
   buyerCpf: string;
+  buyerPhone?: string;
 }
 
 export const DigitalTicket = ({
@@ -24,7 +26,8 @@ export const DigitalTicket = ({
   location,
   area,
   buyerName,
-  buyerCpf
+  buyerCpf,
+  buyerPhone
 }: DigitalTicketProps) => {
   return (
     <Card className="w-full max-w-2xl mx-auto bg-white">
@@ -54,7 +57,7 @@ export const DigitalTicket = ({
         </div>
 
         <div className="border-t pt-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <p className="font-semibold">Nome:</p>
               <p>{buyerName}</p>
@@ -62,6 +65,10 @@ export const DigitalTicket = ({
             <div>
               <p className="font-semibold">CPF:</p>
               <p>{buyerCpf}</p>
+            </div>
+            <div>
+              <p className="font-semibold">Telefone:</p>
+              <p>{buyerPhone || "Não informado"}</p>
             </div>
           </div>
         </div>
