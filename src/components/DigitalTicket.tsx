@@ -1,6 +1,6 @@
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Barcode } from "lucide-react";
+import Barcode from "react-barcode";
 import { QRCodeSVG } from "qrcode.react";
 
 interface DigitalTicketProps {
@@ -120,8 +120,15 @@ export const DigitalTicket = ({
             <p className="text-sm text-muted-foreground mt-2">QR Code</p>
           </div>
           <div className="text-center">
-            <Barcode className="w-32 h-32 mx-auto" />
-            <p className="text-sm text-muted-foreground mt-2">Código de Barras ({barcodeValue})</p>
+            <Barcode 
+              value={barcodeValue}
+              width={1.5}
+              height={40}
+              fontSize={12}
+              margin={0}
+              className="mx-auto"
+            />
+            <p className="text-sm text-muted-foreground mt-2">Código de Barras</p>
           </div>
         </div>
       </CardContent>
