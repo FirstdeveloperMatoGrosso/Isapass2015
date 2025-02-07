@@ -45,6 +45,9 @@ export const DigitalTicket = ({
   // Convertendo o objeto para string JSON
   const qrCodeValue = JSON.stringify(ticketData);
 
+  // Criando uma string para o código de barras com ID do ingresso e código de segurança
+  const barcodeValue = `${ticketId}-${securityCode}`;
+
   return (
     <Card className="w-full max-w-2xl mx-auto bg-white">
       <CardContent className="p-6 space-y-6">
@@ -118,7 +121,7 @@ export const DigitalTicket = ({
           </div>
           <div className="text-center">
             <Barcode className="w-32 h-32 mx-auto" />
-            <p className="text-sm text-muted-foreground mt-2">Código de Barras</p>
+            <p className="text-sm text-muted-foreground mt-2">Código de Barras ({barcodeValue})</p>
           </div>
         </div>
       </CardContent>
