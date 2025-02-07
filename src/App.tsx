@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,7 @@ import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import BuyTicket from "./pages/BuyTicket";
 import Dashboard from "./pages/Dashboard";
+import AdminPanel from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -16,15 +18,14 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/events/:id/buy" element={<BuyTicket />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/events/:id/buy" element={<BuyTicket />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin/*" element={<AdminPanel />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </TooltipProvider>
   </QueryClientProvider>
 );
