@@ -1,10 +1,28 @@
 
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Search, UserPlus } from "lucide-react";
+
+// Dados de exemplo
+const mockCustomers = [
+  { id: 1, name: "João Silva", email: "joao@email.com", phone: "(11) 99999-9999", lastPurchase: "2024-02-20" },
+  { id: 2, name: "Maria Santos", email: "maria@email.com", phone: "(11) 88888-8888", lastPurchase: "2024-02-19" },
+];
 
 const CustomersPage = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  
   return (
     <div className="space-y-6">
-      <h2 className="text-3xl font-bold tracking-tight">Clientes</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">Clientes</h2>
+        <Button>
+          <UserPlus className="mr-2 h-4 w-4" />
+          Novo Cliente
+        </Button>
+      </div>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -22,13 +40,46 @@ const CustomersPage = () => {
         </Card>
       </div>
       
-      <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
-        <div className="p-6">
-          <p className="text-muted-foreground">
-            Lista de clientes será exibida aqui.
-          </p>
-        </div>
-      </div>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Lista de Clientes</CardTitle>
+            <div className="relative w-64">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar clientes..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <div className="grid grid-cols-5 gap-4 p-4 font-medium">
+              <div>Nome</div>
+              <div>Email</div>
+              <div>Telefone</div>
+              <div>Última Compra</div>
+              <div>Ações</div>
+            </div>
+            {mockCustomers.map((customer) => (
+              <div key={customer.id} className="grid grid-cols-5 gap-4 border-t p-4">
+                <div>{customer.name}</div>
+                <div>{customer.email}</div>
+                <div>{customer.phone}</div>
+                <div>{new Date(customer.lastPurchase).toLocaleDateString()}</div>
+                <div>
+                  <Button variant="ghost" size="sm">
+                    Ver detalhes
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
