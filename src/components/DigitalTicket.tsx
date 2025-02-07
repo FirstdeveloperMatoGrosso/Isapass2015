@@ -119,15 +119,16 @@ export const DigitalTicket = ({
             />
             <p className="text-sm text-muted-foreground mt-2">QR Code</p>
           </div>
-          <div className="text-center">
-            <Barcode 
-              value={barcodeValue}
-              width={1.5}
-              height={40}
-              fontSize={12}
-              margin={0}
-              className="mx-auto"
-            />
+          <div className="text-center mx-auto">
+            <div className="mx-auto">
+              <Barcode 
+                value={barcodeValue}
+                width={1.5}
+                height={40}
+                fontSize={12}
+                margin={0}
+              />
+            </div>
             <p className="text-sm text-muted-foreground mt-2">Código de Barras</p>
           </div>
         </div>
