@@ -33,7 +33,7 @@ const mockEvents = [
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-[#D3E4FD] via-[#FFDEE2] to-[#0EA5E9]">
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-12">
         <SponsorBanner />
