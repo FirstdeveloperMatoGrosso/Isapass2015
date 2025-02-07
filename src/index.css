@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 15 85% 11%;
-    --foreground: 32 84% 59%;
-    --card: 15 85% 11%;
-    --card-foreground: 32 84% 59%;
-    --popover: 15 85% 11%;
-    --popover-foreground: 32 84% 59%;
-    --primary: 32 84% 59%;
-    --primary-foreground: 15 85% 11%;
-    --secondary: 20 77% 53%;
-    --secondary-foreground: 15 85% 11%;
-    --muted: 15 85% 11%;
-    --muted-foreground: 32 84% 59%;
-    --accent: 14 100% 35%;
-    --accent-foreground: 32 84% 59%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 255 68% 74%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 267 35% 54%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 15 85% 11%;
-    --border: 20 77% 53%;
-    --input: 20 77% 53%;
-    --ring: 32 84% 59%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 255 68% 74%;
     --radius: 0.75rem;
   }
 }
@@ -33,13 +33,12 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-color: #f59982;
   }
 }
 
 .event-card {
   @apply relative overflow-hidden rounded-lg transition-all duration-300 hover:shadow-xl;
-  background: linear-gradient(135deg, #efac41 0%, #6c1305 100%);
+  background: linear-gradient(135deg, hsl(var(--primary)/0.1) 0%, hsl(var(--secondary)/0.1) 100%);
 }
 
 .event-card:hover {
