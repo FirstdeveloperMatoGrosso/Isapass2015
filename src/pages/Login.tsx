@@ -1,3 +1,4 @@
+
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +7,7 @@ import { useState } from "react";
 
 const Login = () => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   return (
     <div className="min-h-screen bg-background">
@@ -14,19 +16,35 @@ const Login = () => {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-center">
-              {isAdmin ? "Login Administrativo" : "Login"}
+              {isAdmin ? "Login Administrativo" : (isLogin ? "Login" : "Cadastro")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            {!isLogin && (
+              <Input type="text" placeholder="Nome completo" />
+            )}
             <Input type="email" placeholder="Email" />
             <Input type="password" placeholder="Senha" />
-            <Button className="w-full">Entrar</Button>
-            <div className="text-center">
+            {!isLogin && (
+              <Input type="password" placeholder="Confirme a senha" />
+            )}
+            <Button className="w-full">
+              {isLogin ? "Entrar" : "Cadastrar"}
+            </Button>
+            <div className="flex flex-col items-center gap-2 text-sm text-muted-foreground">
               <button
                 onClick={() => setIsAdmin(!isAdmin)}
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                className="hover:text-primary transition-colors"
               >
                 {isAdmin ? "Área do Cliente" : "Área Administrativa"}
+              </button>
+              <button
+                onClick={() => setIsLogin(!isLogin)}
+                className="hover:text-primary transition-colors"
+              >
+                {isLogin 
+                  ? "Não tem uma conta? Cadastre-se" 
+                  : "Já tem uma conta? Faça login"}
               </button>
             </div>
           </CardContent>
