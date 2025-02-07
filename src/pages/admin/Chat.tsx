@@ -30,7 +30,6 @@ const ChatPage = () => {
 
     setMessages([...messages, newMessage]);
     
-    // Simular resposta do bot
     setTimeout(() => {
       const botResponse: Message = {
         id: Date.now() + 1,
@@ -52,10 +51,10 @@ const ChatPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Chat Bot</h2>
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Chat Bot</h2>
       </div>
       
-      <Card className="h-[600px] flex flex-col">
+      <Card className="h-[calc(100vh-12rem)] flex flex-col">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
@@ -63,7 +62,7 @@ const ChatPage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col">
-          <div className="flex-1 overflow-y-auto space-y-4 mb-4">
+          <div className="flex-1 overflow-y-auto space-y-4 mb-4 p-2">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -78,7 +77,7 @@ const ChatPage = () => {
                       : "bg-muted"
                   }`}
                 >
-                  <p>{message.text}</p>
+                  <p className="break-words">{message.text}</p>
                   <span className="text-xs opacity-70">
                     {message.timestamp.toLocaleTimeString()}
                   </span>

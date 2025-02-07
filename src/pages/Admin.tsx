@@ -16,7 +16,6 @@ const AdminPanel = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Redirect to dashboard if on /admin
     if (window.location.pathname === '/admin') {
       navigate('/admin/dashboard');
     }
@@ -34,8 +33,8 @@ const AdminPanel = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <Sidebar>
+      <div className="min-h-screen flex w-full overflow-hidden">
+        <Sidebar className="hidden md:block">
           <SidebarContent>
             <SidebarGroup>
               <SidebarGroupLabel>Painel Administrativo</SidebarGroupLabel>
@@ -57,17 +56,21 @@ const AdminPanel = () => {
           </SidebarContent>
         </Sidebar>
         
-        <main className="flex-1 p-6">
-          <SidebarTrigger />
-          <Routes>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/events" element={<EventsPage />} />
-            <Route path="/customers" element={<CustomersPage />} />
-            <Route path="/sales" element={<SalesPage />} />
-            <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </Routes>
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto">
+          <div className="md:hidden mb-4">
+            <SidebarTrigger />
+          </div>
+          <div className="container mx-auto max-w-7xl">
+            <Routes>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/events" element={<EventsPage />} />
+              <Route path="/customers" element={<CustomersPage />} />
+              <Route path="/sales" element={<SalesPage />} />
+              <Route path="/reports" element={<ReportsPage />} />
+              <Route path="/chat" element={<ChatPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Routes>
+          </div>
         </main>
       </div>
     </SidebarProvider>
@@ -75,3 +78,4 @@ const AdminPanel = () => {
 };
 
 export default AdminPanel;
+
