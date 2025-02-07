@@ -1,5 +1,5 @@
 
-import { Instagram, Linkedin } from "lucide-react";
+import { Instagram, Linkedin, Ticket } from "lucide-react";
 
 export const Footer = () => {
   return (
@@ -8,12 +8,12 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Logo e Copyright */}
           <div className="text-center md:text-left">
-            <h3 className="font-bold text-xl mb-4">
-              <img 
-                src="/photo-1486312338219-ce68d2c6f44d" 
-                alt="IsaPass" 
-                className="h-8 w-auto"
-              />
+            <h3 className="font-bold text-xl mb-4 flex items-center">
+              <Ticket className="h-8 w-8 text-[#0EA5E9]" />
+              <div className="flex">
+                <span className="text-[#D946EF]">Isa</span>
+                <span className="text-[#0EA5E9]">Pass</span>
+              </div>
             </h3>
             <p className="text-gray-600 text-sm">
               © 2024 rodrigodev.shop<br />
@@ -54,4 +54,3 @@ export const Footer = () => {
     </footer>
   );
 };
-
