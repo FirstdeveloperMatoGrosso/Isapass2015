@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { EventCard } from "@/components/EventCard";
+import { SponsorBanner } from "@/components/SponsorBanner";
 
 const mockEvents = [
   {
@@ -33,6 +34,7 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-12">
+        <SponsorBanner />
         <h1 className="text-4xl font-bold text-center mb-8">
           Encontre os melhores eventos
         </h1>
