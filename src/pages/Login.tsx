@@ -1,3 +1,4 @@
+
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -82,9 +83,10 @@ const Login = () => {
         address: "Rua Teste, 123"
       };
       localStorage.setItem('userData', JSON.stringify(mockUserData));
+      localStorage.setItem('isLoggedIn', 'true');
       
       toast.success("Login realizado com sucesso!");
-      navigate("/");
+      navigate("/dashboard");
     }
   };
 
