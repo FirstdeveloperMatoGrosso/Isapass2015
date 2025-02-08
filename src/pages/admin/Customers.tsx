@@ -1,8 +1,10 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Search, UserPlus, Edit, Lock, Trash2, User, Building2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -13,8 +15,12 @@ interface Customer {
   name: string;
   email: string;
   phone: string;
-  lastPurchase: string;
+  document: string;
   type: CustomerType;
+  address: string;
+  city: string;
+  state: string;
+  lastPurchase: string;
   blocked: boolean;
 }
 
@@ -23,24 +29,43 @@ const mockCustomers: Customer[] = [
     id: 1, 
     name: "João Silva", 
     email: "joao@email.com", 
-    phone: "(11) 99999-9999", 
-    lastPurchase: "2024-02-20",
+    phone: "(11) 99999-9999",
+    document: "123.456.789-00",
     type: "individual",
+    address: "Rua das Flores, 123",
+    city: "São Paulo",
+    state: "SP",
+    lastPurchase: "2024-02-20",
     blocked: false
   },
   { 
     id: 2, 
     name: "Tech Solutions Ltd", 
     email: "contact@techsolutions.com", 
-    phone: "(11) 88888-8888", 
-    lastPurchase: "2024-02-19",
+    phone: "(11) 88888-8888",
+    document: "12.345.678/0001-90",
     type: "company",
+    address: "Av. Paulista, 1000",
+    city: "São Paulo",
+    state: "SP",
+    lastPurchase: "2024-02-19",
     blocked: true
   },
 ];
 
 const CustomersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [isNewCustomerOpen, setIsNewCustomerOpen] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    document: "",
+    type: "individual" as CustomerType,
+    address: "",
+    city: "",
+    state: "",
+  });
   const { toast } = useToast();
   
   const handleBlock = (customer: Customer) => {
@@ -63,15 +88,154 @@ const CustomersPage = () => {
       description: `Editando informações de ${customer.name}`,
     });
   };
+
+  const handleNewCustomerSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Cliente cadastrado",
+      description: `${newCustomer.name} foi cadastrado com sucesso.`,
+    });
+    setIsNewCustomerOpen(false);
+    setNewCustomer({
+      name: "",
+      email: "",
+      phone: "",
+      document: "",
+      type: "individual",
+      address: "",
+      city: "",
+      state: "",
+    });
+  };
   
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Clientes</h2>
-        <Button className="w-full sm:w-auto hover:scale-105 transition-transform">
-          <UserPlus className="mr-2 h-4 w-4" />
-          Novo Cliente
-        </Button>
+        <Dialog open={isNewCustomerOpen} onOpenChange={setIsNewCustomerOpen}>
+          <DialogTrigger asChild>
+            <Button className="w-full sm:w-auto hover:scale-105 transition-transform">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Novo Cliente
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogHeader>
+              <DialogTitle>Cadastrar Novo Cliente</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleNewCustomerSubmit} className="space-y-4">
+              <div className="space-y-4">
+                <div>
+                  <Label>Tipo de Cliente</Label>
+                  <RadioGroup
+                    value={newCustomer.type}
+                    onValueChange={(value: CustomerType) =>
+                      setNewCustomer({ ...newCustomer, type: value })
+                    }
+                    className="flex gap-4 mt-2"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="individual" id="individual" />
+                      <Label htmlFor="individual" className="flex items-center gap-1">
+                        <User className="h-4 w-4" />
+                        Pessoa Física
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="company" id="company" />
+                      <Label htmlFor="company" className="flex items-center gap-1">
+                        <Building2 className="h-4 w-4" />
+                        Pessoa Jurídica
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Nome {newCustomer.type === 'company' ? 'da Empresa' : 'Completo'}</Label>
+                    <Input
+                      id="name"
+                      value={newCustomer.name}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
+                      placeholder={newCustomer.type === 'company' ? 'Nome da Empresa' : 'Nome Completo'}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="document">{newCustomer.type === 'company' ? 'CNPJ' : 'CPF'}</Label>
+                    <Input
+                      id="document"
+                      value={newCustomer.document}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, document: e.target.value })}
+                      placeholder={newCustomer.type === 'company' ? '00.000.000/0000-00' : '000.000.000-00'}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">E-mail</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      value={newCustomer.email}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
+                      placeholder="email@exemplo.com"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Telefone</Label>
+                    <Input
+                      id="phone"
+                      value={newCustomer.phone}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
+                      placeholder="(00) 00000-0000"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="address">Endereço</Label>
+                  <Input
+                    id="address"
+                    value={newCustomer.address}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, address: e.target.value })}
+                    placeholder="Rua, número, complemento"
+                  />
+                </div>
+
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="city">Cidade</Label>
+                    <Input
+                      id="city"
+                      value={newCustomer.city}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, city: e.target.value })}
+                      placeholder="Cidade"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="state">Estado</Label>
+                    <Input
+                      id="state"
+                      value={newCustomer.state}
+                      onChange={(e) => setNewCustomer({ ...newCustomer, state: e.target.value })}
+                      placeholder="Estado"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 mt-6">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsNewCustomerOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button type="submit">Cadastrar Cliente</Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
       
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
@@ -149,17 +313,19 @@ const CustomersPage = () => {
         </CardHeader>
         <CardContent className="overflow-x-auto">
           <div className="min-w-[700px] rounded-md border">
-            <div className="grid grid-cols-7 gap-4 p-4 font-medium bg-muted/50">
+            <div className="grid grid-cols-9 gap-4 p-4 font-medium bg-muted/50">
               <div>Tipo</div>
               <div>Nome</div>
+              <div>Documento</div>
               <div>Email</div>
               <div>Telefone</div>
+              <div>Cidade/Estado</div>
               <div>Última Compra</div>
               <div>Status</div>
               <div>Ações</div>
             </div>
             {mockCustomers.map((customer) => (
-              <div key={customer.id} className="grid grid-cols-7 gap-4 border-t p-4 hover:bg-muted/30 transition-colors">
+              <div key={customer.id} className="grid grid-cols-9 gap-4 border-t p-4 hover:bg-muted/30 transition-colors">
                 <div className="flex items-center gap-2">
                   {customer.type === "individual" ? (
                     <User className="h-4 w-4 text-primary" />
@@ -169,8 +335,10 @@ const CustomersPage = () => {
                   <span className="text-sm">{customer.type === "individual" ? "PF" : "PJ"}</span>
                 </div>
                 <div className="truncate font-medium">{customer.name}</div>
+                <div className="truncate text-muted-foreground">{customer.document}</div>
                 <div className="truncate text-muted-foreground">{customer.email}</div>
                 <div className="truncate text-muted-foreground">{customer.phone}</div>
+                <div className="truncate text-muted-foreground">{customer.city}/{customer.state}</div>
                 <div className="text-muted-foreground">{new Date(customer.lastPurchase).toLocaleDateString()}</div>
                 <div>
                   <span className={`px-2 py-1 rounded-full text-xs ${
@@ -217,4 +385,3 @@ const CustomersPage = () => {
 };
 
 export default CustomersPage;
-
