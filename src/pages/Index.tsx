@@ -4,6 +4,8 @@ import { EventCard } from "@/components/EventCard";
 import { SponsorBanner } from "@/components/SponsorBanner";
 import { CookieConsent } from "@/components/CookieConsent";
 import { Footer } from "@/components/Footer";
+import { MusicPlayer } from "@/components/MusicPlayer";
+import { ShareOptions } from "@/components/ShareOptions";
 
 const mockEvents = [
   {
@@ -45,6 +47,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
+      <ShareOptions />
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
         <SponsorBanner />
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
@@ -56,6 +59,7 @@ const Index = () => {
           ))}
         </div>
       </main>
+      <MusicPlayer />
       <Footer />
       <CookieConsent />
     </div>
