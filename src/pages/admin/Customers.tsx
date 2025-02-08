@@ -3,28 +3,79 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, UserPlus } from "lucide-react";
+import { Search, UserPlus, Edit, Lock, Trash2, User, Building2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
-const mockCustomers = [
-  { id: 1, name: "João Silva", email: "joao@email.com", phone: "(11) 99999-9999", lastPurchase: "2024-02-20" },
-  { id: 2, name: "Maria Santos", email: "maria@email.com", phone: "(11) 88888-8888", lastPurchase: "2024-02-19" },
+type CustomerType = "individual" | "company";
+
+interface Customer {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  lastPurchase: string;
+  type: CustomerType;
+  blocked: boolean;
+}
+
+const mockCustomers: Customer[] = [
+  { 
+    id: 1, 
+    name: "João Silva", 
+    email: "joao@email.com", 
+    phone: "(11) 99999-9999", 
+    lastPurchase: "2024-02-20",
+    type: "individual",
+    blocked: false
+  },
+  { 
+    id: 2, 
+    name: "Tech Solutions Ltd", 
+    email: "contact@techsolutions.com", 
+    phone: "(11) 88888-8888", 
+    lastPurchase: "2024-02-19",
+    type: "company",
+    blocked: true
+  },
 ];
 
 const CustomersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
+  
+  const handleBlock = (customer: Customer) => {
+    toast({
+      title: `Cliente ${customer.blocked ? "desbloqueado" : "bloqueado"}`,
+      description: `${customer.name} foi ${customer.blocked ? "desbloqueado" : "bloqueado"} com sucesso.`,
+    });
+  };
+
+  const handleDelete = (customer: Customer) => {
+    toast({
+      title: "Cliente excluído",
+      description: `${customer.name} foi excluído com sucesso.`,
+    });
+  };
+
+  const handleEdit = (customer: Customer) => {
+    toast({
+      title: "Editar cliente",
+      description: `Editando informações de ${customer.name}`,
+    });
+  };
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Clientes</h2>
-        <Button>
+        <Button className="w-full sm:w-auto hover:scale-105 transition-transform">
           <UserPlus className="mr-2 h-4 w-4" />
           Novo Cliente
         </Button>
       </div>
       
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="hover:shadow-lg transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
               Total de Clientes
@@ -34,6 +85,48 @@ const CustomersPage = () => {
             <div className="text-xl md:text-2xl font-bold">1,234</div>
             <p className="text-xs text-muted-foreground">
               +20% desde o último mês
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Pessoas Físicas
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl md:text-2xl font-bold">892</div>
+            <p className="text-xs text-muted-foreground">
+              72% dos clientes
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Pessoas Jurídicas
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl md:text-2xl font-bold">342</div>
+            <p className="text-xs text-muted-foreground">
+              28% dos clientes
+            </p>
+          </CardContent>
+        </Card>
+        
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Clientes Bloqueados
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl md:text-2xl font-bold text-destructive">23</div>
+            <p className="text-xs text-muted-foreground">
+              1.8% dos clientes
             </p>
           </CardContent>
         </Card>
@@ -55,23 +148,63 @@ const CustomersPage = () => {
           </div>
         </CardHeader>
         <CardContent className="overflow-x-auto">
-          <div className="min-w-[600px] rounded-md border">
-            <div className="grid grid-cols-5 gap-4 p-4 font-medium">
+          <div className="min-w-[700px] rounded-md border">
+            <div className="grid grid-cols-7 gap-4 p-4 font-medium bg-muted/50">
+              <div>Tipo</div>
               <div>Nome</div>
               <div>Email</div>
               <div>Telefone</div>
               <div>Última Compra</div>
+              <div>Status</div>
               <div>Ações</div>
             </div>
             {mockCustomers.map((customer) => (
-              <div key={customer.id} className="grid grid-cols-5 gap-4 border-t p-4">
-                <div className="truncate">{customer.name}</div>
-                <div className="truncate">{customer.email}</div>
-                <div className="truncate">{customer.phone}</div>
-                <div>{new Date(customer.lastPurchase).toLocaleDateString()}</div>
+              <div key={customer.id} className="grid grid-cols-7 gap-4 border-t p-4 hover:bg-muted/30 transition-colors">
+                <div className="flex items-center gap-2">
+                  {customer.type === "individual" ? (
+                    <User className="h-4 w-4 text-primary" />
+                  ) : (
+                    <Building2 className="h-4 w-4 text-secondary" />
+                  )}
+                  <span className="text-sm">{customer.type === "individual" ? "PF" : "PJ"}</span>
+                </div>
+                <div className="truncate font-medium">{customer.name}</div>
+                <div className="truncate text-muted-foreground">{customer.email}</div>
+                <div className="truncate text-muted-foreground">{customer.phone}</div>
+                <div className="text-muted-foreground">{new Date(customer.lastPurchase).toLocaleDateString()}</div>
                 <div>
-                  <Button variant="ghost" size="sm">
-                    Ver detalhes
+                  <span className={`px-2 py-1 rounded-full text-xs ${
+                    customer.blocked 
+                      ? "bg-destructive/10 text-destructive" 
+                      : "bg-green-100 text-green-700"
+                  }`}>
+                    {customer.blocked ? "Bloqueado" : "Ativo"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hover:text-primary"
+                    onClick={() => handleEdit(customer)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`h-8 w-8 ${customer.blocked ? "hover:text-green-600" : "hover:text-destructive"}`}
+                    onClick={() => handleBlock(customer)}
+                  >
+                    <Lock className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 hover:text-destructive"
+                    onClick={() => handleDelete(customer)}
+                  >
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
