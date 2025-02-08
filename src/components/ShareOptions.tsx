@@ -10,11 +10,31 @@ import { Button } from './ui/button';
 import { toast } from './ui/use-toast';
 
 export const ShareOptions = () => {
-  const handleShare = (method: string) => {
-    toast({
-      title: "Compartilhando",
-      description: `Compartilhando via ${method}...`,
-    });
+  const handleShare = async (method: string) => {
+    try {
+      if (navigator.share && (method === 'WhatsApp' || method === 'Telegram')) {
+        await navigator.share({
+          title: 'Compartilhar conteúdo',
+          text: 'Confira este conteúdo interessante!',
+          url: window.location.href,
+        });
+      } else if (method === 'Email') {
+        const subject = encodeURIComponent('Compartilhar conteúdo');
+        const body = encodeURIComponent(`Confira este conteúdo: ${window.location.href}`);
+        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      }
+      
+      toast({
+        title: "Compartilhado com sucesso!",
+        description: `Conteúdo compartilhado via ${method}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao compartilhar",
+        description: "Não foi possível compartilhar o conteúdo",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDownload = (format: string) => {
@@ -22,6 +42,7 @@ export const ShareOptions = () => {
       title: "Download iniciado",
       description: `Baixando relatório em ${format}...`,
     });
+    // Aqui você pode implementar a lógica real de download
   };
 
   return (

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { BarChart3, Calendar, CreditCard, LayoutDashboard, MessageSquare, Settings, Users, ChevronLeft, ImageIcon } from "lucide-react";
@@ -25,6 +25,14 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps)
     { title: "Configurações", icon: Settings, path: "/admin/settings" },
   ];
 
+  const handleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+    toast({
+      title: isCollapsed ? "Menu expandido" : "Menu recolhido",
+      duration: 1500,
+    });
+  };
+
   return (
     <Sidebar className={`hidden md:flex h-screen flex-col fixed left-0 top-0 z-20 border-r bg-card transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'}`}>
       <SidebarContent>
@@ -32,7 +40,7 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps)
           variant="ghost"
           size="icon"
           className="absolute right-2 top-2"
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={handleCollapse}
         >
           <ChevronLeft className={`h-4 w-4 transition-transform ${isCollapsed ? 'rotate-180' : ''}`} />
         </Button>
