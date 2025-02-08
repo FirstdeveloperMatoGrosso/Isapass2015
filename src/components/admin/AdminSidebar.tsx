@@ -39,13 +39,13 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps)
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-2 top-2"
+          className="absolute right-2 top-2 hover:bg-accent"
           onClick={handleCollapse}
         >
-          <ChevronLeft className={`h-4 w-4 transition-transform ${isCollapsed ? 'rotate-180' : ''}`} />
+          <ChevronLeft className={`h-4 w-4 transition-transform duration-200 ${isCollapsed ? 'rotate-180' : ''}`} />
         </Button>
         <SidebarGroup>
-          <SidebarGroupLabel className={`flex items-center gap-2 text-lg font-bold px-3 py-2 ${isCollapsed ? 'justify-center' : ''}`}>
+          <SidebarGroupLabel className={`flex items-center gap-2 text-lg font-bold px-4 py-4 ${isCollapsed ? 'justify-center' : ''}`}>
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
               <LayoutDashboard className="w-5 h-5 text-primary" />
             </div>
@@ -58,7 +58,7 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps)
                   <SidebarMenuButton asChild>
                     <Link 
                       to={item.path} 
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-accent transition-all duration-200 group"
+                      className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-accent transition-all duration-200 group"
                       onClick={() => {
                         toast({
                           title: `Navegando para ${item.title}`,
