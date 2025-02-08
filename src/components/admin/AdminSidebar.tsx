@@ -36,7 +36,7 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps)
   return (
     <Sidebar className={`fixed left-0 top-0 z-20 h-screen transition-all duration-300 border-r bg-card ${isCollapsed ? 'w-16' : 'w-64'}`}>
       <SidebarContent className="flex flex-col h-full">
-        <div className="pt-6 px-4 mb-4">
+        <div className="pt-4 px-3">
           <Button
             variant="ghost"
             size="icon"
@@ -48,20 +48,20 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps)
         </div>
         
         <SidebarGroup>
-          <SidebarGroupLabel className={`flex items-center gap-2 text-lg font-bold px-4 mb-6 ${isCollapsed ? 'justify-center' : ''}`}>
+          <SidebarGroupLabel className={`flex items-center gap-2 text-lg font-bold px-3 mt-2 ${isCollapsed ? 'justify-center' : ''}`}>
             <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
               <LayoutDashboard className="w-5 h-5 text-primary" />
             </div>
             {!isCollapsed && <span>Admin Panel</span>}
           </SidebarGroupLabel>
-          <SidebarGroupContent>
+          <SidebarGroupContent className="mt-4">
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link 
                       to={item.path} 
-                      className="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-accent transition-all duration-200 group"
+                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent transition-all duration-200 group"
                       onClick={() => {
                         toast({
                           title: `Navegando para ${item.title}`,
