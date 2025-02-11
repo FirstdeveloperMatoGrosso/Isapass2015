@@ -48,20 +48,27 @@ const ApiConnectPage = () => {
     try {
       const supabase = createClient(url, key);
       
-      const { data, error } = await supabase
-        .from('information_schema.tables')
-        .select('table_name')
-        .eq('table_schema', 'public');
+      // Usando a API correta do Supabase para listar tabelas
+      const { data: tables, error } = await supabase.rpc('list_tables');
+      
+      if (error) {
+        console.error('Erro ao buscar tabelas:', error);
+        return false;
+      }
 
-      if (error) throw error;
+      if (!tables || !Array.isArray(tables)) {
+        console.error('Formato de resposta inválido');
+        return false;
+      }
 
-      const tableInfoPromises = data.map(async (table) => {
+      // Buscando a contagem de registros para cada tabela
+      const tableInfoPromises = tables.map(async (tableName) => {
         const { count, error: countError } = await supabase
-          .from(table.table_name)
+          .from(tableName)
           .select('*', { count: 'exact', head: true });
 
         return {
-          name: table.table_name,
+          name: tableName,
           rowCount: countError ? 0 : (count || 0)
         };
       });
