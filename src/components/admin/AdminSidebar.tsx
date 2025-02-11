@@ -36,9 +36,15 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps)
     });
   };
 
+  const handleMobileMenuClick = () => {
+    if (isMobile) {
+      setIsCollapsed(true);
+    }
+  };
+
   if (!isMobile && isCollapsed) {
     return (
-      <Sidebar className="fixed h-screen transition-all duration-300 border-r bg-card w-16">
+      <Sidebar className="fixed h-screen transition-all duration-300 border-r bg-card w-16 z-50">
         <SidebarContent>
           <div className="pt-4 px-3">
             <Button
@@ -75,56 +81,66 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps)
   }
 
   return (
-    <Sidebar className={`fixed h-screen transition-all duration-300 border-r bg-card ${isMobile ? 'w-[85vw] max-w-[300px]' : 'w-64'} ${isCollapsed ? '-translate-x-full' : 'translate-x-0'}`}>
-      <SidebarContent className="flex flex-col h-full">
-        <div className="pt-4 px-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
-              <LayoutDashboard className="w-5 h-5 text-primary" />
+    <>
+      {isMobile && !isCollapsed && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40"
+          onClick={handleMobileMenuClick}
+        />
+      )}
+      <Sidebar 
+        className={`fixed h-screen transition-all duration-300 border-r bg-card z-50 ${
+          isMobile ? 'w-[85vw] max-w-[300px]' : 'w-64'
+        } ${isCollapsed ? '-translate-x-full' : 'translate-x-0'}`}
+      >
+        <SidebarContent className="flex flex-col h-full">
+          <div className="pt-4 px-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10">
+                <LayoutDashboard className="w-5 h-5 text-primary" />
+              </div>
+              <span className="font-bold text-lg">Admin Panel</span>
             </div>
-            <span className="font-bold text-lg">Admin Panel</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hover:bg-accent"
+              onClick={handleCollapse}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hover:bg-accent"
-            onClick={handleCollapse}
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-        </div>
-        
-        <SidebarGroup>
-          <SidebarGroupContent className="mt-4">
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link 
-                      to={item.path} 
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent transition-all duration-200 group"
-                      onClick={() => {
-                        toast({
-                          title: `Navegando para ${item.title}`,
-                          description: "Carregando página...",
-                        });
-                        if (isMobile) {
-                          setIsCollapsed(true);
-                        }
-                      }}
-                    >
-                      <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-background group-hover:bg-primary/10 transition-colors">
-                        <item.icon className="h-5 w-5 group-hover:text-primary transition-colors" />
-                      </div>
-                      <span className="font-medium">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+          
+          <SidebarGroup>
+            <SidebarGroupContent className="mt-4">
+              <SidebarMenu>
+                {menuItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link 
+                        to={item.path} 
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-accent transition-all duration-200 group"
+                        onClick={() => {
+                          toast({
+                            title: `Navegando para ${item.title}`,
+                            description: "Carregando página...",
+                          });
+                          handleMobileMenuClick();
+                        }}
+                      >
+                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-background group-hover:bg-primary/10 transition-colors">
+                          <item.icon className="h-5 w-5 group-hover:text-primary transition-colors" />
+                        </div>
+                        <span className="font-medium">{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+      </Sidebar>
+    </>
   );
 };
