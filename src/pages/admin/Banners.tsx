@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ interface Banner {
 const BannersPage = () => {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [newBanner, setNewBanner] = useState<Partial<Banner>>({});
+  const [isCreating, setIsCreating] = useState(false);
 
   const handleAddBanner = () => {
     if (!newBanner.title || !newBanner.imageUrl) {
@@ -37,6 +39,7 @@ const BannersPage = () => {
 
     setBanners([...banners, banner]);
     setNewBanner({});
+    setIsCreating(false);
     toast({
       title: "Sucesso",
       description: "Banner adicionado com sucesso!"
@@ -69,43 +72,52 @@ const BannersPage = () => {
         </div>
       </div>
 
-      <CardHeader>
-        <CardTitle>Novo Banner</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4">
-          <div className="grid gap-2">
-            <Label htmlFor="title">Título</Label>
-            <Input
-              id="title"
-              value={newBanner.title || ''}
-              onChange={(e) => setNewBanner({ ...newBanner, title: e.target.value })}
-              placeholder="Digite o título do banner"
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="imageUrl">URL da Imagem</Label>
-            <Input
-              id="imageUrl"
-              value={newBanner.imageUrl || ''}
-              onChange={(e) => setNewBanner({ ...newBanner, imageUrl: e.target.value })}
-              placeholder="Cole a URL da imagem"
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="link">Link (opcional)</Label>
-            <Input
-              id="link"
-              value={newBanner.link || ''}
-              onChange={(e) => setNewBanner({ ...newBanner, link: e.target.value })}
-              placeholder="Digite o link do banner"
-            />
-          </div>
-          <Button onClick={handleAddBanner} className="w-full">
-            <Plus className="mr-2 h-4 w-4" /> Adicionar Banner
-          </Button>
-        </div>
-      </CardContent>
+      {isCreating && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Novo Banner</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="title">Título</Label>
+                <Input
+                  id="title"
+                  value={newBanner.title || ''}
+                  onChange={(e) => setNewBanner({ ...newBanner, title: e.target.value })}
+                  placeholder="Digite o título do banner"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="imageUrl">URL da Imagem</Label>
+                <Input
+                  id="imageUrl"
+                  value={newBanner.imageUrl || ''}
+                  onChange={(e) => setNewBanner({ ...newBanner, imageUrl: e.target.value })}
+                  placeholder="Cole a URL da imagem"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="link">Link (opcional)</Label>
+                <Input
+                  id="link"
+                  value={newBanner.link || ''}
+                  onChange={(e) => setNewBanner({ ...newBanner, link: e.target.value })}
+                  placeholder="Digite o link do banner"
+                />
+              </div>
+              <div className="flex gap-2 justify-end">
+                <Button variant="outline" onClick={() => setIsCreating(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleAddBanner}>
+                  <Plus className="mr-2 h-4 w-4" /> Adicionar Banner
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {banners.map((banner) => (
