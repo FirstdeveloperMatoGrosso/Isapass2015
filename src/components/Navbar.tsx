@@ -9,37 +9,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    setIsLoggedIn(loggedIn);
-
-    // Add event listener for when user leaves/closes the page
-    const handleTabClose = () => {
-      localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('userData');
-    };
-
-    window.addEventListener('beforeunload', handleTabClose);
-
-    // Add event listener for when user navigates away
-    window.addEventListener('unload', handleTabClose);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleTabClose);
-      window.removeEventListener('unload', handleTabClose);
-    };
-  }, []);
-
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userData');
     setIsLoggedIn(false);
     navigate('/');
   };
@@ -115,4 +92,3 @@ export const Navbar = () => {
     </nav>
   );
 };
-

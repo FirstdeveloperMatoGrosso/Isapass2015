@@ -48,15 +48,6 @@ const Login = () => {
         return;
       }
 
-      // Simulating successful registration
-      localStorage.setItem('userData', JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-        cpf: formData.cpf,
-        phone: formData.phone,
-        address: formData.address
-      }));
-      
       toast.success("Conta criada com sucesso!");
       setIsLogin(true);
       setFormData({
@@ -74,17 +65,6 @@ const Login = () => {
         return;
       }
 
-      // Simulating successful login
-      const mockUserData = {
-        name: "Usuário Teste",
-        email: formData.email,
-        cpf: "123.456.789-00",
-        phone: "(11) 99999-9999",
-        address: "Rua Teste, 123"
-      };
-      localStorage.setItem('userData', JSON.stringify(mockUserData));
-      localStorage.setItem('isLoggedIn', 'true');
-      
       toast.success("Login realizado com sucesso!");
       navigate("/dashboard");
     }
