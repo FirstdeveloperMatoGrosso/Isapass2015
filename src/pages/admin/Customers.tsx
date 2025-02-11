@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -57,6 +56,9 @@ const mockCustomers: Customer[] = [
 const CustomersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isNewCustomerOpen, setIsNewCustomerOpen] = useState(false);
+  const [isEditCustomerOpen, setIsEditCustomerOpen] = useState(false);
+  const [customers, setCustomers] = useState<Customer[]>(mockCustomers);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [newCustomer, setNewCustomer] = useState({
     name: "",
     email: "",
@@ -70,13 +72,21 @@ const CustomersPage = () => {
   const { toast } = useToast();
   
   const handleBlock = (customer: Customer) => {
+    setCustomers(prev => prev.map(c => {
+      if (c.id === customer.id) {
+        return { ...c, blocked: !c.blocked };
+      }
+      return c;
+    }));
+    
     toast({
-      title: `Cliente ${customer.blocked ? "desbloqueado" : "bloqueado"}`,
+      title: customer.blocked ? "Cliente desbloqueado" : "Cliente bloqueado",
       description: `${customer.name} foi ${customer.blocked ? "desbloqueado" : "bloqueado"} com sucesso.`,
     });
   };
 
   const handleDelete = (customer: Customer) => {
+    setCustomers(prev => prev.filter(c => c.id !== customer.id));
     toast({
       title: "Cliente excluído",
       description: `${customer.name} foi excluído com sucesso.`,
@@ -84,18 +94,74 @@ const CustomersPage = () => {
   };
 
   const handleEdit = (customer: Customer) => {
+    setSelectedCustomer(customer);
+    setNewCustomer({
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      document: customer.document,
+      type: customer.type,
+      address: customer.address,
+      city: customer.city,
+      state: customer.state,
+    });
+    setIsEditCustomerOpen(true);
+  };
+
+  const handleEditSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedCustomer) return;
+
+    setCustomers(prev => prev.map(customer => {
+      if (customer.id === selectedCustomer.id) {
+        return {
+          ...customer,
+          ...newCustomer,
+          lastPurchase: customer.lastPurchase,
+          blocked: customer.blocked,
+          id: customer.id
+        };
+      }
+      return customer;
+    }));
+
     toast({
-      title: "Editar cliente",
-      description: `Editando informações de ${customer.name}`,
+      title: "Cliente atualizado",
+      description: `${newCustomer.name} foi atualizado com sucesso.`,
+    });
+
+    setIsEditCustomerOpen(false);
+    setSelectedCustomer(null);
+    setNewCustomer({
+      name: "",
+      email: "",
+      phone: "",
+      document: "",
+      type: "individual",
+      address: "",
+      city: "",
+      state: "",
     });
   };
 
   const handleNewCustomerSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const newCustomerId = Math.max(...customers.map(c => c.id)) + 1;
+    
+    const customerToAdd: Customer = {
+      ...newCustomer,
+      id: newCustomerId,
+      lastPurchase: new Date().toISOString().split('T')[0],
+      blocked: false
+    };
+
+    setCustomers(prev => [...prev, customerToAdd]);
+    
     toast({
       title: "Cliente cadastrado",
       description: `${newCustomer.name} foi cadastrado com sucesso.`,
     });
+    
     setIsNewCustomerOpen(false);
     setNewCustomer({
       name: "",
@@ -108,7 +174,7 @@ const CustomersPage = () => {
       state: "",
     });
   };
-  
+
   return (
     <div className="p-4 space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -325,62 +391,187 @@ const CustomersPage = () => {
               <div>Status</div>
               <div>Ações</div>
             </div>
-            {mockCustomers.map((customer) => (
-              <div key={customer.id} className="grid grid-cols-9 gap-4 border-t p-4 hover:bg-muted/30 transition-colors">
-                <div className="flex items-center gap-2">
-                  {customer.type === "individual" ? (
-                    <User className="h-4 w-4 text-primary" />
-                  ) : (
-                    <Building2 className="h-4 w-4 text-secondary" />
-                  )}
-                  <span className="text-sm">{customer.type === "individual" ? "PF" : "PJ"}</span>
+            {customers
+              .filter(customer => 
+                customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                customer.document.includes(searchTerm)
+              )
+              .map((customer) => (
+                <div key={customer.id} className="grid grid-cols-9 gap-4 border-t p-4 hover:bg-muted/30 transition-colors">
+                  <div className="flex items-center gap-2">
+                    {customer.type === "individual" ? (
+                      <User className="h-4 w-4 text-primary" />
+                    ) : (
+                      <Building2 className="h-4 w-4 text-secondary" />
+                    )}
+                    <span className="text-sm">{customer.type === "individual" ? "PF" : "PJ"}</span>
+                  </div>
+                  <div className="truncate font-medium">{customer.name}</div>
+                  <div className="truncate text-muted-foreground">{customer.document}</div>
+                  <div className="truncate text-muted-foreground">{customer.email}</div>
+                  <div className="truncate text-muted-foreground">{customer.phone}</div>
+                  <div className="truncate text-muted-foreground">{customer.city}/{customer.state}</div>
+                  <div className="text-muted-foreground">{new Date(customer.lastPurchase).toLocaleDateString()}</div>
+                  <div>
+                    <span className={`px-2 py-1 rounded-full text-xs ${
+                      customer.blocked 
+                        ? "bg-destructive/10 text-destructive" 
+                        : "bg-green-100 text-green-700"
+                    }`}>
+                      {customer.blocked ? "Bloqueado" : "Ativo"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 hover:text-primary"
+                      onClick={() => handleEdit(customer)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`h-8 w-8 ${customer.blocked ? "hover:text-green-600" : "hover:text-destructive"}`}
+                      onClick={() => handleBlock(customer)}
+                    >
+                      <Lock className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 hover:text-destructive"
+                      onClick={() => handleDelete(customer)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="truncate font-medium">{customer.name}</div>
-                <div className="truncate text-muted-foreground">{customer.document}</div>
-                <div className="truncate text-muted-foreground">{customer.email}</div>
-                <div className="truncate text-muted-foreground">{customer.phone}</div>
-                <div className="truncate text-muted-foreground">{customer.city}/{customer.state}</div>
-                <div className="text-muted-foreground">{new Date(customer.lastPurchase).toLocaleDateString()}</div>
-                <div>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    customer.blocked 
-                      ? "bg-destructive/10 text-destructive" 
-                      : "bg-green-100 text-green-700"
-                  }`}>
-                    {customer.blocked ? "Bloqueado" : "Ativo"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 hover:text-primary"
-                    onClick={() => handleEdit(customer)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`h-8 w-8 ${customer.blocked ? "hover:text-green-600" : "hover:text-destructive"}`}
-                    onClick={() => handleBlock(customer)}
-                  >
-                    <Lock className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 hover:text-destructive"
-                    onClick={() => handleDelete(customer)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
             ))}
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={isEditCustomerOpen} onOpenChange={setIsEditCustomerOpen}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Editar Cliente</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleEditSubmit} className="space-y-4">
+            <div className="space-y-4">
+              <div>
+                <Label>Tipo de Cliente</Label>
+                <RadioGroup
+                  value={newCustomer.type}
+                  onValueChange={(value: CustomerType) =>
+                    setNewCustomer({ ...newCustomer, type: value })
+                  }
+                  className="flex gap-4 mt-2"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="individual" id="edit-individual" />
+                    <Label htmlFor="edit-individual" className="flex items-center gap-1">
+                      <User className="h-4 w-4" />
+                      Pessoa Física
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="company" id="edit-company" />
+                    <Label htmlFor="edit-company" className="flex items-center gap-1">
+                      <Building2 className="h-4 w-4" />
+                      Pessoa Jurídica
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-name">Nome {newCustomer.type === 'company' ? 'da Empresa' : 'Completo'}</Label>
+                  <Input
+                    id="edit-name"
+                    value={newCustomer.name}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, name: e.target.value })}
+                    placeholder={newCustomer.type === 'company' ? 'Nome da Empresa' : 'Nome Completo'}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-document">{newCustomer.type === 'company' ? 'CNPJ' : 'CPF'}</Label>
+                  <Input
+                    id="edit-document"
+                    value={newCustomer.document}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, document: e.target.value })}
+                    placeholder={newCustomer.type === 'company' ? '00.000.000/0000-00' : '000.000.000-00'}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-email">E-mail</Label>
+                  <Input
+                    id="edit-email"
+                    type="email"
+                    value={newCustomer.email}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, email: e.target.value })}
+                    placeholder="email@exemplo.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-phone">Telefone</Label>
+                  <Input
+                    id="edit-phone"
+                    value={newCustomer.phone}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, phone: e.target.value })}
+                    placeholder="(00) 00000-0000"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-address">Endereço</Label>
+                <Input
+                  id="edit-address"
+                  value={newCustomer.address}
+                  onChange={(e) => setNewCustomer({ ...newCustomer, address: e.target.value })}
+                  placeholder="Rua, número, complemento"
+                />
+              </div>
+
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-city">Cidade</Label>
+                  <Input
+                    id="edit-city"
+                    value={newCustomer.city}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, city: e.target.value })}
+                    placeholder="Cidade"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-state">Estado</Label>
+                  <Input
+                    id="edit-state"
+                    value={newCustomer.state}
+                    onChange={(e) => setNewCustomer({ ...newCustomer, state: e.target.value })}
+                    placeholder="Estado"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-6">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsEditCustomerOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit">Salvar Alterações</Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
