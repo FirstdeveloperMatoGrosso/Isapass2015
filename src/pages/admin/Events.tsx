@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Pencil, Trash2 } from "lucide-react";
@@ -6,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { ShareOptions } from "@/components/ShareOptions";
 
 interface Event {
   id: string;
@@ -112,6 +114,7 @@ const EventsPage = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <ShareOptions />
           <Button onClick={() => setIsCreating(true)} className="hover-scale">
             <Plus className="mr-2 h-4 w-4" />
             Novo Evento

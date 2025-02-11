@@ -1,6 +1,5 @@
 
 import { Routes, Route } from "react-router-dom";
-import { ShareOptions } from "@/components/ShareOptions";
 import DashboardPage from "@/pages/admin/Dashboard";
 import EventsPage from "@/pages/admin/Events";
 import CustomersPage from "@/pages/admin/Customers";
@@ -17,7 +16,6 @@ interface AdminContentProps {
 export const AdminContent = ({ isCollapsed }: AdminContentProps) => {
   return (
     <div className="flex-1 overflow-y-auto">
-      <ShareOptions />
       <div className="w-full">
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
