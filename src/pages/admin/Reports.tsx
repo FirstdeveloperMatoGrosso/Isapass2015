@@ -48,7 +48,7 @@ const ReportsPage = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <ShareOptions />
+          <ShareOptions data={monthlyData} title="Relatório de Vendas" />
         </div>
       </div>
 

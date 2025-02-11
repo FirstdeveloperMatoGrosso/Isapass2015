@@ -7,9 +7,18 @@ import {
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
 import { Button } from './ui/button';
-import { toast } from './ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
+import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
 
-export const ShareOptions = () => {
+interface ShareOptionsProps {
+  data?: any[];
+  title?: string;
+}
+
+export const ShareOptions = ({ data = [], title = 'Relatório' }: ShareOptionsProps) => {
+  const { toast } = useToast();
+
   const handleShare = async (method: string) => {
     try {
       if (navigator.share && (method === 'WhatsApp' || method === 'Telegram')) {
@@ -37,12 +46,72 @@ export const ShareOptions = () => {
     }
   };
 
-  const handleDownload = (format: string) => {
-    toast({
-      title: "Download iniciado",
-      description: `Baixando relatório em ${format}...`,
-    });
-    // Aqui você pode implementar a lógica real de download
+  const handleDownloadPDF = () => {
+    try {
+      const doc = new jsPDF();
+      
+      // Adiciona o título
+      doc.setFontSize(16);
+      doc.text(title, 20, 20);
+      
+      // Adiciona os dados
+      if (data && data.length > 0) {
+        const headers = Object.keys(data[0]);
+        
+        // Configura as colunas
+        let yPosition = 40;
+        const margin = 20;
+        
+        // Adiciona cabeçalho
+        doc.setFontSize(12);
+        doc.text(headers.join(' | '), margin, yPosition);
+        
+        // Adiciona linhas de dados
+        data.forEach((row, index) => {
+          yPosition += 10;
+          const rowData = headers.map(header => String(row[header]));
+          doc.text(rowData.join(' | '), margin, yPosition);
+        });
+      }
+      
+      // Salva o PDF
+      doc.save(`${title}.pdf`);
+      
+      toast({
+        title: "Download concluído",
+        description: "PDF baixado com sucesso",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro ao baixar",
+        description: "Não foi possível gerar o arquivo PDF",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDownloadExcel = () => {
+    try {
+      if (data && data.length > 0) {
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Dados");
+        XLSX.writeFile(wb, `${title}.xlsx`);
+        
+        toast({
+          title: "Download concluído",
+          description: "Excel baixado com sucesso",
+        });
+      } else {
+        throw new Error("Sem dados para exportar");
+      }
+    } catch (error) {
+      toast({
+        title: "Erro ao baixar",
+        description: "Não foi possível gerar o arquivo Excel",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -65,11 +134,11 @@ export const ShareOptions = () => {
           <Mail className="mr-2 h-4 w-4" />
           Email
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleDownload('PDF')}>
+        <DropdownMenuItem onClick={handleDownloadPDF}>
           <Download className="mr-2 h-4 w-4" />
           Baixar PDF
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleDownload('Excel')}>
+        <DropdownMenuItem onClick={handleDownloadExcel}>
           <Download className="mr-2 h-4 w-4" />
           Baixar Excel
         </DropdownMenuItem>
