@@ -146,6 +146,28 @@ const ApiConnectPage = () => {
     setIsLoading(true);
     try {
       const supabase = createClient(supabaseUrl, supabaseKey);
+      
+      // Primeiro, tentamos criar a função execute_sql se ela não existir
+      await supabase.rpc('create_execute_sql_function', {
+        sql: `
+          CREATE OR REPLACE FUNCTION execute_sql(query text)
+          RETURNS JSONB
+          LANGUAGE plpgsql
+          SECURITY DEFINER
+          AS $$
+          DECLARE
+            result JSONB;
+          BEGIN
+            EXECUTE 'WITH query_result AS (' || query || ') 
+                     SELECT jsonb_agg(row_to_json(query_result)) 
+                     FROM query_result' INTO result;
+            RETURN COALESCE(result, '[]'::jsonb);
+          END;
+          $$;
+        `
+      });
+
+      // Agora executamos a consulta usando a função
       const { data, error } = await supabase.rpc('execute_sql', {
         query: sqlQuery
       });
@@ -156,7 +178,7 @@ const ApiConnectPage = () => {
       toast.success("Consulta executada com sucesso!");
     } catch (error) {
       console.error('Erro ao executar consulta:', error);
-      toast.error("Erro ao executar consulta SQL");
+      toast.error("Erro ao executar consulta SQL. Verifique se a sintaxe está correta.");
     } finally {
       setIsLoading(false);
     }
