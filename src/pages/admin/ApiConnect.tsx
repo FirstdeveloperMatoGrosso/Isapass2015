@@ -256,6 +256,10 @@ const ApiConnectPage = () => {
         <TabsList className="w-full max-w-md">
           <TabsTrigger value="api" className="w-full">API Própria</TabsTrigger>
           <TabsTrigger value="supabase" className="w-full">Supabase</TabsTrigger>
+          <TabsTrigger value="tables" className="w-full flex items-center gap-2">
+            <Table className="h-4 w-4" />
+            Tabelas
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="api">
@@ -495,6 +499,101 @@ const ApiConnectPage = () => {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="tables">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Table className="h-5 w-5" />
+                Visualização de Tabelas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {!isConnected && (
+                <p className="text-muted-foreground">
+                  Conecte-se ao Supabase primeiro para visualizar as tabelas.
+                </p>
+              )}
+              
+              {isConnected && (
+                <div className="space-y-4">
+                  {tables.length === 0 ? (
+                    <p className="text-muted-foreground">
+                      Nenhuma tabela encontrada no banco de dados.
+                    </p>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold">Tabelas Encontradas</h3>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={syncTableData}
+                          disabled={isLoading || !selectedTable}
+                        >
+                          <RefreshCw className="h-4 w-4 mr-2" />
+                          Sincronizar Tabela
+                        </Button>
+                      </div>
+
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div className="space-y-2">
+                          {tables.map((table) => (
+                            <div
+                              key={table.name}
+                              className={`flex items-center justify-between p-2 bg-muted rounded-lg cursor-pointer hover:bg-muted/80 transition-colors ${
+                                selectedTable === table.name ? 'ring-2 ring-primary' : ''
+                              }`}
+                              onClick={() => handleTableClick(table.name)}
+                            >
+                              <div className="flex items-center gap-2">
+                                <Table className="h-4 w-4" />
+                                <span>{table.name}</span>
+                              </div>
+                              <span className="text-sm text-muted-foreground">
+                                {table.rowCount} registros
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {selectedTable && tableData.length > 0 && (
+                          <div className="space-y-2">
+                            <h4 className="text-md font-semibold">
+                              Dados da Tabela: {selectedTable}
+                            </h4>
+                            <div className="border rounded-lg overflow-hidden">
+                              <UITable>
+                                <TableHeader>
+                                  <TableRow>
+                                    {tableColumns.map((column) => (
+                                      <TableHead key={column}>{column}</TableHead>
+                                    ))}
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {tableData.map((row, index) => (
+                                    <TableRow key={index}>
+                                      {tableColumns.map((column) => (
+                                        <TableCell key={column}>
+                                          {JSON.stringify(row[column])}
+                                        </TableCell>
+                                      ))}
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </UITable>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>
