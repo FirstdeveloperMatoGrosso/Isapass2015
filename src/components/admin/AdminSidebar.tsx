@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { BarChart3, Calendar, CreditCard, LayoutDashboard, MessageSquare, Settings, Users, ChevronLeft, ImageIcon } from "lucide-react";
+import { BarChart3, Calendar, CreditCard, LayoutDashboard, MessageSquare, Settings, Users, ChevronLeft, ImageIcon, Link2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface AdminSidebarProps {
@@ -22,6 +22,7 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps)
     { title: "Relatórios", icon: BarChart3, path: "/admin/reports" },
     { title: "Chat Bot", icon: MessageSquare, path: "/admin/chat" },
     { title: "Banners", icon: ImageIcon, path: "/admin/banners" },
+    { title: "API Connect", icon: Link2, path: "/admin/api-connect" },
     { title: "Configurações", icon: Settings, path: "/admin/settings" },
   ];
 

@@ -8,6 +8,7 @@ import ReportsPage from "@/pages/admin/Reports";
 import ChatPage from "@/pages/admin/Chat";
 import SettingsPage from "@/pages/admin/Settings";
 import BannersPage from "@/pages/admin/Banners";
+import ApiConnectPage from "@/pages/admin/ApiConnect";
 
 interface AdminContentProps {
   isCollapsed: boolean;
@@ -25,6 +26,7 @@ export const AdminContent = ({ isCollapsed }: AdminContentProps) => {
           <Route path="/reports" element={<ReportsPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/banners" element={<BannersPage />} />
+          <Route path="/api-connect" element={<ApiConnectPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </div>
