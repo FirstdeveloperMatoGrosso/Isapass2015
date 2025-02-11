@@ -48,31 +48,41 @@ const ApiConnectPage = () => {
     try {
       const supabase = createClient(url, key);
       
-      // Usando uma consulta SQL direta para listar as tabelas
+      // Usando o método getTables do Postgrest
+      const { data: rawTables, error: postgrestError } = await supabase.auth.getSession();
+      
+      if (postgrestError) {
+        console.error('Erro ao obter sessão:', postgrestError);
+        return false;
+      }
+
+      // Usando uma query SQL direta para listar as tabelas
       const { data, error } = await supabase
-        .from('_tables')
-        .select('name')
-        .eq('schema', 'public')
-        .limit(100);
+        .rpc('get_tables', {}, {
+          count: 'exact'
+        });
 
       if (error) {
         console.error('Erro ao buscar tabelas:', error);
         return false;
       }
 
-      if (!data || !Array.isArray(data)) {
+      if (!data) {
         console.error('Nenhuma tabela encontrada');
         return false;
       }
 
+      // Convertendo a resposta para o formato esperado
+      const tableNames = Array.isArray(data) ? data : [data];
+
       // Buscando a contagem de registros para cada tabela
-      const tableInfoPromises = data.map(async (table) => {
+      const tableInfoPromises = tableNames.map(async (tableName) => {
         const { count, error: countError } = await supabase
-          .from(table.name)
+          .from(tableName)
           .select('*', { count: 'exact', head: true });
 
         return {
-          name: table.name,
+          name: tableName,
           rowCount: countError ? 0 : (count || 0)
         };
       });
