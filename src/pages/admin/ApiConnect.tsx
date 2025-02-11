@@ -342,7 +342,7 @@ const ApiConnectPage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Database className="h-5 w-5" />
-                  Conectar ao Supabase
+                  {isConnected ? "Conectado ao Supabase" : "Conectar ao Supabase"}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -353,6 +353,8 @@ const ApiConnectPage = () => {
                     value={supabaseUrl}
                     onChange={(e) => setSupabaseUrl(e.target.value)}
                     placeholder="https://xxx.supabase.co"
+                    disabled={isConnected}
+                    readOnly={isConnected}
                   />
                 </div>
 
@@ -364,109 +366,117 @@ const ApiConnectPage = () => {
                     onChange={(e) => setSupabaseKey(e.target.value)}
                     type="password"
                     placeholder="sua-chave-anon-publica"
+                    disabled={isConnected}
+                    readOnly={isConnected}
                   />
                 </div>
 
-                <Button 
-                  onClick={handleSupabaseConnect} 
-                  className="w-full"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Conectando..." : "Conectar ao Supabase"}
-                </Button>
+                {!isConnected && (
+                  <Button 
+                    onClick={handleSupabaseConnect} 
+                    className="w-full"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Conectando..." : "Conectar ao Supabase"}
+                  </Button>
+                )}
 
                 {isConnected && (
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-green-700 text-sm">
+                      Conexão estabelecida com sucesso. Para desconectar, você precisa remover o acesso no painel do Supabase.
+                    </p>
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label>Consulta SQL</Label>
+                  <Textarea
+                    value={sqlQuery}
+                    onChange={(e) => setSqlQuery(e.target.value)}
+                    placeholder="Digite sua consulta SQL aqui..."
+                    className="font-mono"
+                  />
+                  <Button 
+                    onClick={executeQuery}
+                    disabled={isLoading}
+                    className="w-full mt-2"
+                  >
+                    <Code2 className="h-4 w-4 mr-2" />
+                    Executar SQL
+                  </Button>
+                </div>
+
+                {queryResult.length > 0 && (
+                  <div className="space-y-2">
+                    <Label>Resultado da Consulta</Label>
+                    <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
+                      {JSON.stringify(queryResult, null, 2)}
+                    </pre>
+                  </div>
+                )}
+
+                {tables.length > 0 && (
                   <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label>Consulta SQL</Label>
-                      <Textarea
-                        value={sqlQuery}
-                        onChange={(e) => setSqlQuery(e.target.value)}
-                        placeholder="Digite sua consulta SQL aqui..."
-                        className="font-mono"
-                      />
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">Tabelas Encontradas</h3>
                       <Button 
-                        onClick={executeQuery}
-                        disabled={isLoading}
-                        className="w-full mt-2"
+                        variant="outline" 
+                        size="sm"
+                        onClick={syncTableData}
+                        disabled={isLoading || !selectedTable}
                       >
-                        <Code2 className="h-4 w-4 mr-2" />
-                        Executar SQL
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Sincronizar Tabela
                       </Button>
                     </div>
-
-                    {queryResult.length > 0 && (
-                      <div className="space-y-2">
-                        <Label>Resultado da Consulta</Label>
-                        <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-                          {JSON.stringify(queryResult, null, 2)}
-                        </pre>
-                      </div>
-                    )}
-
-                    {tables.length > 0 && (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-semibold">Tabelas Encontradas</h3>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={syncTableData}
-                            disabled={isLoading || !selectedTable}
-                          >
-                            <RefreshCw className="h-4 w-4 mr-2" />
-                            Sincronizar Tabela
-                          </Button>
-                        </div>
-                        <div className="space-y-2">
-                          {tables.map((table) => (
-                            <div
-                              key={table.name}
-                              className={`flex items-center justify-between p-2 bg-muted rounded-lg cursor-pointer hover:bg-muted/80 transition-colors ${
-                                selectedTable === table.name ? 'ring-2 ring-primary' : ''
-                              }`}
-                              onClick={() => handleTableClick(table.name)}
-                            >
-                              <div className="flex items-center gap-2">
-                                <Table className="h-4 w-4" />
-                                <span>{table.name}</span>
-                              </div>
-                              <span className="text-sm text-muted-foreground">
-                                {table.rowCount} registros
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-
-                        {selectedTable && tableData.length > 0 && (
-                          <div className="space-y-2">
-                            <h4 className="text-md font-semibold">
-                              Dados da Tabela: {selectedTable}
-                            </h4>
-                            <div className="border rounded-lg overflow-hidden">
-                              <UITable>
-                                <TableHeader>
-                                  <TableRow>
-                                    {tableColumns.map((column) => (
-                                      <TableHead key={column}>{column}</TableHead>
-                                    ))}
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {tableData.map((row, index) => (
-                                    <TableRow key={index}>
-                                      {tableColumns.map((column) => (
-                                        <TableCell key={column}>
-                                          {JSON.stringify(row[column])}
-                                        </TableCell>
-                                      ))}
-                                    </TableRow>
-                                  ))}
-                                </TableBody>
-                              </UITable>
-                            </div>
+                    <div className="space-y-2">
+                      {tables.map((table) => (
+                        <div
+                          key={table.name}
+                          className={`flex items-center justify-between p-2 bg-muted rounded-lg cursor-pointer hover:bg-muted/80 transition-colors ${
+                            selectedTable === table.name ? 'ring-2 ring-primary' : ''
+                          }`}
+                          onClick={() => handleTableClick(table.name)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Table className="h-4 w-4" />
+                            <span>{table.name}</span>
                           </div>
-                        )}
+                          <span className="text-sm text-muted-foreground">
+                            {table.rowCount} registros
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {selectedTable && tableData.length > 0 && (
+                      <div className="space-y-2">
+                        <h4 className="text-md font-semibold">
+                          Dados da Tabela: {selectedTable}
+                        </h4>
+                        <div className="border rounded-lg overflow-hidden">
+                          <UITable>
+                            <TableHeader>
+                              <TableRow>
+                                {tableColumns.map((column) => (
+                                  <TableHead key={column}>{column}</TableHead>
+                                ))}
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {tableData.map((row, index) => (
+                                <TableRow key={index}>
+                                  {tableColumns.map((column) => (
+                                    <TableCell key={column}>
+                                      {JSON.stringify(row[column])}
+                                    </TableCell>
+                                  ))}
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </UITable>
+                        </div>
                       </div>
                     )}
                   </div>
