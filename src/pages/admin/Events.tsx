@@ -26,6 +26,7 @@ interface Event {
 
 const EventsPage = () => {
   const [isCreating, setIsCreating] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
   const [events, setEvents] = useState<Event[]>([
     {
@@ -66,10 +67,36 @@ const EventsPage = () => {
     }));
   };
 
+  const handleEdit = (event: Event) => {
+    setFormData({
+      title: event.title,
+      date: event.date,
+      time: event.time,
+      location: event.location,
+      description: event.description,
+      price: event.price.toString(),
+      capacity: event.capacity.toString(),
+      imageUrl: event.imageUrl,
+      classification: event.classification,
+      areas: event.areas.join(', '),
+      attractions: event.attractions.join(', ')
+    });
+    setIsEditing(true);
+    setIsCreating(true);
+  };
+
+  const handleDelete = (id: string) => {
+    setEvents(prev => prev.filter(event => event.id !== id));
+    toast({
+      title: "Evento excluído",
+      description: "O evento foi removido com sucesso.",
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newEvent: Event = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: isEditing ? formData.id || Math.random().toString(36).substr(2, 9) : Math.random().toString(36).substr(2, 9),
       title: formData.title,
       date: formData.date,
       time: formData.time,
@@ -83,12 +110,22 @@ const EventsPage = () => {
       attractions: formData.attractions.split(',').map(attraction => attraction.trim())
     };
 
-    setEvents(prev => [...prev, newEvent]);
-    toast({
-      title: "Evento criado com sucesso!",
-      description: `O evento ${formData.title} foi cadastrado.`,
-    });
+    if (isEditing) {
+      setEvents(prev => prev.map(event => event.id === newEvent.id ? newEvent : event));
+      toast({
+        title: "Evento atualizado!",
+        description: `O evento ${formData.title} foi atualizado com sucesso.`,
+      });
+    } else {
+      setEvents(prev => [...prev, newEvent]);
+      toast({
+        title: "Evento criado com sucesso!",
+        description: `O evento ${formData.title} foi cadastrado.`,
+      });
+    }
+    
     setIsCreating(false);
+    setIsEditing(false);
     setFormData({
       title: "",
       date: "",
@@ -125,7 +162,7 @@ const EventsPage = () => {
       {isCreating ? (
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle>Criar Novo Evento</CardTitle>
+            <CardTitle>{isEditing ? "Editar Evento" : "Criar Novo Evento"}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -278,7 +315,24 @@ const EventsPage = () => {
               <div className="flex justify-end space-x-2">
                 <Button 
                   variant="outline" 
-                  onClick={() => setIsCreating(false)}
+                  onClick={() => {
+                    setIsCreating(false);
+                    setIsEditing(false);
+                    setFormData({
+                      title: "",
+                      date: "",
+                      time: "",
+                      location: "",
+                      description: "",
+                      price: "",
+                      capacity: "",
+                      imageUrl: "",
+                      classification: "",
+                      areas: "",
+                      attractions: ""
+                    });
+                  }}
+                  type="button"
                   className="hover:bg-secondary/80 transition-colors"
                 >
                   Cancelar
@@ -287,7 +341,7 @@ const EventsPage = () => {
                   type="submit"
                   className="hover-scale"
                 >
-                  Criar Evento
+                  {isEditing ? "Salvar Alterações" : "Criar Evento"}
                 </Button>
               </div>
             </form>
@@ -305,10 +359,20 @@ const EventsPage = () => {
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   />
                   <div className="absolute top-2 right-2 flex gap-2">
-                    <Button size="icon" variant="secondary" className="w-8 h-8">
+                    <Button 
+                      size="icon" 
+                      variant="secondary" 
+                      className="w-8 h-8"
+                      onClick={() => handleEdit(event)}
+                    >
                       <Pencil className="h-4 w-4" />
                     </Button>
-                    <Button size="icon" variant="destructive" className="w-8 h-8">
+                    <Button 
+                      size="icon" 
+                      variant="destructive" 
+                      className="w-8 h-8"
+                      onClick={() => handleDelete(event.id)}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
