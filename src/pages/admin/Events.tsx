@@ -24,6 +24,21 @@ interface Event {
   attractions: string[];
 }
 
+interface FormData {
+  id?: string;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+  price: string;
+  capacity: string;
+  imageUrl: string;
+  classification: string;
+  areas: string;
+  attractions: string;
+}
+
 const EventsPage = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -45,7 +60,7 @@ const EventsPage = () => {
     }
   ]);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     title: "",
     date: "",
     time: "",
@@ -69,6 +84,7 @@ const EventsPage = () => {
 
   const handleEdit = (event: Event) => {
     setFormData({
+      id: event.id, // Agora incluímos o id ao editar
       title: event.title,
       date: event.date,
       time: event.time,
@@ -96,7 +112,7 @@ const EventsPage = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const newEvent: Event = {
-      id: isEditing ? formData.id || Math.random().toString(36).substr(2, 9) : Math.random().toString(36).substr(2, 9),
+      id: isEditing && formData.id ? formData.id : Math.random().toString(36).substr(2, 9),
       title: formData.title,
       date: formData.date,
       time: formData.time,
