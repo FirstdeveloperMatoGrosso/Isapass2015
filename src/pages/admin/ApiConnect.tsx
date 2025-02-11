@@ -8,6 +8,14 @@ import { Copy, Database, Table, RefreshCw, Code2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createClient, PostgrestError } from '@supabase/supabase-js';
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Table as UITable,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface TableInfo {
   name: string;
@@ -25,6 +33,9 @@ const ApiConnectPage = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [sqlQuery, setSqlQuery] = useState("");
   const [queryResult, setQueryResult] = useState<any[]>([]);
+  const [selectedTable, setSelectedTable] = useState<string | null>(null);
+  const [tableData, setTableData] = useState<any[]>([]);
+  const [tableColumns, setTableColumns] = useState<string[]>([]);
 
   const generateToken = () => {
     if (!appName) {
@@ -184,17 +195,52 @@ const ApiConnectPage = () => {
     }
   };
 
-  const syncData = async () => {
+  const syncTableData = async () => {
+    if (!selectedTable) return;
+    
     setIsLoading(true);
     try {
-      toast.success("Iniciando sincronização dos dados...");
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success(`Sincronizando dados da tabela ${selectedTable}...`);
+      await fetchTableData(selectedTable);
       toast.success("Dados sincronizados com sucesso!");
     } catch (error) {
       toast.error("Erro ao sincronizar os dados");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchTableData = async (tableName: string) => {
+    setIsLoading(true);
+    try {
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      const { data, error } = await supabase
+        .from(tableName)
+        .select('*')
+        .limit(100);
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        setTableColumns(Object.keys(data[0]));
+        setTableData(data);
+      } else {
+        setTableColumns([]);
+        setTableData([]);
+      }
+      
+      setSelectedTable(tableName);
+      toast.success(`Dados da tabela ${tableName} carregados`);
+    } catch (error) {
+      console.error('Erro ao carregar dados:', error);
+      toast.error("Erro ao carregar dados da tabela");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTableClick = (tableName: string) => {
+    fetchTableData(tableName);
   };
 
   return (
@@ -361,18 +407,21 @@ const ApiConnectPage = () => {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={syncData}
-                            disabled={isLoading}
+                            onClick={syncTableData}
+                            disabled={isLoading || !selectedTable}
                           >
                             <RefreshCw className="h-4 w-4 mr-2" />
-                            Sincronizar Dados
+                            Sincronizar Tabela
                           </Button>
                         </div>
                         <div className="space-y-2">
                           {tables.map((table) => (
                             <div
                               key={table.name}
-                              className="flex items-center justify-between p-2 bg-muted rounded-lg"
+                              className={`flex items-center justify-between p-2 bg-muted rounded-lg cursor-pointer hover:bg-muted/80 transition-colors ${
+                                selectedTable === table.name ? 'ring-2 ring-primary' : ''
+                              }`}
+                              onClick={() => handleTableClick(table.name)}
                             >
                               <div className="flex items-center gap-2">
                                 <Table className="h-4 w-4" />
@@ -384,6 +433,36 @@ const ApiConnectPage = () => {
                             </div>
                           ))}
                         </div>
+
+                        {selectedTable && tableData.length > 0 && (
+                          <div className="space-y-2">
+                            <h4 className="text-md font-semibold">
+                              Dados da Tabela: {selectedTable}
+                            </h4>
+                            <div className="border rounded-lg overflow-hidden">
+                              <UITable>
+                                <TableHeader>
+                                  <TableRow>
+                                    {tableColumns.map((column) => (
+                                      <TableHead key={column}>{column}</TableHead>
+                                    ))}
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {tableData.map((row, index) => (
+                                    <TableRow key={index}>
+                                      {tableColumns.map((column) => (
+                                        <TableCell key={column}>
+                                          {JSON.stringify(row[column])}
+                                        </TableCell>
+                                      ))}
+                                    </TableRow>
+                                  ))}
+                                </TableBody>
+                              </UITable>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
