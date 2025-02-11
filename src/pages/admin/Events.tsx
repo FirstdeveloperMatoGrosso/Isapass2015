@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, Share2 } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -116,9 +115,6 @@ const EventsPage = () => {
           <Button onClick={() => setIsCreating(true)} className="hover-scale">
             <Plus className="mr-2 h-4 w-4" />
             Novo Evento
-          </Button>
-          <Button variant="outline" size="icon">
-            <Share2 className="h-4 w-4" />
           </Button>
         </div>
       </div>
