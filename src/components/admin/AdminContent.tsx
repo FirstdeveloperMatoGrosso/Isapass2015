@@ -1,6 +1,5 @@
 
 import { Routes, Route } from "react-router-dom";
-import { useIsMobile } from "@/hooks/use-mobile";
 import DashboardPage from "@/pages/admin/Dashboard";
 import EventsPage from "@/pages/admin/Events";
 import CustomersPage from "@/pages/admin/Customers";
@@ -16,18 +15,8 @@ interface AdminContentProps {
 }
 
 export const AdminContent = ({ isCollapsed }: AdminContentProps) => {
-  const isMobile = useIsMobile();
-
   return (
     <div className="flex-1 overflow-y-auto">
-      {/* Overlay para dispositivos móveis */}
-      {isMobile && !isCollapsed && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40"
-          aria-hidden="true"
-          onClick={() => document.dispatchEvent(new CustomEvent('toggle-sidebar'))}
-        />
-      )}
       <div className="w-full">
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
