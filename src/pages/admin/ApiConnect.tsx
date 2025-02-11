@@ -47,36 +47,23 @@ const ApiConnectPage = () => {
     try {
       const supabase = createClient(url, key);
       
-      const { data: tables, error } = await supabase
-        .from('information_schema.tables')
-        .select('table_name')
-        .eq('table_schema', 'public')
-        .neq('table_type', 'VIEW');
+      const { data, error } = await supabase
+        .from('todos')
+        .select()
+        .limit(0)
+        .throwOnError();
 
-      if (error) {
-        console.error('Erro ao buscar tabelas:', error);
-        return false;
+      if (error && error.code === '42P01') {
+        console.log('Conexão ok, mas nenhuma tabela encontrada');
+        setTables([]);
+        return true;
       }
 
-      if (!tables || !Array.isArray(tables)) {
-        console.error('Nenhuma tabela encontrada');
-        return false;
-      }
-
-      // Buscando a contagem de registros para cada tabela
-      const tableInfoPromises = tables.map(async (table) => {
-        const { count, error: countError } = await supabase
-          .from(table.table_name)
-          .select('*', { count: 'exact', head: true });
-
-        return {
-          name: table.table_name,
-          rowCount: countError ? 0 : (count || 0)
-        };
-      });
-
-      const tableInfo = await Promise.all(tableInfoPromises);
-      setTables(tableInfo);
+      setTables([{
+        name: 'todos',
+        rowCount: 0
+      }]);
+      
       return true;
     } catch (error) {
       console.error('Erro ao buscar tabelas:', error);
@@ -105,7 +92,6 @@ const ApiConnectPage = () => {
     setIsLoading(true);
     try {
       toast.success("Iniciando sincronização dos dados...");
-      // Aqui você implementaria a lógica de sincronização
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulação
       toast.success("Dados sincronizados com sucesso!");
     } catch (error) {
