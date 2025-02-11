@@ -35,15 +35,15 @@ const DashboardPage = () => {
   ];
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col gap-2">
+    <div className="space-y-4 pl-2">
+      <div className="flex flex-col gap-1">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Dashboard</h2>
         <p className="text-muted-foreground">
           Bem-vindo ao seu painel de controle
         </p>
       </div>
       
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card 
             key={stat.title} 
@@ -67,13 +67,13 @@ const DashboardPage = () => {
         ))}
       </div>
 
-      <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">
+      <div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle>Atividade Recente</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[1, 2, 3].map((item) => (
                 <div 
                   key={item}
@@ -99,7 +99,7 @@ const DashboardPage = () => {
             <CardTitle>Próximos Eventos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[1, 2, 3].map((item) => (
                 <div 
                   key={item}
