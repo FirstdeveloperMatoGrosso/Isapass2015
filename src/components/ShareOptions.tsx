@@ -46,36 +46,34 @@ export const ShareOptions = () => {
   };
 
   return (
-    <div className="fixed top-20 right-4 z-40">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon">
-            <Share2 className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem onClick={() => handleShare('WhatsApp')}>
-            <MessageSquare className="mr-2 h-4 w-4" />
-            WhatsApp
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleShare('Telegram')}>
-            <MessageSquare className="mr-2 h-4 w-4" />
-            Telegram
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleShare('Email')}>
-            <Mail className="mr-2 h-4 w-4" />
-            Email
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleDownload('PDF')}>
-            <Download className="mr-2 h-4 w-4" />
-            Baixar PDF
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleDownload('Excel')}>
-            <Download className="mr-2 h-4 w-4" />
-            Baixar Excel
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon">
+          <Share2 className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem onClick={() => handleShare('WhatsApp')}>
+          <MessageSquare className="mr-2 h-4 w-4" />
+          WhatsApp
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleShare('Telegram')}>
+          <MessageSquare className="mr-2 h-4 w-4" />
+          Telegram
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleShare('Email')}>
+          <Mail className="mr-2 h-4 w-4" />
+          Email
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleDownload('PDF')}>
+          <Download className="mr-2 h-4 w-4" />
+          Baixar PDF
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleDownload('Excel')}>
+          <Download className="mr-2 h-4 w-4" />
+          Baixar Excel
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
