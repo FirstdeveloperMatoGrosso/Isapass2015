@@ -5,6 +5,9 @@ import { SponsorBanner } from "@/components/SponsorBanner";
 import { CookieConsent } from "@/components/CookieConsent";
 import { Footer } from "@/components/Footer";
 import { MusicPlayer } from "@/components/MusicPlayer";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Database } from "lucide-react";
 
 const mockEvents = [
   {
@@ -47,6 +50,14 @@ const Index = () => {
     <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-12 flex-grow">
+        <div className="flex justify-end mb-4">
+          <Button asChild variant="outline">
+            <Link to="/admin/api-connect" className="flex items-center gap-2">
+              <Database className="h-4 w-4" />
+              Gerenciar Banco de Dados
+            </Link>
+          </Button>
+        </div>
         <SponsorBanner />
         <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
           Encontre os melhores eventos
