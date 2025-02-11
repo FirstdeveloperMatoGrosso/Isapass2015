@@ -11,13 +11,12 @@ export const CookieConsent = () => {
 
   const handleAccept = () => {
     setShowConsent(false);
-    localStorage.setItem("cookieConsent", "accepted");
     toast({
       description: "Preferências de cookies salvas com sucesso!",
     });
   };
 
-  if (!showConsent || localStorage.getItem("cookieConsent")) {
+  if (!showConsent) {
     return null;
   }
 
