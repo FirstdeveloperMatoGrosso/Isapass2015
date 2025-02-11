@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Copy, Database, Table, RefreshCw } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { createClient } from '@supabase/supabase-js';
+import { createClient, PostgrestError } from '@supabase/supabase-js';
 
 interface TableInfo {
   name: string;
@@ -47,26 +47,18 @@ const ApiConnectPage = () => {
     try {
       const supabase = createClient(url, key);
       
-      const { data, error } = await supabase
-        .from('todos')
-        .select()
-        .limit(0)
-        .throwOnError();
-
-      if (error && error.code === '42P01') {
-        console.log('Conexão ok, mas nenhuma tabela encontrada');
-        setTables([]);
-        return true;
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('Erro ao verificar sessão:', sessionError);
+        return false;
       }
 
-      setTables([{
-        name: 'todos',
-        rowCount: 0
-      }]);
-      
+      setTables([]);
       return true;
+
     } catch (error) {
-      console.error('Erro ao buscar tabelas:', error);
+      console.error('Erro ao verificar conexão:', error);
       return false;
     }
   };
