@@ -1,8 +1,9 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, AlertTriangle, TrendingUp, ShoppingCart, XCircle } from "lucide-react";
 import { ShareOptions } from "@/components/ShareOptions";
 import { Badge } from "@/components/ui/badge";
+import { QRCodeSVG } from "qrcode.react";
+import Barcode from "react-barcode";
 
 interface Sale {
   id: string;
@@ -193,7 +194,7 @@ const SalesPage = () => {
                   <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
                     <CreditCard className="h-6 w-6 text-primary" />
                   </div>
-                  <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex-1 min-w-0 space-y-4">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium">
                         Pedido #{sale.id}
@@ -217,7 +218,7 @@ const SalesPage = () => {
                     <p className="text-sm text-muted-foreground">
                       {sale.eventTitle} - {sale.ticketInfo.area}
                     </p>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-start">
                       <div className="text-sm">
                         <p className="font-medium">Comprador:</p>
                         <p className="text-muted-foreground">{sale.buyer.name}</p>
@@ -233,6 +234,34 @@ const SalesPage = () => {
                         <p className="text-xs text-muted-foreground">
                           {sale.ticketInfo.quantity} {sale.ticketInfo.quantity === 1 ? 'ingresso' : 'ingressos'}
                         </p>
+                      </div>
+                    </div>
+                    <div className="flex justify-center gap-8 pt-4 border-t">
+                      <div className="text-center">
+                        <QRCodeSVG 
+                          value={JSON.stringify({
+                            saleId: sale.id,
+                            event: sale.eventTitle,
+                            buyer: sale.buyer,
+                            ticket: sale.ticketInfo
+                          })}
+                          size={100}
+                          level="H"
+                          className="mx-auto"
+                        />
+                        <p className="text-xs text-muted-foreground mt-2">QR Code</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="mx-auto">
+                          <Barcode 
+                            value={`${sale.id}-${sale.buyer.cpf}`}
+                            width={1.5}
+                            height={40}
+                            fontSize={12}
+                            margin={0}
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-2">Código de Barras</p>
                       </div>
                     </div>
                   </div>
