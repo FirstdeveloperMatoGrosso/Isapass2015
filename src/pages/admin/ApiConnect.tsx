@@ -48,18 +48,19 @@ const ApiConnectPage = () => {
     try {
       const supabase = createClient(url, key);
       
-      // Consultando diretamente as tabelas do schema public
+      // Usando uma consulta SQL direta para listar as tabelas
       const { data, error } = await supabase
-        .from('pg_catalog.pg_tables')
-        .select('tablename')
-        .eq('schemaname', 'public');
+        .from('_tables')
+        .select('name')
+        .eq('schema', 'public')
+        .limit(100);
 
       if (error) {
         console.error('Erro ao buscar tabelas:', error);
         return false;
       }
 
-      if (!data) {
+      if (!data || !Array.isArray(data)) {
         console.error('Nenhuma tabela encontrada');
         return false;
       }
@@ -67,11 +68,11 @@ const ApiConnectPage = () => {
       // Buscando a contagem de registros para cada tabela
       const tableInfoPromises = data.map(async (table) => {
         const { count, error: countError } = await supabase
-          .from(table.tablename)
+          .from(table.name)
           .select('*', { count: 'exact', head: true });
 
         return {
-          name: table.tablename,
+          name: table.name,
           rowCount: countError ? 0 : (count || 0)
         };
       });
