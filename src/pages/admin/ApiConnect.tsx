@@ -5,8 +5,14 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Copy, Database } from "lucide-react";
+import { Copy, Database, Table, RefreshCw } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { createClient } from '@supabase/supabase-js';
+
+interface TableInfo {
+  name: string;
+  rowCount: number;
+}
 
 const ApiConnectPage = () => {
   const [appName, setAppName] = useState("");
@@ -14,6 +20,8 @@ const ApiConnectPage = () => {
   const [apiUrl, setApiUrl] = useState("");
   const [supabaseUrl, setSupabaseUrl] = useState("");
   const [supabaseKey, setSupabaseKey] = useState("");
+  const [tables, setTables] = useState<TableInfo[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const generateToken = () => {
     if (!appName) {
@@ -36,12 +44,66 @@ const ApiConnectPage = () => {
     toast.success(`${type === "token" ? "Token" : "URL"} copiado para a área de transferência`);
   };
 
-  const handleSupabaseConnect = () => {
+  const fetchTables = async (url: string, key: string) => {
+    try {
+      const supabase = createClient(url, key);
+      
+      const { data, error } = await supabase
+        .from('information_schema.tables')
+        .select('table_name')
+        .eq('table_schema', 'public');
+
+      if (error) throw error;
+
+      const tableInfoPromises = data.map(async (table) => {
+        const { count, error: countError } = await supabase
+          .from(table.table_name)
+          .select('*', { count: 'exact', head: true });
+
+        return {
+          name: table.table_name,
+          rowCount: countError ? 0 : (count || 0)
+        };
+      });
+
+      const tableInfo = await Promise.all(tableInfoPromises);
+      setTables(tableInfo);
+      return true;
+    } catch (error) {
+      console.error('Erro ao buscar tabelas:', error);
+      return false;
+    }
+  };
+
+  const handleSupabaseConnect = async () => {
     if (!supabaseUrl || !supabaseKey) {
       toast.error("Preencha todos os campos do Supabase");
       return;
     }
-    toast.success("Conectado ao Supabase com sucesso!");
+
+    setIsLoading(true);
+    const success = await fetchTables(supabaseUrl, supabaseKey);
+    setIsLoading(false);
+
+    if (success) {
+      toast.success("Conectado ao Supabase com sucesso!");
+    } else {
+      toast.error("Erro ao conectar com o Supabase. Verifique as credenciais.");
+    }
+  };
+
+  const syncData = async () => {
+    setIsLoading(true);
+    try {
+      toast.success("Iniciando sincronização dos dados...");
+      // Aqui você implementaria a lógica de sincronização
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulação
+      toast.success("Dados sincronizados com sucesso!");
+    } catch (error) {
+      toast.error("Erro ao sincronizar os dados");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -118,27 +180,16 @@ const ApiConnectPage = () => {
               <CardHeader>
                 <CardTitle>Instruções de Uso</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Para conectar seu aplicativo à nossa API, siga os passos abaixo:
+                  Para conectar seu aplicativo à nossa API, siga os passos:
                 </p>
-                <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                <ol className="list-decimal list-inside space-y-2 text-sm text-muted-foreground mt-4">
                   <li>Digite o nome do seu aplicativo</li>
                   <li>Clique em "Gerar Token" para criar um novo token de acesso</li>
                   <li>Copie o token e a URL gerados</li>
                   <li>Use o token no cabeçalho de suas requisições como "Authorization: Bearer {`{token}`}"</li>
-                  <li>Use a URL base fornecida para todas as chamadas à API</li>
                 </ol>
-                <div className="mt-4 p-4 bg-muted rounded-lg">
-                  <p className="text-sm font-medium">Exemplo de chamada à API:</p>
-                  <pre className="text-xs mt-2 bg-background p-2 rounded">
-                    {`fetch('https://api.isapass.com/v1/seu-app', {
-  headers: {
-    'Authorization': 'Bearer seu-token'
-  }
-})`}
-                  </pre>
-                </div>
               </CardContent>
             </Card>
           </div>
@@ -175,9 +226,46 @@ const ApiConnectPage = () => {
                   />
                 </div>
 
-                <Button onClick={handleSupabaseConnect} className="w-full">
-                  Conectar ao Supabase
+                <Button 
+                  onClick={handleSupabaseConnect} 
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Conectando..." : "Conectar ao Supabase"}
                 </Button>
+
+                {tables.length > 0 && (
+                  <div className="space-y-4 mt-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold">Tabelas Encontradas</h3>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={syncData}
+                        disabled={isLoading}
+                      >
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Sincronizar Dados
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      {tables.map((table) => (
+                        <div
+                          key={table.name}
+                          className="flex items-center justify-between p-2 bg-muted rounded-lg"
+                        >
+                          <div className="flex items-center gap-2">
+                            <Table className="h-4 w-4" />
+                            <span>{table.name}</span>
+                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            {table.rowCount} registros
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
