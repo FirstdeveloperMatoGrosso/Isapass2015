@@ -18,7 +18,7 @@ export const AdminContent = ({ isCollapsed }: AdminContentProps) => {
   return (
     <div className="flex-1 overflow-y-auto">
       <ShareOptions />
-      <div className="w-full pl-4 pr-2 py-2">
+      <div className="w-full">
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/events" element={<EventsPage />} />

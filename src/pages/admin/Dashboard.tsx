@@ -35,15 +35,15 @@ const DashboardPage = () => {
   ];
 
   return (
-    <div className="space-y-4 pl-2">
-      <div className="flex flex-col gap-1">
+    <div className="pr-4">
+      <div className="flex flex-col gap-1 mb-4">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Dashboard</h2>
         <p className="text-muted-foreground">
           Bem-vindo ao seu painel de controle
         </p>
       </div>
       
-      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-4">
         {stats.map((stat) => (
           <Card 
             key={stat.title} 
