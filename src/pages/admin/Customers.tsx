@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -109,9 +110,9 @@ const CustomersPage = () => {
   };
   
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Clientes</h2>
+    <div className="p-4 space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">Clientes</h2>
         <Dialog open={isNewCustomerOpen} onOpenChange={setIsNewCustomerOpen}>
           <DialogTrigger asChild>
             <Button className="w-full sm:w-auto hover:scale-105 transition-transform">
