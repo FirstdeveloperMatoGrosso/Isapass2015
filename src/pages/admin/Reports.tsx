@@ -13,7 +13,7 @@ const data = [
 
 const ReportsPage = () => {
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="p-4 space-y-6">
       <div className="flex flex-col gap-2">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Relatórios</h2>
         <p className="text-muted-foreground">

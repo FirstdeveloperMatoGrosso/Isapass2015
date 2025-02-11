@@ -104,9 +104,14 @@ const EventsPage = () => {
   };
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="p-4 space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Eventos</h2>
+        <div className="flex flex-col gap-2">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Eventos</h2>
+          <p className="text-muted-foreground">
+            Gerencie seus eventos e programações
+          </p>
+        </div>
         <Button onClick={() => setIsCreating(true)} className="hover-scale">
           <Plus className="mr-2 h-4 w-4" />
           Novo Evento
@@ -342,4 +347,3 @@ const EventsPage = () => {
 };
 
 export default EventsPage;
-
