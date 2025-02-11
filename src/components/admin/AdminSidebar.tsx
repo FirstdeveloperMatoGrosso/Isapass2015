@@ -34,7 +34,7 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps)
   };
 
   return (
-    <Sidebar className={`fixed left-0 top-0 z-20 h-screen transition-all duration-300 border-r bg-card ${isCollapsed ? 'w-16' : 'w-64'}`}>
+    <Sidebar className={`fixed h-screen transition-all duration-300 border-r bg-card ${isCollapsed ? 'w-16' : 'w-64'}`}>
       <SidebarContent className="flex flex-col h-full">
         <div className="pt-4 px-3">
           <Button
