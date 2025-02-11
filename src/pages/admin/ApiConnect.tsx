@@ -48,27 +48,30 @@ const ApiConnectPage = () => {
     try {
       const supabase = createClient(url, key);
       
-      // Usando a API correta do Supabase para listar tabelas
-      const { data: tables, error } = await supabase.rpc('list_tables');
-      
+      // Consultando diretamente as tabelas do schema public
+      const { data, error } = await supabase
+        .from('pg_catalog.pg_tables')
+        .select('tablename')
+        .eq('schemaname', 'public');
+
       if (error) {
         console.error('Erro ao buscar tabelas:', error);
         return false;
       }
 
-      if (!tables || !Array.isArray(tables)) {
-        console.error('Formato de resposta inválido');
+      if (!data) {
+        console.error('Nenhuma tabela encontrada');
         return false;
       }
 
       // Buscando a contagem de registros para cada tabela
-      const tableInfoPromises = tables.map(async (tableName) => {
+      const tableInfoPromises = data.map(async (table) => {
         const { count, error: countError } = await supabase
-          .from(tableName)
+          .from(table.tablename)
           .select('*', { count: 'exact', head: true });
 
         return {
-          name: tableName,
+          name: table.tablename,
           rowCount: countError ? 0 : (count || 0)
         };
       });
