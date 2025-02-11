@@ -35,7 +35,7 @@ const DashboardPage = () => {
   ];
 
   return (
-    <div className="pr-4">
+    <div>
       <div className="flex flex-col gap-1 mb-4">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Dashboard</h2>
         <p className="text-muted-foreground">
