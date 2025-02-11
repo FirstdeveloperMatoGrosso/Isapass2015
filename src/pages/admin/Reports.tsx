@@ -1,6 +1,6 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { ShareOptions } from "@/components/ShareOptions";
 
 const data = [
   { name: 'Jan', vendas: 4000, lucro: 2400 },
@@ -14,11 +14,16 @@ const data = [
 const ReportsPage = () => {
   return (
     <div className="p-4 space-y-6">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Relatórios</h2>
-        <p className="text-muted-foreground">
-          Visualize e analise o desempenho do seu negócio
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Relatórios</h2>
+          <p className="text-muted-foreground">
+            Visualize e analise o desempenho do seu negócio
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <ShareOptions />
+        </div>
       </div>
       
       <div className="grid gap-4 grid-cols-1 lg:grid-cols-2">

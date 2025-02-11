@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ShareOptions } from "@/components/ShareOptions";
 
 interface Message {
   id: number;
@@ -50,11 +50,16 @@ const ChatPage = () => {
 
   return (
     <div className="p-4 space-y-6">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Chat Bot</h2>
-        <p className="text-muted-foreground">
-          Interaja com seus clientes através do chat automático
-        </p>
+      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2">
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Chat Bot</h2>
+          <p className="text-muted-foreground">
+            Interaja com seus clientes através do chat automático
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <ShareOptions />
+        </div>
       </div>
       
       <Card className="h-[calc(100vh-12rem)] flex flex-col">
