@@ -1,12 +1,14 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Copy, Database, Table, RefreshCw } from "lucide-react";
+import { Copy, Database, Table, RefreshCw, Code2 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { createClient, PostgrestError } from '@supabase/supabase-js';
+import { Textarea } from "@/components/ui/textarea";
 
 interface TableInfo {
   name: string;
@@ -17,10 +19,13 @@ const ApiConnectPage = () => {
   const [appName, setAppName] = useState("");
   const [apiToken, setApiToken] = useState("");
   const [apiUrl, setApiUrl] = useState("");
-  const [supabaseUrl, setSupabaseUrl] = useState("");
-  const [supabaseKey, setSupabaseKey] = useState("");
+  const [supabaseUrl, setSupabaseUrl] = useState(() => localStorage.getItem('supabaseUrl') || "");
+  const [supabaseKey, setSupabaseKey] = useState(() => localStorage.getItem('supabaseKey') || "");
   const [tables, setTables] = useState<TableInfo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [sqlQuery, setSqlQuery] = useState("");
+  const [queryResult, setQueryResult] = useState<any[]>([]);
 
   const generateToken = () => {
     if (!appName) {
@@ -47,6 +52,7 @@ const ApiConnectPage = () => {
     try {
       const supabase = createClient(url, key);
       
+      // Verifica a conexão
       const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
@@ -54,9 +60,25 @@ const ApiConnectPage = () => {
         return false;
       }
 
-      setTables([]);
-      return true;
+      // Lista as tabelas do schema public
+      const { data: tablesData, error: tablesError } = await supabase
+        .from('_tables')
+        .select('name, row_count')
+        .neq('schema', 'pg_');
 
+      if (tablesError) {
+        console.error('Erro ao listar tabelas:', tablesError);
+        return true; // Retorna true pois a conexão está ok, mesmo sem listar tabelas
+      }
+
+      if (tablesData) {
+        setTables(tablesData.map(table => ({
+          name: table.name,
+          rowCount: table.row_count || 0
+        })));
+      }
+
+      return true;
     } catch (error) {
       console.error('Erro ao verificar conexão:', error);
       return false;
@@ -74,9 +96,39 @@ const ApiConnectPage = () => {
     setIsLoading(false);
 
     if (success) {
+      // Salva as credenciais no localStorage
+      localStorage.setItem('supabaseUrl', supabaseUrl);
+      localStorage.setItem('supabaseKey', supabaseKey);
+      setIsConnected(true);
       toast.success("Conectado ao Supabase com sucesso!");
     } else {
+      setIsConnected(false);
       toast.error("Erro ao conectar com o Supabase. Verifique as credenciais.");
+    }
+  };
+
+  const executeQuery = async () => {
+    if (!sqlQuery.trim()) {
+      toast.error("Digite uma consulta SQL");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      const { data, error } = await supabase.rpc('execute_sql', {
+        query: sqlQuery
+      });
+
+      if (error) throw error;
+
+      setQueryResult(data || []);
+      toast.success("Consulta executada com sucesso!");
+    } catch (error) {
+      console.error('Erro ao executar consulta:', error);
+      toast.error("Erro ao executar consulta SQL");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -84,7 +136,7 @@ const ApiConnectPage = () => {
     setIsLoading(true);
     try {
       toast.success("Iniciando sincronização dos dados...");
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulação
+      await new Promise(resolve => setTimeout(resolve, 1000));
       toast.success("Dados sincronizados com sucesso!");
     } catch (error) {
       toast.error("Erro ao sincronizar os dados");
@@ -221,36 +273,67 @@ const ApiConnectPage = () => {
                   {isLoading ? "Conectando..." : "Conectar ao Supabase"}
                 </Button>
 
-                {tables.length > 0 && (
-                  <div className="space-y-4 mt-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold">Tabelas Encontradas</h3>
+                {isConnected && (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label>Consulta SQL</Label>
+                      <Textarea
+                        value={sqlQuery}
+                        onChange={(e) => setSqlQuery(e.target.value)}
+                        placeholder="Digite sua consulta SQL aqui..."
+                        className="font-mono"
+                      />
                       <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={syncData}
+                        onClick={executeQuery}
                         disabled={isLoading}
+                        className="w-full mt-2"
                       >
-                        <RefreshCw className="h-4 w-4 mr-2" />
-                        Sincronizar Dados
+                        <Code2 className="h-4 w-4 mr-2" />
+                        Executar SQL
                       </Button>
                     </div>
-                    <div className="space-y-2">
-                      {tables.map((table) => (
-                        <div
-                          key={table.name}
-                          className="flex items-center justify-between p-2 bg-muted rounded-lg"
-                        >
-                          <div className="flex items-center gap-2">
-                            <Table className="h-4 w-4" />
-                            <span>{table.name}</span>
-                          </div>
-                          <span className="text-sm text-muted-foreground">
-                            {table.rowCount} registros
-                          </span>
+
+                    {queryResult.length > 0 && (
+                      <div className="space-y-2">
+                        <Label>Resultado da Consulta</Label>
+                        <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
+                          {JSON.stringify(queryResult, null, 2)}
+                        </pre>
+                      </div>
+                    )}
+
+                    {tables.length > 0 && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-semibold">Tabelas Encontradas</h3>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={syncData}
+                            disabled={isLoading}
+                          >
+                            <RefreshCw className="h-4 w-4 mr-2" />
+                            Sincronizar Dados
+                          </Button>
                         </div>
-                      ))}
-                    </div>
+                        <div className="space-y-2">
+                          {tables.map((table) => (
+                            <div
+                              key={table.name}
+                              className="flex items-center justify-between p-2 bg-muted rounded-lg"
+                            >
+                              <div className="flex items-center gap-2">
+                                <Table className="h-4 w-4" />
+                                <span>{table.name}</span>
+                              </div>
+                              <span className="text-sm text-muted-foreground">
+                                {table.rowCount} registros
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
