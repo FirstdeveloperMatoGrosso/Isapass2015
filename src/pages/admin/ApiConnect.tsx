@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -36,6 +36,24 @@ const ApiConnectPage = () => {
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [tableData, setTableData] = useState<any[]>([]);
   const [tableColumns, setTableColumns] = useState<string[]>([]);
+
+  useEffect(() => {
+    const loadInitialTables = async () => {
+      const savedUrl = localStorage.getItem('supabaseUrl');
+      const savedKey = localStorage.getItem('supabaseKey');
+      
+      if (savedUrl && savedKey) {
+        setIsLoading(true);
+        const success = await fetchTables(savedUrl, savedKey);
+        if (success) {
+          setIsConnected(true);
+        }
+        setIsLoading(false);
+      }
+    };
+
+    loadInitialTables();
+  }, []);
 
   const generateToken = () => {
     if (!appName) {
@@ -517,6 +535,7 @@ const ApiConnectPage = () => {
               <CardTitle className="flex items-center gap-2">
                 <Table className="h-5 w-5" />
                 Visualização de Tabelas
+                {isLoading && <RefreshCw className="h-4 w-4 animate-spin ml-2" />}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -529,9 +548,12 @@ const ApiConnectPage = () => {
               {isConnected && (
                 <div className="space-y-4">
                   {tables.length === 0 ? (
-                    <p className="text-muted-foreground">
-                      Nenhuma tabela encontrada no banco de dados.
-                    </p>
+                    <div className="text-center py-8">
+                      <Database className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground">
+                        Nenhuma tabela encontrada no banco de dados.
+                      </p>
+                    </div>
                   ) : (
                     <>
                       <div className="flex items-center justify-between">
@@ -542,7 +564,7 @@ const ApiConnectPage = () => {
                           onClick={syncTableData}
                           disabled={isLoading || !selectedTable}
                         >
-                          <RefreshCw className="h-4 w-4 mr-2" />
+                          <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
                           Sincronizar Tabela
                         </Button>
                       </div>
