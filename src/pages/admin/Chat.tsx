@@ -49,9 +49,12 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-4 space-y-6">
+      <div className="flex flex-col gap-2">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Chat Bot</h2>
+        <p className="text-muted-foreground">
+          Interaja com seus clientes através do chat automático
+        </p>
       </div>
       
       <Card className="h-[calc(100vh-12rem)] flex flex-col">
@@ -109,4 +112,3 @@ const ChatPage = () => {
 };
 
 export default ChatPage;
-

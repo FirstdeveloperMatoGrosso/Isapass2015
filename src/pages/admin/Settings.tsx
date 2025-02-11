@@ -7,8 +7,13 @@ import { Switch } from "@/components/ui/switch";
 
 const SettingsPage = () => {
   return (
-    <div className="space-y-6">
-      <h2 className="text-3xl font-bold tracking-tight">Configurações</h2>
+    <div className="p-4 space-y-6">
+      <div className="flex flex-col gap-2">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Configurações</h2>
+        <p className="text-muted-foreground">
+          Gerencie as configurações do sistema
+        </p>
+      </div>
       
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
