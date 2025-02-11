@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -48,41 +47,30 @@ const ApiConnectPage = () => {
     try {
       const supabase = createClient(url, key);
       
-      // Usando o método getTables do Postgrest
-      const { data: rawTables, error: postgrestError } = await supabase.auth.getSession();
-      
-      if (postgrestError) {
-        console.error('Erro ao obter sessão:', postgrestError);
-        return false;
-      }
-
-      // Usando uma query SQL direta para listar as tabelas
-      const { data, error } = await supabase
-        .rpc('get_tables', {}, {
-          count: 'exact'
-        });
+      const { data: tables, error } = await supabase
+        .from('information_schema.tables')
+        .select('table_name')
+        .eq('table_schema', 'public')
+        .neq('table_type', 'VIEW');
 
       if (error) {
         console.error('Erro ao buscar tabelas:', error);
         return false;
       }
 
-      if (!data) {
+      if (!tables || !Array.isArray(tables)) {
         console.error('Nenhuma tabela encontrada');
         return false;
       }
 
-      // Convertendo a resposta para o formato esperado
-      const tableNames = Array.isArray(data) ? data : [data];
-
       // Buscando a contagem de registros para cada tabela
-      const tableInfoPromises = tableNames.map(async (tableName) => {
+      const tableInfoPromises = tables.map(async (table) => {
         const { count, error: countError } = await supabase
-          .from(tableName)
+          .from(table.table_name)
           .select('*', { count: 'exact', head: true });
 
         return {
-          name: tableName,
+          name: table.table_name,
           rowCount: countError ? 0 : (count || 0)
         };
       });
