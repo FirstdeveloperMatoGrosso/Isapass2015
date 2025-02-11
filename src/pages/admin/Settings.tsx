@@ -5,8 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { ShareOptions } from "@/components/ShareOptions";
+import { CreditCard, QrCode, Receipt } from "lucide-react";
+import { toast } from "sonner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const SettingsPage = () => {
+  const handleSavePaymentSettings = () => {
+    toast.success("Configurações de pagamento salvas com sucesso!");
+  };
+
   return (
     <div className="p-4 space-y-6">
       <div className="flex items-center justify-between">
@@ -55,20 +62,98 @@ const SettingsPage = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Integrações</CardTitle>
+            <CardTitle>Gateways de Pagamento</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>API Key</Label>
-              <Input type="password" placeholder="••••••••" />
-            </div>
+            <Tabs defaultValue="stone" className="w-full">
+              <TabsList className="w-full grid grid-cols-3 mb-4">
+                <TabsTrigger value="stone">Stone</TabsTrigger>
+                <TabsTrigger value="mercadopago">Mercado Pago</TabsTrigger>
+                <TabsTrigger value="pagarme">Pagar.me</TabsTrigger>
+              </TabsList>
 
-            <div className="space-y-2">
-              <Label>Webhook URL</Label>
-              <Input placeholder="https://" />
-            </div>
+              <TabsContent value="stone" className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Stone Client ID</Label>
+                  <Input type="password" placeholder="•••••••••••••••••" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Stone Client Secret</Label>
+                  <Input type="password" placeholder="•••••••••••••••••" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" />
+                  <Label>Aceitar Cartão de Crédito</Label>
+                  <Switch />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Receipt className="h-4 w-4" />
+                  <Label>Aceitar Boleto</Label>
+                  <Switch />
+                </div>
+                <div className="flex items-center gap-2">
+                  <QrCode className="h-4 w-4" />
+                  <Label>Aceitar PIX</Label>
+                  <Switch />
+                </div>
+              </TabsContent>
 
-            <Button>Salvar Configurações</Button>
+              <TabsContent value="mercadopago" className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Access Token</Label>
+                  <Input type="password" placeholder="TEST-0000000000000000-000000-000000000000000000000000" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Public Key</Label>
+                  <Input type="password" placeholder="TEST-0000000-0000000000000" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" />
+                  <Label>Aceitar Cartão de Crédito</Label>
+                  <Switch />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Receipt className="h-4 w-4" />
+                  <Label>Aceitar Boleto</Label>
+                  <Switch />
+                </div>
+                <div className="flex items-center gap-2">
+                  <QrCode className="h-4 w-4" />
+                  <Label>Aceitar PIX</Label>
+                  <Switch />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="pagarme" className="space-y-4">
+                <div className="space-y-2">
+                  <Label>API Key</Label>
+                  <Input type="password" placeholder="ak_test_00000000000000000000000000000000" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Encryption Key</Label>
+                  <Input type="password" placeholder="ek_test_00000000000000000000000000000000" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <CreditCard className="h-4 w-4" />
+                  <Label>Aceitar Cartão de Crédito</Label>
+                  <Switch />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Receipt className="h-4 w-4" />
+                  <Label>Aceitar Boleto</Label>
+                  <Switch />
+                </div>
+                <div className="flex items-center gap-2">
+                  <QrCode className="h-4 w-4" />
+                  <Label>Aceitar PIX</Label>
+                  <Switch />
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            <Button className="w-full" onClick={handleSavePaymentSettings}>
+              Salvar Configurações de Pagamento
+            </Button>
           </CardContent>
         </Card>
 
