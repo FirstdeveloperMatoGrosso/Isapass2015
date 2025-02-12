@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,16 +23,18 @@ const ChatPage = () => {
 
   const generateChatResponse = async (prompt: string) => {
     try {
-      // Buscar a API key do Supabase
-      const { data: { value: apiKey }, error: secretError } = await supabase
+      // Fetch API key from Supabase
+      const { data, error } = await supabase
         .from('secrets')
         .select('value')
         .eq('name', 'QWEN_API_KEY')
         .single();
 
-      if (secretError || !apiKey) {
+      if (error || !data) {
         throw new Error('API Key não encontrada');
       }
+
+      const apiKey = data.value;
 
       const response = await fetch('https://api.qwen.ai/v1/chat/completions', {
         method: 'POST',
@@ -63,8 +65,8 @@ const ChatPage = () => {
         throw new Error(error.message || 'Erro na chamada da API');
       }
 
-      const data = await response.json();
-      return data.choices[0].message.content;
+      const data2 = await response.json();
+      return data2.choices[0].message.content;
     } catch (error) {
       console.error('Erro ao gerar resposta:', error);
       throw error;
