@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { MessageSquare, Send, Loader2, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ShareOptions } from "@/components/ShareOptions";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: number;
@@ -17,14 +16,6 @@ interface Message {
   customerName?: string;
 }
 
-interface Conversation {
-  id: string;
-  customerPhone: string;
-  customerName: string;
-  messages: Message[];
-  lastMessageAt: Date;
-}
-
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
@@ -32,129 +23,6 @@ const ChatPage = () => {
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerName, setCustomerName] = useState("");
   const { toast } = useToast();
-
-  // Carregar conversa existente quando o número do cliente é fornecido
-  useEffect(() => {
-    const loadConversation = async () => {
-      if (!customerPhone) return;
-
-      try {
-        const { data, error } = await supabase
-          .from('conversations')
-          .select('*')
-          .eq('customer_phone', customerPhone)
-          .single();
-
-        if (error) throw error;
-
-        if (data) {
-          setMessages(data.messages);
-          setCustomerName(data.customer_name);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar conversa:', error);
-      }
-    };
-
-    loadConversation();
-  }, [customerPhone]);
-
-  const saveConversation = async (newMessages: Message[]) => {
-    if (!customerPhone || !customerName) return;
-
-    try {
-      const conversation: Conversation = {
-        id: `${customerPhone}-${Date.now()}`,
-        customerPhone,
-        customerName,
-        messages: newMessages,
-        lastMessageAt: new Date(),
-      };
-
-      const { error } = await supabase
-        .from('conversations')
-        .upsert({ 
-          customer_phone: customerPhone,
-          customer_name: customerName,
-          messages: newMessages,
-          last_message_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Erro ao salvar conversa:', error);
-      toast({
-        title: "Erro ao salvar",
-        description: "Não foi possível salvar a conversa.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const generateChatResponse = async (prompt: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('secrets')
-        .select('value')
-        .eq('name', 'QWEN_API_KEY')
-        .single();
-
-      if (error || !data) {
-        throw new Error('API Key não encontrada');
-      }
-
-      const apiKey = data.value;
-
-      const response = await fetch('https://api.qwen.ai/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify({
-          model: 'qwen-max',
-          messages: [
-            {
-              role: 'system',
-              content: `Você é um assistente de atendimento ao cliente especializado em uma plataforma de eventos. Suas responsabilidades incluem:
-
-1. Ajudar com dúvidas sobre compra, troca e reembolso de ingressos
-2. Resolver problemas com pagamentos e confirmação de compras
-3. Informar sobre políticas de meia-entrada e documentação necessária
-4. Explicar procedimentos de entrada no evento e regras gerais
-5. Auxiliar com problemas técnicos no site ou aplicativo
-6. Fornecer informações sobre eventos, horários e locais
-7. Esclarecer dúvidas sobre áreas e tipos de ingresso
-8. Informar sobre acessibilidade e necessidades especiais
-
-Mantenha um tom cordial, profissional e prestativo, sempre buscando resolver as questões dos clientes da melhor forma possível.
-
-Cliente atual: ${customerName}
-Telefone: ${customerPhone}`
-            },
-            {
-              role: 'user',
-              content: prompt
-            }
-          ],
-          temperature: 0.7,
-          max_tokens: 800,
-          stream: false
-        })
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Erro na chamada da API');
-      }
-
-      const data2 = await response.json();
-      return data2.choices[0].message.content;
-    } catch (error) {
-      console.error('Erro ao gerar resposta:', error);
-      throw error;
-    }
-  };
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
@@ -176,26 +44,25 @@ Telefone: ${customerPhone}`
       customerName: customerName,
     };
 
-    const newMessages = [...messages, userMessage];
-    setMessages(newMessages);
+    setMessages((prev) => [...prev, userMessage]);
     setInputMessage("");
     setIsLoading(true);
 
     try {
-      const botResponse = await generateChatResponse(inputMessage);
-      
+      // Simulating bot response for now
       const botMessage: Message = {
         id: Date.now() + 1,
-        text: botResponse,
+        text: "Esta é uma resposta automática. O sistema de chat está em desenvolvimento.",
         sender: "bot",
         timestamp: new Date(),
         phoneNumber: customerPhone,
         customerName: customerName,
       };
 
-      const updatedMessages = [...newMessages, botMessage];
-      setMessages(updatedMessages);
-      await saveConversation(updatedMessages);
+      setTimeout(() => {
+        setMessages(prev => [...prev, botMessage]);
+        setIsLoading(false);
+      }, 1000);
       
       toast({
         title: "Mensagem enviada",
@@ -207,7 +74,6 @@ Telefone: ${customerPhone}`
         description: "Houve um erro ao processar sua mensagem. Tente novamente.",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
