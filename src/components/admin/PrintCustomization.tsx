@@ -1,8 +1,9 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Printer, Receipt, FileText, Upload, Building2, Beer, Wine } from "lucide-react";
+import { Printer, Receipt, FileText, Upload, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -197,103 +198,6 @@ export const PrintCustomization = () => {
                 </div>
                 <Switch defaultChecked />
               </div>
-            </div>
-          </div>
-
-          <div className="border-t pt-6">
-            <h3 className="font-medium mb-4 flex items-center gap-2">
-              <Beer className="h-5 w-5" />
-              Configuração de Fichas de Bebidas
-            </h3>
-            <div className="space-y-6">
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Título da Ficha</Label>
-                    <Input placeholder="Ex: Ficha de Consumação" />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Valor da Ficha</Label>
-                    <Input type="number" placeholder="R$ 0,00" />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Cor da Ficha</Label>
-                    <Select defaultValue="blue">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione a cor" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="blue">Azul</SelectItem>
-                        <SelectItem value="red">Vermelho</SelectItem>
-                        <SelectItem value="green">Verde</SelectItem>
-                        <SelectItem value="yellow">Amarelo</SelectItem>
-                        <SelectItem value="purple">Roxo</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Tipo de Bebida</Label>
-                    <Select defaultValue="all">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">Todas as Bebidas</SelectItem>
-                        <SelectItem value="beer">Cerveja</SelectItem>
-                        <SelectItem value="wine">Vinho</SelectItem>
-                        <SelectItem value="spirits">Destilados</SelectItem>
-                        <SelectItem value="soft">Não Alcoólicos</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Numeração</Label>
-                    <div className="grid grid-cols-2 gap-4">
-                      <Input type="number" placeholder="Início" />
-                      <Input type="number" placeholder="Fim" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Validade</Label>
-                    <Input type="date" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Receipt className="h-4 w-4" />
-                    <span>Incluir QR Code</span>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Receipt className="h-4 w-4" />
-                    <span>Incluir Código de Barras</span>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Wine className="h-4 w-4" />
-                    <span>Aviso de Consumo para Menores</span>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-              </div>
-
-              <Button variant="outline" className="w-full">
-                Adicionar Novo Tipo de Ficha
-              </Button>
             </div>
           </div>
 
