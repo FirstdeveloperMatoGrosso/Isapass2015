@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -202,6 +201,62 @@ const BeverageTokensPage = () => {
               <Button onClick={handleSave} className="w-full">
                 Salvar Configurações
               </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Receipt className="h-5 w-5" />
+              Prévia da Ficha
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="border rounded-lg p-6 bg-white">
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 border-b pb-4">
+                  <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
+                    <Upload className="h-6 w-6 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold">Nome do Evento/Empresa</h3>
+                    <p className="text-sm text-muted-foreground">CNPJ: 00.000.000/0000-00</p>
+                    <p className="text-sm text-muted-foreground">Endereço Completo, Cidade - UF</p>
+                  </div>
+                </div>
+
+                <div className="space-y-2 text-center">
+                  <h4 className="font-bold text-xl">FICHA DE CONSUMAÇÃO</h4>
+                  <div className="text-2xl font-bold text-primary">R$ 10,00</div>
+                  <p className="text-sm">Válida para todas as bebidas</p>
+                </div>
+
+                <div className="flex justify-center gap-4 pt-4 border-t">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-muted rounded-lg flex items-center justify-center mb-2">
+                      <QrCode className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">QR Code</span>
+                  </div>
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-muted rounded-lg flex items-center justify-center mb-2">
+                      <Barcode className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                    <span className="text-xs text-muted-foreground">Código de Barras</span>
+                  </div>
+                </div>
+
+                <div className="text-center text-xs text-muted-foreground pt-4 border-t">
+                  <p>Venda e consumo proibidos para menores de 18 anos</p>
+                  <p>Válido até: 31/12/2024</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 text-sm text-muted-foreground text-center">
+              Esta é uma prévia de como sua ficha ficará após a impressão.
+              As informações serão atualizadas conforme você fizer alterações nas configurações acima.
             </div>
           </CardContent>
         </Card>
