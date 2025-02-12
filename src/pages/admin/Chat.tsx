@@ -1,9 +1,9 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Send, Loader2 } from "lucide-react";
+import { MessageSquare, Send, Loader2, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ShareOptions } from "@/components/ShareOptions";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,13 +13,83 @@ interface Message {
   text: string;
   sender: "user" | "bot";
   timestamp: Date;
+  phoneNumber?: string;
+  customerName?: string;
+}
+
+interface Conversation {
+  id: string;
+  customerPhone: string;
+  customerName: string;
+  messages: Message[];
+  lastMessageAt: Date;
 }
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerName, setCustomerName] = useState("");
   const { toast } = useToast();
+
+  // Carregar conversa existente quando o número do cliente é fornecido
+  useEffect(() => {
+    const loadConversation = async () => {
+      if (!customerPhone) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('conversations')
+          .select('*')
+          .eq('customer_phone', customerPhone)
+          .single();
+
+        if (error) throw error;
+
+        if (data) {
+          setMessages(data.messages);
+          setCustomerName(data.customer_name);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar conversa:', error);
+      }
+    };
+
+    loadConversation();
+  }, [customerPhone]);
+
+  const saveConversation = async (newMessages: Message[]) => {
+    if (!customerPhone || !customerName) return;
+
+    try {
+      const conversation: Conversation = {
+        id: `${customerPhone}-${Date.now()}`,
+        customerPhone,
+        customerName,
+        messages: newMessages,
+        lastMessageAt: new Date(),
+      };
+
+      const { error } = await supabase
+        .from('conversations')
+        .upsert({ 
+          customer_phone: customerPhone,
+          customer_name: customerName,
+          messages: newMessages,
+          last_message_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Erro ao salvar conversa:', error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Não foi possível salvar a conversa.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const generateChatResponse = async (prompt: string) => {
     try {
@@ -57,7 +127,10 @@ const ChatPage = () => {
 7. Esclarecer dúvidas sobre áreas e tipos de ingresso
 8. Informar sobre acessibilidade e necessidades especiais
 
-Mantenha um tom cordial, profissional e prestativo, sempre buscando resolver as questões dos clientes da melhor forma possível.`
+Mantenha um tom cordial, profissional e prestativo, sempre buscando resolver as questões dos clientes da melhor forma possível.
+
+Cliente atual: ${customerName}
+Telefone: ${customerPhone}`
             },
             {
               role: 'user',
@@ -85,15 +158,26 @@ Mantenha um tom cordial, profissional e prestativo, sempre buscando resolver as 
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
+    if (!customerPhone || !customerName) {
+      toast({
+        title: "Informações necessárias",
+        description: "Por favor, insira o telefone e nome do cliente.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now(),
       text: inputMessage,
       sender: "user",
       timestamp: new Date(),
+      phoneNumber: customerPhone,
+      customerName: customerName,
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
     setInputMessage("");
     setIsLoading(true);
 
@@ -105,9 +189,13 @@ Mantenha um tom cordial, profissional e prestativo, sempre buscando resolver as 
         text: botResponse,
         sender: "bot",
         timestamp: new Date(),
+        phoneNumber: customerPhone,
+        customerName: customerName,
       };
 
-      setMessages(prev => [...prev, botMessage]);
+      const updatedMessages = [...newMessages, botMessage];
+      setMessages(updatedMessages);
+      await saveConversation(updatedMessages);
       
       toast({
         title: "Mensagem enviada",
@@ -136,11 +224,40 @@ Mantenha um tom cordial, profissional e prestativo, sempre buscando resolver as 
         <ShareOptions />
       </div>
       
-      <Card className="h-[calc(100vh-12rem)] flex flex-col">
+      <Card className="mb-4">
+        <CardContent className="pt-6">
+          <div className="flex gap-4">
+            <Input
+              placeholder="Número do WhatsApp"
+              value={customerPhone}
+              onChange={(e) => setCustomerPhone(e.target.value)}
+              className="flex-1"
+              type="tel"
+            />
+            <Input
+              placeholder="Nome do Cliente"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              className="flex-1"
+            />
+          </div>
+        </CardContent>
+      </Card>
+      
+      <Card className="h-[calc(100vh-16rem)] flex flex-col">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <MessageSquare className="h-5 w-5" />
-            Chat com Clientes
+            {customerPhone ? (
+              <div className="flex items-center gap-2">
+                Chat com {customerName} 
+                <span className="text-sm text-muted-foreground flex items-center gap-1">
+                  <Phone className="h-4 w-4" /> {customerPhone}
+                </span>
+              </div>
+            ) : (
+              "Chat com Clientes"
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-1 flex flex-col">
@@ -168,7 +285,9 @@ Mantenha um tom cordial, profissional e prestativo, sempre buscando resolver as 
             ))}
             {messages.length === 0 && (
               <div className="flex items-center justify-center h-full text-muted-foreground">
-                Nenhuma mensagem ainda. Comece uma conversa!
+                {customerPhone 
+                  ? "Inicie uma conversa com o cliente!"
+                  : "Insira o número do WhatsApp e nome do cliente para começar."}
               </div>
             )}
           </div>
@@ -179,9 +298,12 @@ Mantenha um tom cordial, profissional e prestativo, sempre buscando resolver as 
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSendMessage()}
               className="flex-1"
-              disabled={isLoading}
+              disabled={isLoading || !customerPhone || !customerName}
             />
-            <Button onClick={handleSendMessage} disabled={isLoading}>
+            <Button 
+              onClick={handleSendMessage} 
+              disabled={isLoading || !customerPhone || !customerName}
+            >
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
