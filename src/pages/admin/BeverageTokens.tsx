@@ -703,7 +703,7 @@ const BeverageTokensPage = () => {
                       </CardHeader>
                       <CardContent>
                         <pre className="bg-muted p-2 rounded-md text-sm">
-                          pod 'IsaPassTokens', '~> 1.0.0'
+                          pod &apos;IsaPassTokens&apos;, &apos;~&gt; 1.0.0&apos;
                         </pre>
                       </CardContent>
                     </Card>
