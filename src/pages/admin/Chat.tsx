@@ -18,15 +18,21 @@ const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [apiKey, setApiKey] = useState("");
   const { toast } = useToast();
 
   const generateChatResponse = async (prompt: string) => {
     try {
+      // Verificar se tem API key
+      if (!apiKey) {
+        throw new Error('API Key não configurada');
+      }
+
       const response = await fetch('https://api.qwen.ai/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + process.env.QWEN_API_KEY,
+          'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           model: 'qwen-max',
@@ -47,7 +53,8 @@ const ChatPage = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Erro na chamada da API');
+        const error = await response.json();
+        throw new Error(error.message || 'Erro na chamada da API');
       }
 
       const data = await response.json();
@@ -60,6 +67,16 @@ const ChatPage = () => {
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
+
+    // Verificar se tem API key configurada
+    if (!apiKey) {
+      toast({
+        title: "API Key não configurada",
+        description: "Por favor, configure a API Key do Qwen nas configurações.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     const userMessage: Message = {
       id: Date.now(),
@@ -109,6 +126,13 @@ const ChatPage = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Input
+            type="password"
+            placeholder="Qwen API Key"
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+            className="w-64"
+          />
           <ShareOptions />
         </div>
       </div>
