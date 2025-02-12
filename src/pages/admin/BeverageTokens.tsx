@@ -103,6 +103,27 @@ const BeverageTokensPage = () => {
     issuedAt: `${formattedDate} ${formattedTime}`
   };
 
+  const apiResponseExample = {
+    token: {
+      id: "tk_123456",
+      securityCode: securityCode,
+      nsu,
+      type: "FICHA DE CONSUMAÇÃO",
+      value: 10.00,
+      validFor: "Todas as bebidas",
+      expirationDate: "31/12/2024",
+      issuedAt: `${formattedDate} ${formattedTime}`,
+      establishmentInfo: {
+        name: "Nome do Estabelecimento",
+        cnpj: "00.000.000/0000-00",
+        address: "Endereço Completo",
+        city: "Cidade - UF"
+      },
+      qrCodeData: qrCodeData,
+      status: "active"
+    }
+  };
+
   return (
     <div className="p-4">
       <div className="flex flex-col gap-2 mb-6">
@@ -118,6 +139,7 @@ const BeverageTokensPage = () => {
         <TabsList>
           <TabsTrigger value="tokens">Configuração de Fichas</TabsTrigger>
           <TabsTrigger value="products">Produtos</TabsTrigger>
+          <TabsTrigger value="api">Documentação API</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products">
@@ -453,6 +475,165 @@ const BeverageTokensPage = () => {
               <div className="mt-4 text-sm text-muted-foreground text-center">
                 Esta é uma prévia de como sua ficha ficará após a impressão.
                 As informações serão atualizadas conforme você fizer alterações nas configurações acima.
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="api">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Code2 className="h-5 w-5" />
+                Documentação da API
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Base URL</h3>
+                  <code className="bg-muted p-2 rounded-md block">
+                    https://api.isapass.com/v1
+                  </code>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Endpoints</h3>
+                  
+                  <div className="space-y-6">
+                    {/* GET Token */}
+                    <div className="border-b pb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge>GET</Badge>
+                        <code>/tokens/:id</code>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Retorna os dados de uma ficha específica
+                      </p>
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Parâmetros:</p>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground">
+                          <li>id: ID da ficha (obrigatório)</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    {/* POST Token Validation */}
+                    <div className="border-b pb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge>POST</Badge>
+                        <code>/tokens/validate</code>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Valida uma ficha através do QR Code ou código de barras
+                      </p>
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Body:</p>
+                        <pre className="bg-muted p-2 rounded-md text-sm">
+{`{
+  "securityCode": "string",
+  "nsu": "string"
+}`}
+                        </pre>
+                      </div>
+                    </div>
+
+                    {/* GET Token Print */}
+                    <div className="border-b pb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge>GET</Badge>
+                        <code>/tokens/:id/print</code>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Retorna o HTML formatado para impressão da ficha
+                      </p>
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Query Parameters:</p>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground">
+                          <li>format: "html" | "pdf" (opcional, default: "html")</li>
+                          <li>size: "80mm" | "a4" (opcional, default: "80mm")</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    {/* POST Create Token */}
+                    <div className="pb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge>POST</Badge>
+                        <code>/tokens</code>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Cria uma nova ficha
+                      </p>
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Body:</p>
+                        <pre className="bg-muted p-2 rounded-md text-sm">
+{`{
+  "type": "string",
+  "value": number,
+  "validFor": "string",
+  "expirationDate": "string"
+}`}
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Exemplo de Resposta</h3>
+                  <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
+                    {JSON.stringify(apiResponseExample, null, 2)}
+                  </pre>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Autenticação</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Todas as requisições devem incluir o header de autenticação:
+                  </p>
+                  <pre className="bg-muted p-2 rounded-md text-sm">
+                    Authorization: Bearer seu-token-de-api
+                  </pre>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Códigos de Status</h3>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li><span className="font-medium">200</span> - Sucesso</li>
+                    <li><span className="font-medium">201</span> - Criado com sucesso</li>
+                    <li><span className="font-medium">400</span> - Requisição inválida</li>
+                    <li><span className="font-medium">401</span> - Não autorizado</li>
+                    <li><span className="font-medium">404</span> - Não encontrado</li>
+                    <li><span className="font-medium">500</span> - Erro interno do servidor</li>
+                  </ul>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">SDKs e Bibliotecas</h3>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-base">Android SDK</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <pre className="bg-muted p-2 rounded-md text-sm">
+                          implementation 'com.isapass:tokens-sdk:1.0.0'
+                        </pre>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-base">iOS SDK</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <pre className="bg-muted p-2 rounded-md text-sm">
+                          pod 'IsaPassTokens', '~> 1.0.0'
+                        </pre>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
