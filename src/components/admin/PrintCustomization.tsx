@@ -6,10 +6,25 @@ import { Switch } from "@/components/ui/switch";
 import { Printer, Receipt, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { DigitalTicket } from "@/components/DigitalTicket";
 
 export const PrintCustomization = () => {
   const handleSave = () => {
     toast.success("Configurações de impressão salvas com sucesso!");
+  };
+
+  const previewTicket = {
+    ticketId: "TK123456",
+    securityCode: "SEC789",
+    purchaseDate: "01/03/2024",
+    eventTitle: "Exemplo de Evento",
+    eventDate: "15/03/2024",
+    eventTime: "20:00",
+    location: "Local do Evento",
+    area: "Área VIP",
+    buyerName: "João Silva",
+    buyerCpf: "123.456.789-00",
+    buyerPhone: "(11) 98765-4321"
   };
 
   return (
@@ -118,6 +133,14 @@ export const PrintCustomization = () => {
           <Button onClick={handleSave} className="w-full">
             Salvar Configurações
           </Button>
+
+          <div className="border-t pt-6">
+            <h3 className="font-medium mb-4">Prévia do Modelo de Impressão</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Clique no modelo abaixo para visualizar em tamanho maior
+            </p>
+            <DigitalTicket {...previewTicket} />
+          </div>
         </CardContent>
       </Card>
     </div>
