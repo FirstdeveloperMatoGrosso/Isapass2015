@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Beer, Receipt, Wine, QrCode, Barcode } from "lucide-react";
+import { Beer, Receipt, Wine, QrCode, Barcode, Upload, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -11,6 +11,14 @@ import { toast } from "sonner";
 const BeverageTokensPage = () => {
   const handleSave = () => {
     toast.success("Configurações de fichas salvas com sucesso!");
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Aqui você pode implementar o upload do arquivo
+      toast.success("Logo enviada com sucesso!");
+    }
   };
 
   return (
@@ -25,6 +33,74 @@ const BeverageTokensPage = () => {
       </div>
 
       <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Building2 className="h-5 w-5" />
+              Personalização do Título
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Logo do Evento/Empresa</Label>
+                  <div className="flex items-center gap-4">
+                    <div className="w-24 h-24 border-2 border-dashed rounded-lg flex items-center justify-center bg-muted">
+                      <Upload className="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <div className="space-y-2 flex-1">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="cursor-pointer"
+                      />
+                      <p className="text-sm text-muted-foreground">
+                        PNG, JPG ou GIF. Máximo 2MB.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Nome do Evento/Empresa</Label>
+                  <Input placeholder="Digite o nome do evento ou empresa" />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>CNPJ</Label>
+                  <Input placeholder="00.000.000/0000-00" />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Endereço</Label>
+                <Input placeholder="Rua, número, bairro" />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Cidade/Estado</Label>
+                <Input placeholder="Cidade - UF" />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Telefone</Label>
+                <Input placeholder="(00) 0000-0000" />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input type="email" placeholder="contato@empresa.com" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
