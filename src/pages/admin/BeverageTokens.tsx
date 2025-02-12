@@ -10,12 +10,22 @@ import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import BarcodeGenerator from "react-barcode";
 import { useState } from "react";
+import { format } from "date-fns";
 
 const BeverageTokensPage = () => {
   const [securityCode] = useState(() => {
     // Gera um código de segurança aleatório de 8 dígitos
     return Math.random().toString(36).substring(2, 10).toUpperCase();
   });
+
+  const [nsu] = useState(() => {
+    // Gera um NSU aleatório de 6 dígitos
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  });
+
+  const currentDate = new Date();
+  const formattedDate = format(currentDate, "dd/MM/yyyy");
+  const formattedTime = format(currentDate, "HH:mm:ss");
 
   const handleSave = () => {
     toast.success("Configurações de fichas salvas com sucesso!");
@@ -32,10 +42,12 @@ const BeverageTokensPage = () => {
   // Dados que serão codificados no QR Code
   const qrCodeData = {
     securityCode,
+    nsu,
     type: "FICHA DE CONSUMAÇÃO",
     value: "R$ 10,00",
     validFor: "Todas as bebidas",
-    expirationDate: "31/12/2024"
+    expirationDate: "31/12/2024",
+    issuedAt: `${formattedDate} ${formattedTime}`
   };
 
   return (
@@ -248,6 +260,11 @@ const BeverageTokensPage = () => {
                   <h4 className="font-bold text-xl">FICHA DE CONSUMAÇÃO</h4>
                   <div className="text-2xl font-bold text-primary">R$ 10,00</div>
                   <p className="text-sm">Válida para todas as bebidas</p>
+                  <div className="text-xs text-muted-foreground space-y-1">
+                    <p>NSU: {nsu}</p>
+                    <p>Data: {formattedDate}</p>
+                    <p>Hora: {formattedTime}</p>
+                  </div>
                 </div>
 
                 <div className="flex justify-center gap-4 pt-4 border-t">
