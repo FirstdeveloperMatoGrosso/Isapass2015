@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Share2, Mail, MessageCircle } from "lucide-react";
 import { DigitalTicket } from "@/components/DigitalTicket";
-import { CustomerChat } from "@/components/CustomerChat";
+import CustomerChat from "@/components/CustomerChat";
 
 const Dashboard = () => {
   const [userData, setUserData] = useState<any>(null);

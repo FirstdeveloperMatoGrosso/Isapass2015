@@ -1,11 +1,10 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: number;
@@ -20,6 +19,17 @@ const CustomerChat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  useEffect(() => {
+    // Load messages from localStorage on component mount
+    const savedMessages = localStorage.getItem('chatMessages');
+    if (savedMessages) {
+      setMessages(JSON.parse(savedMessages).map((msg: any) => ({
+        ...msg,
+        timestamp: new Date(msg.timestamp)
+      })));
+    }
+  }, []);
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
@@ -30,20 +40,14 @@ const CustomerChat = () => {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInputMessage("");
     setIsLoading(true);
 
     try {
-      const { error } = await supabase
-        .from('conversations')
-        .insert({ 
-          customer_name: localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')!).name : 'Cliente',
-          messages: [...messages, userMessage],
-          last_message_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
+      // Save messages to localStorage
+      localStorage.setItem('chatMessages', JSON.stringify(updatedMessages));
       
       toast({
         title: "Mensagem enviada",
