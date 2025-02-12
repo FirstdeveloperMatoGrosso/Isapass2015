@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import Barcode from "react-barcode";
 import { QRCodeSVG } from "qrcode.react";
@@ -131,6 +130,16 @@ export const DigitalTicket = ({
                 <p className="text-sm text-muted-foreground mt-2">Código de Barras</p>
               </div>
             </div>
+
+            <div className="border-t pt-4 text-center">
+              <p className="text-sm text-muted-foreground mb-2">
+                PROIBIDA A VENDA E O CONSUMO DE BEBIDAS ALCOÓLICAS PARA MENORES DE 18 ANOS
+                LEI FEDERAL 8.069/90 - ARTIGO 81
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Código do Consumidor - Decreto 2.181/97 - RAC/PROCON
+              </p>
+            </div>
           </CardContent>
         </Card>
       </DialogTrigger>
@@ -221,6 +230,16 @@ export const DigitalTicket = ({
                 <p className="text-sm text-muted-foreground mt-2">Código de Barras</p>
               </div>
             </div>
+          </div>
+
+          <div className="border-t pt-4 text-center">
+            <p className="text-sm text-muted-foreground mb-2">
+              PROIBIDA A VENDA E O CONSUMO DE BEBIDAS ALCOÓLICAS PARA MENORES DE 18 ANOS
+              LEI FEDERAL 8.069/90 - ARTIGO 81
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Código do Consumidor - Decreto 2.181/97 - RAC/PROCON
+            </p>
           </div>
         </div>
       </DialogContent>
