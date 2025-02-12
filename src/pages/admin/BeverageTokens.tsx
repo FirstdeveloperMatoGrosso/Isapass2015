@@ -7,7 +7,7 @@ import { Beer, Receipt, Wine, QrCode as QrCodeIcon, BarcodeIcon, Upload, Buildin
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { QRCode } from "qrcode.react";
+import QRCodeReact from "qrcode.react";
 import BarcodeGenerator from "react-barcode";
 import { useState } from "react";
 
@@ -190,14 +190,14 @@ const BeverageTokensPage = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <QrCode className="h-4 w-4" />
+                  <QrCodeIcon className="h-4 w-4" />
                   <span>Incluir QR Code</span>
                 </div>
                 <Switch defaultChecked />
               </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Barcode className="h-4 w-4" />
+                  <BarcodeIcon className="h-4 w-4" />
                   <span>Incluir Código de Barras</span>
                 </div>
                 <Switch defaultChecked />
@@ -253,7 +253,7 @@ const BeverageTokensPage = () => {
                 <div className="flex justify-center gap-4 pt-4 border-t">
                   <div className="text-center">
                     <div className="w-20 h-20 bg-white rounded-lg flex items-center justify-center mb-2">
-                      <QRCode
+                      <QRCodeReact
                         value={JSON.stringify(qrCodeData)}
                         size={80}
                         level="H"
