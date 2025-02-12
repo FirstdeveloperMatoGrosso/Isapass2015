@@ -12,6 +12,7 @@ import ApiTokensPage from "@/pages/admin/ApiTokens";
 import ApiTicketsPage from "@/pages/admin/ApiTickets";
 import PrintCustomizationPage from "@/pages/admin/PrintCustomization";
 import BeverageTokensPage from "@/pages/admin/BeverageTokens";
+import MusicPage from "@/pages/admin/Music";
 
 interface AdminContentProps {
   isCollapsed: boolean;
@@ -29,6 +30,7 @@ export const AdminContent = ({ isCollapsed }: AdminContentProps) => {
           <Route path="/reports" element={<ReportsPage />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/banners" element={<BannersPage />} />
+          <Route path="/music" element={<MusicPage />} />
           <Route path="/api-tokens" element={<ApiTokensPage />} />
           <Route path="/api-tickets" element={<ApiTicketsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
