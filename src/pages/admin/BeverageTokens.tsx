@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -6,8 +7,16 @@ import { Beer, Receipt, Wine, QrCode, Barcode, Upload, Building2 } from "lucide-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import QRCode from "qrcode.react";
+import Barcode from "react-barcode";
+import { useState } from "react";
 
 const BeverageTokensPage = () => {
+  const [securityCode] = useState(() => {
+    // Gera um código de segurança aleatório de 8 dígitos
+    return Math.random().toString(36).substring(2, 10).toUpperCase();
+  });
+
   const handleSave = () => {
     toast.success("Configurações de fichas salvas com sucesso!");
   };
@@ -18,6 +27,15 @@ const BeverageTokensPage = () => {
       // Aqui você pode implementar o upload do arquivo
       toast.success("Logo enviada com sucesso!");
     }
+  };
+
+  // Dados que serão codificados no QR Code
+  const qrCodeData = {
+    securityCode,
+    type: "FICHA DE CONSUMAÇÃO",
+    value: "R$ 10,00",
+    validFor: "Todas as bebidas",
+    expirationDate: "31/12/2024"
   };
 
   return (
@@ -234,16 +252,27 @@ const BeverageTokensPage = () => {
 
                 <div className="flex justify-center gap-4 pt-4 border-t">
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-muted rounded-lg flex items-center justify-center mb-2">
-                      <QrCode className="h-12 w-12 text-muted-foreground" />
+                    <div className="w-20 h-20 bg-white rounded-lg flex items-center justify-center mb-2">
+                      <QRCode
+                        value={JSON.stringify(qrCodeData)}
+                        size={80}
+                        level="H"
+                        includeMargin={true}
+                      />
                     </div>
                     <span className="text-xs text-muted-foreground">QR Code</span>
                   </div>
                   <div className="text-center">
-                    <div className="w-20 h-20 bg-muted rounded-lg flex items-center justify-center mb-2">
-                      <Barcode className="h-12 w-12 text-muted-foreground" />
+                    <div className="w-auto h-20 bg-white rounded-lg flex items-center justify-center mb-2 px-2">
+                      <Barcode 
+                        value={securityCode}
+                        height={60}
+                        width={1.5}
+                        fontSize={12}
+                        margin={0}
+                      />
                     </div>
-                    <span className="text-xs text-muted-foreground">Código de Barras</span>
+                    <span className="text-xs text-muted-foreground">Código de Segurança: {securityCode}</span>
                   </div>
                 </div>
 
