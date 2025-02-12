@@ -1,11 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Send, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ShareOptions } from "@/components/ShareOptions";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: number;
@@ -18,14 +19,19 @@ const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [apiKey, setApiKey] = useState("");
   const { toast } = useToast();
 
   const generateChatResponse = async (prompt: string) => {
     try {
-      // Verificar se tem API key
-      if (!apiKey) {
-        throw new Error('API Key não configurada');
+      // Buscar a API key do Supabase
+      const { data: { value: apiKey }, error: secretError } = await supabase
+        .from('secrets')
+        .select('value')
+        .eq('name', 'QWEN_API_KEY')
+        .single();
+
+      if (secretError || !apiKey) {
+        throw new Error('API Key não encontrada');
       }
 
       const response = await fetch('https://api.qwen.ai/v1/chat/completions', {
@@ -67,16 +73,6 @@ const ChatPage = () => {
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
-
-    // Verificar se tem API key configurada
-    if (!apiKey) {
-      toast({
-        title: "API Key não configurada",
-        description: "Por favor, configure a API Key do Qwen nas configurações.",
-        variant: "destructive",
-      });
-      return;
-    }
 
     const userMessage: Message = {
       id: Date.now(),
@@ -125,16 +121,7 @@ const ChatPage = () => {
             Interaja com seus clientes através do chat automático alimentado por IA
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Input
-            type="password"
-            placeholder="Qwen API Key"
-            value={apiKey}
-            onChange={(e) => setApiKey(e.target.value)}
-            className="w-64"
-          />
-          <ShareOptions />
-        </div>
+        <ShareOptions />
       </div>
       
       <Card className="h-[calc(100vh-12rem)] flex flex-col">
