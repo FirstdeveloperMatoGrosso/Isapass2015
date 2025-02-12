@@ -3,12 +3,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Beer, Receipt, Wine, QrCode, Barcode, Upload, Building2 } from "lucide-react";
+import { Beer, Receipt, Wine, QrCode as QrCodeIcon, BarcodeIcon, Upload, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import QRCode from "qrcode.react";
-import Barcode from "react-barcode";
+import { QRCode } from "qrcode.react";
+import BarcodeGenerator from "react-barcode";
 import { useState } from "react";
 
 const BeverageTokensPage = () => {
@@ -264,7 +264,7 @@ const BeverageTokensPage = () => {
                   </div>
                   <div className="text-center">
                     <div className="w-auto h-20 bg-white rounded-lg flex items-center justify-center mb-2 px-2">
-                      <Barcode 
+                      <BarcodeGenerator 
                         value={securityCode}
                         height={60}
                         width={1.5}
