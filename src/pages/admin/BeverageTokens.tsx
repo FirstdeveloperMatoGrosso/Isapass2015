@@ -166,7 +166,8 @@ const BeverageTokensPage = () => {
         <TabsList>
           <TabsTrigger value="tokens">Configuração de Fichas</TabsTrigger>
           <TabsTrigger value="products">Produtos</TabsTrigger>
-          <TabsTrigger value="api">Documentação API</TabsTrigger>
+          <TabsTrigger value="api-tokens">API de Fichas</TabsTrigger>
+          <TabsTrigger value="api-tickets">API de Ingressos</TabsTrigger>
         </TabsList>
 
         <TabsContent value="products">
@@ -507,12 +508,12 @@ const BeverageTokensPage = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="api">
+        <TabsContent value="api-tokens">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Code2 className="h-5 w-5" />
-                Documentação da API
+                Documentação da API de Fichas
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -525,7 +526,7 @@ const BeverageTokensPage = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">API de Fichas</h3>
+                  <h3 className="text-lg font-semibold">Endpoints</h3>
                   <div className="space-y-6">
                     <div className="border-b pb-4">
                       <div className="flex items-center gap-2 mb-2">
@@ -563,7 +564,65 @@ const BeverageTokensPage = () => {
                     </div>
                   </div>
 
-                  <h3 className="text-lg font-semibold pt-6">API de Ingressos</h3>
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Exemplo de Resposta</h3>
+                    <div>
+                      <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
+                        {JSON.stringify(apiResponseExample, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">SDKs para Fichas</h3>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">Android SDK</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <pre className="bg-muted p-2 rounded-md text-sm">
+                            implementation &apos;com.isapass:tokens-sdk:1.0.0&apos;
+                          </pre>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">iOS SDK</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <pre className="bg-muted p-2 rounded-md text-sm">
+                            pod &apos;IsaPassTokens&apos;, &apos;~&gt; 1.0.0&apos;
+                          </pre>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="api-tickets">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Code2 className="h-5 w-5" />
+                Documentação da API de Ingressos
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Base URL</h3>
+                  <code className="bg-muted p-2 rounded-md block">
+                    https://api.isapass.com/v1
+                  </code>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold">Endpoints</h3>
                   <div className="space-y-6">
                     <div className="border-b pb-4">
                       <div className="flex items-center gap-2 mb-2">
@@ -642,22 +701,39 @@ const BeverageTokensPage = () => {
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Exemplos de Resposta</h3>
                   <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Exemplo de Resposta</h3>
                     <div>
-                      <p className="font-medium mb-2">Resposta da API de Fichas:</p>
-                      <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-                        {JSON.stringify(apiResponseExample, null, 2)}
-                      </pre>
-                    </div>
-                    <div>
-                      <p className="font-medium mb-2">Resposta da API de Ingressos:</p>
                       <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
                         {JSON.stringify(ticketApiExample, null, 2)}
                       </pre>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">SDKs para Ingressos</h3>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">Android SDK</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <pre className="bg-muted p-2 rounded-md text-sm">
+                            implementation &apos;com.isapass:tickets-sdk:1.0.0&apos;
+                          </pre>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-base">iOS SDK</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <pre className="bg-muted p-2 rounded-md text-sm">
+                            pod &apos;IsaPassTickets&apos;, &apos;~&gt; 1.0.0&apos;
+                          </pre>
+                        </CardContent>
+                      </Card>
                     </div>
                   </div>
                 </div>
@@ -682,32 +758,6 @@ const BeverageTokensPage = () => {
                     <li><span className="font-medium">404</span> - Não encontrado</li>
                     <li><span className="font-medium">500</span> - Erro interno do servidor</li>
                   </ul>
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">SDKs e Bibliotecas</h3>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-base">Android SDK</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <pre className="bg-muted p-2 rounded-md text-sm">
-                          implementation 'com.isapass:tokens-sdk:1.0.0'
-                        </pre>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-base">iOS SDK</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <pre className="bg-muted p-2 rounded-md text-sm">
-                          pod &apos;IsaPassTokens&apos;, &apos;~&gt; 1.0.0&apos;
-                        </pre>
-                      </CardContent>
-                    </Card>
-                  </div>
                 </div>
               </div>
             </CardContent>
