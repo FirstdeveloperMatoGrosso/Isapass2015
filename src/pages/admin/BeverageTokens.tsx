@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Beer, Receipt, Wine, QrCode as QrCodeIcon, BarcodeIcon, Upload, Building2, Coffee } from "lucide-react";
+import { Beer, Receipt, Wine, QrCode as QrCodeIcon, BarcodeIcon, Upload, Building2, Coffee, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -11,6 +11,7 @@ import BarcodeGenerator from "react-barcode";
 import { useState } from "react";
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
 interface Product {
   id: string;
