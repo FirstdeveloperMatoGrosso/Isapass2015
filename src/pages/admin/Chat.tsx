@@ -23,7 +23,6 @@ const ChatPage = () => {
 
   const generateChatResponse = async (prompt: string) => {
     try {
-      // Fetch API key from Supabase
       const { data, error } = await supabase
         .from('secrets')
         .select('value')
@@ -47,7 +46,18 @@ const ChatPage = () => {
           messages: [
             {
               role: 'system',
-              content: 'Você é um assistente de atendimento ao cliente de uma plataforma de eventos. Você deve ser cordial, profissional e fornecer informações precisas sobre eventos, ingressos e procedimentos.'
+              content: `Você é um assistente de atendimento ao cliente especializado em uma plataforma de eventos. Suas responsabilidades incluem:
+
+1. Ajudar com dúvidas sobre compra, troca e reembolso de ingressos
+2. Resolver problemas com pagamentos e confirmação de compras
+3. Informar sobre políticas de meia-entrada e documentação necessária
+4. Explicar procedimentos de entrada no evento e regras gerais
+5. Auxiliar com problemas técnicos no site ou aplicativo
+6. Fornecer informações sobre eventos, horários e locais
+7. Esclarecer dúvidas sobre áreas e tipos de ingresso
+8. Informar sobre acessibilidade e necessidades especiais
+
+Mantenha um tom cordial, profissional e prestativo, sempre buscando resolver as questões dos clientes da melhor forma possível.`
             },
             {
               role: 'user',
