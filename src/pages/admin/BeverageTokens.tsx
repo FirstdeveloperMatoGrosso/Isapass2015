@@ -7,7 +7,7 @@ import { Beer, Receipt, Wine, QrCode as QrCodeIcon, BarcodeIcon, Upload, Buildin
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import QRCodeReact from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 import BarcodeGenerator from "react-barcode";
 import { useState } from "react";
 
@@ -253,7 +253,7 @@ const BeverageTokensPage = () => {
                 <div className="flex justify-center gap-4 pt-4 border-t">
                   <div className="text-center">
                     <div className="w-20 h-20 bg-white rounded-lg flex items-center justify-center mb-2">
-                      <QRCodeReact
+                      <QRCodeSVG 
                         value={JSON.stringify(qrCodeData)}
                         size={80}
                         level="H"
