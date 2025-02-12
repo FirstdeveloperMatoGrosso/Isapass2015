@@ -93,7 +93,6 @@ const BeverageTokensPage = () => {
     toast.success("Produto removido com sucesso!");
   };
 
-  // Dados que serão codificados no QR Code
   const qrCodeData = {
     securityCode,
     nsu,
@@ -122,6 +121,33 @@ const BeverageTokensPage = () => {
       },
       qrCodeData: qrCodeData,
       status: "active"
+    }
+  };
+
+  const ticketApiExample = {
+    ticket: {
+      id: "TICKET_123456",
+      securityCode: "SEC789",
+      eventId: "EVENT_123",
+      eventTitle: "Show do Metallica",
+      eventDate: "2024-05-15",
+      eventTime: "20:00",
+      location: "Allianz Parque",
+      area: "Pista Premium",
+      price: 450.00,
+      buyerInfo: {
+        name: "João Silva",
+        cpf: "123.456.789-00",
+        email: "joao@email.com",
+        phone: "(11) 98765-4321"
+      },
+      status: "valid",
+      purchaseDate: "2024-03-15T14:30:00Z",
+      qrCodeData: {
+        ticketId: "TICKET_123456",
+        securityCode: "SEC789",
+        eventId: "EVENT_123"
+      }
     }
   };
 
@@ -499,10 +525,8 @@ const BeverageTokensPage = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Endpoints</h3>
-                  
+                  <h3 className="text-lg font-semibold">API de Fichas</h3>
                   <div className="space-y-6">
-                    {/* GET Token */}
                     <div className="border-b pb-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge>GET</Badge>
@@ -519,7 +543,6 @@ const BeverageTokensPage = () => {
                       </div>
                     </div>
 
-                    {/* POST Token Validation */}
                     <div className="border-b pb-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge>POST</Badge>
@@ -538,42 +561,82 @@ const BeverageTokensPage = () => {
                         </pre>
                       </div>
                     </div>
+                  </div>
 
-                    {/* GET Token Print */}
+                  <h3 className="text-lg font-semibold pt-6">API de Ingressos</h3>
+                  <div className="space-y-6">
                     <div className="border-b pb-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge>GET</Badge>
-                        <code>/tokens/:id/print</code>
+                        <code>/tickets/:id</code>
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">
-                        Retorna o HTML formatado para impressão da ficha
+                        Retorna os dados de um ingresso específico
                       </p>
                       <div className="space-y-2">
-                        <p className="text-sm font-medium">Query Parameters:</p>
+                        <p className="text-sm font-medium">Parâmetros:</p>
                         <ul className="list-disc list-inside text-sm text-muted-foreground">
-                          <li>format: "html" | "pdf" (opcional, default: "html")</li>
-                          <li>size: "80mm" | "a4" (opcional, default: "80mm")</li>
+                          <li>id: ID do ingresso (obrigatório)</li>
                         </ul>
                       </div>
                     </div>
 
-                    {/* POST Create Token */}
-                    <div className="pb-4">
+                    <div className="border-b pb-4">
                       <div className="flex items-center gap-2 mb-2">
                         <Badge>POST</Badge>
-                        <code>/tokens</code>
+                        <code>/tickets/validate</code>
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">
-                        Cria uma nova ficha
+                        Valida um ingresso através do QR Code ou código de barras
                       </p>
                       <div className="space-y-2">
                         <p className="text-sm font-medium">Body:</p>
                         <pre className="bg-muted p-2 rounded-md text-sm">
 {`{
-  "type": "string",
-  "value": number,
-  "validFor": "string",
-  "expirationDate": "string"
+  "ticketId": "string",
+  "securityCode": "string"
+}`}
+                        </pre>
+                      </div>
+                    </div>
+
+                    <div className="border-b pb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge>GET</Badge>
+                        <code>/tickets/:id/print</code>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Retorna o HTML formatado para impressão do ingresso
+                      </p>
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Query Parameters:</p>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground">
+                          <li>format: "html" | "pdf" (opcional, default: "html")</li>
+                          <li>size: "a4" | "thermal" (opcional, default: "a4")</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="pb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge>POST</Badge>
+                        <code>/tickets</code>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Cria um novo ingresso
+                      </p>
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Body:</p>
+                        <pre className="bg-muted p-2 rounded-md text-sm">
+{`{
+  "eventId": "string",
+  "area": "string",
+  "buyerInfo": {
+    "name": "string",
+    "cpf": "string",
+    "email": "string",
+    "phone": "string"
+  }
 }`}
                         </pre>
                       </div>
@@ -582,10 +645,21 @@ const BeverageTokensPage = () => {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold">Exemplo de Resposta</h3>
-                  <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-                    {JSON.stringify(apiResponseExample, null, 2)}
-                  </pre>
+                  <h3 className="text-lg font-semibold">Exemplos de Resposta</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="font-medium mb-2">Resposta da API de Fichas:</p>
+                      <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
+                        {JSON.stringify(apiResponseExample, null, 2)}
+                      </pre>
+                    </div>
+                    <div>
+                      <p className="font-medium mb-2">Resposta da API de Ingressos:</p>
+                      <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
+                        {JSON.stringify(ticketApiExample, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-4">
