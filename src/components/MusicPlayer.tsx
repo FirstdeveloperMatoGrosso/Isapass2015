@@ -68,38 +68,43 @@ export const MusicPlayer = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-4 bg-white/90 backdrop-blur-sm p-4 rounded-lg shadow-lg border w-72 animate-fade-in">
+    <div className="fixed bottom-0 left-0 right-0 md:bottom-4 md:right-4 md:left-auto md:w-72 bg-white/90 backdrop-blur-sm p-3 md:p-4 rounded-none md:rounded-lg shadow-lg border animate-fade-in">
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between mb-2">
-          <div className="flex flex-col">
-            <span className="text-sm font-medium">
+          <div className="flex flex-col max-w-[70%] md:max-w-full">
+            <span className="text-sm font-medium truncate">
               {currentMusic?.title || "Nenhuma música"}
             </span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 truncate">
               {currentMusic?.artist || ""}
             </span>
           </div>
-          <Volume2 className="h-4 w-4" />
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <Slider
-            value={volume}
-            onValueChange={handleVolumeChange}
-            max={100}
-            step={1}
-            className="w-24"
-          />
+          <div className="flex items-center gap-2">
+            <Volume2 className="h-4 w-4" />
+            <Slider
+              value={volume}
+              onValueChange={handleVolumeChange}
+              max={100}
+              step={1}
+              className="w-20 md:w-24"
+            />
+          </div>
         </div>
 
-        <div className="flex items-center justify-center gap-2 mt-2">
-          <Button variant="ghost" size="icon" onClick={handlePrevious}>
+        <div className="flex items-center justify-center gap-1 md:gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handlePrevious}
+            className="h-8 w-8 md:h-9 md:w-9"
+          >
             <SkipBack className="h-4 w-4" />
           </Button>
           <Button 
             variant="default" 
             size="icon"
             onClick={handlePlayPause}
+            className="h-8 w-8 md:h-9 md:w-9"
           >
             {isPlaying ? (
               <Pause className="h-4 w-4" />
@@ -107,7 +112,12 @@ export const MusicPlayer = () => {
               <Play className="h-4 w-4" />
             )}
           </Button>
-          <Button variant="ghost" size="icon" onClick={handleNext}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleNext}
+            className="h-8 w-8 md:h-9 md:w-9"
+          >
             <SkipForward className="h-4 w-4" />
           </Button>
         </div>
