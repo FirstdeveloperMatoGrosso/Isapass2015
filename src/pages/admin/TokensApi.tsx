@@ -93,6 +93,47 @@ const TokensApiPage = () => {
               <li>GET /tokens/:id - Obtém detalhes de uma ficha</li>
               <li>PUT /tokens/:id - Atualiza uma ficha</li>
               <li>DELETE /tokens/:id - Remove uma ficha</li>
+              <li>POST /tokens/:id/redeem - Resgata uma ficha</li>
+              <li>GET /tokens/balance - Obtém saldo de fichas</li>
+              <li>POST /tokens/transfer - Transfere fichas entre usuários</li>
+            </ul>
+          </div>
+
+          <div className="space-y-2 mt-4">
+            <h3 className="font-semibold">Exemplo de Requisição:</h3>
+            <pre className="bg-muted p-4 rounded-lg text-xs">
+{`// Criar nova ficha
+fetch('https://api.exemplo.com/v1/tokens', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer sua-chave-api',
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    userId: '123',
+    amount: 50,
+    type: 'consumable'
+  })
+});
+
+// Resgatar uma ficha
+fetch('https://api.exemplo.com/v1/tokens/456/redeem', {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer sua-chave-api',
+    'Content-Type': 'application/json'
+  }
+});`}
+            </pre>
+          </div>
+
+          <div className="space-y-2 mt-4">
+            <h3 className="font-semibold">Tipos de Fichas:</h3>
+            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+              <li>Consumível - Pode ser gasta em produtos/serviços</li>
+              <li>Promocional - Fichas com tempo limitado de uso</li>
+              <li>Premium - Fichas especiais com benefícios exclusivos</li>
+              <li>Colecionável - Fichas únicas não consumíveis</li>
             </ul>
           </div>
         </CardContent>
