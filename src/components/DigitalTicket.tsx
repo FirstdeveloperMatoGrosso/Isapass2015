@@ -48,88 +48,90 @@ export const DigitalTicket = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Card className="w-full max-w-2xl mx-auto bg-white hover:bg-gray-50 cursor-pointer transition-colors">
-          <CardContent className="p-6 space-y-6">
-            <div className="text-center border-b pb-4">
-              <h2 className="text-2xl font-bold">{eventTitle}</h2>
-              <p className="text-muted-foreground">Ingresso Digital</p>
+        <Card className="w-[204px] mx-auto bg-white hover:bg-gray-50 cursor-pointer transition-colors">
+          <CardContent className="p-2 space-y-2">
+            <div className="text-center border-b pb-2">
+              <h2 className="text-base font-bold">{eventTitle}</h2>
+              <p className="text-xs text-muted-foreground">Ingresso Digital</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="font-semibold">Data:</p>
-                <p>{eventDate}</p>
+            <div className="space-y-1 text-xs">
+              <div className="flex justify-between">
+                <span className="font-semibold">Data:</span>
+                <span>{eventDate}</span>
               </div>
-              <div>
-                <p className="font-semibold">Hora:</p>
-                <p>{eventTime}</p>
+              <div className="flex justify-between">
+                <span className="font-semibold">Hora:</span>
+                <span>{eventTime}</span>
               </div>
-              <div>
-                <p className="font-semibold">Local:</p>
-                <p>{location}</p>
+              <div className="flex justify-between">
+                <span className="font-semibold">Local:</span>
+                <span>{location}</span>
               </div>
-              <div>
-                <p className="font-semibold">Área:</p>
-                <p>{area}</p>
-              </div>
-            </div>
-
-            <div className="border-t pt-4">
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <p className="font-semibold">Nome:</p>
-                  <p>{buyerName}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">CPF:</p>
-                  <p>{buyerCpf}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Telefone:</p>
-                  <p>{buyerPhone || "Não informado"}</p>
-                </div>
+              <div className="flex justify-between">
+                <span className="font-semibold">Área:</span>
+                <span>{area}</span>
               </div>
             </div>
 
-            <div className="border-t pt-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="font-semibold">ID do Ingresso:</p>
-                  <p>{ticketId}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Código de Segurança:</p>
-                  <p>{securityCode}</p>
-                </div>
-                <div>
-                  <p className="font-semibold">Data da Compra:</p>
-                  <p>{purchaseDate}</p>
-                </div>
+            <div className="border-t pt-2 space-y-1 text-xs">
+              <div>
+                <span className="font-semibold">Nome: </span>
+                <span>{buyerName}</span>
+              </div>
+              <div>
+                <span className="font-semibold">CPF: </span>
+                <span>{buyerCpf}</span>
+              </div>
+              <div>
+                <span className="font-semibold">Tel: </span>
+                <span>{buyerPhone || "Não informado"}</span>
               </div>
             </div>
 
-            <div className="flex justify-center gap-8 pt-4">
+            <div className="border-t pt-2 space-y-1 text-xs">
+              <div>
+                <span className="font-semibold">ID: </span>
+                <span>{ticketId}</span>
+              </div>
+              <div>
+                <span className="font-semibold">Código: </span>
+                <span>{securityCode}</span>
+              </div>
+              <div>
+                <span className="font-semibold">Compra: </span>
+                <span>{purchaseDate}</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center gap-2 pt-2">
               <div className="text-center">
                 <QRCodeSVG 
                   value={qrCodeValue}
-                  size={128}
+                  size={180}
                   level="H"
                   className="mx-auto"
                 />
-                <p className="text-sm text-muted-foreground mt-2">QR Code</p>
+                <p className="text-xs text-muted-foreground mt-1">QR Code</p>
               </div>
-              <div className="text-center mx-auto">
-                <div className="mx-auto">
+              <div className="text-center w-full">
+                <div className="mx-auto flex justify-center">
                   <Barcode 
                     value={barcodeValue}
-                    width={1.5}
+                    width={1}
                     height={40}
-                    fontSize={12}
+                    fontSize={10}
                     margin={0}
+                    displayValue={false}
                   />
                 </div>
-                <p className="text-sm text-muted-foreground mt-2">Código de Barras</p>
+                <p className="text-xs text-muted-foreground mt-1">Código de Barras</p>
               </div>
+            </div>
+
+            <div className="text-[8px] text-center text-muted-foreground border-t pt-2">
+              Este ingresso é pessoal e intransferível.
+              Apresente este QR Code na entrada do evento.
             </div>
           </CardContent>
         </Card>
