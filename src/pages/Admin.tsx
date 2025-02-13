@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
@@ -14,7 +14,7 @@ const AdminPanel = () => {
   useEffect(() => {
     // Só redireciona para /admin/dashboard se estiver exatamente em /admin
     if (location.pathname === '/admin') {
-      navigate('/admin/dashboard');
+      navigate('/admin/dashboard', { replace: true });
     }
   }, [navigate, location]);
 

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { BarChart3, Calendar, CreditCard, LayoutDashboard, MessageSquare, Settings, Users, ChevronLeft, ImageIcon, Link2, Printer, Beer, Code2, Music } from "lucide-react";
@@ -13,6 +13,7 @@ interface AdminSidebarProps {
 
 export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps) => {
   const { toast } = useToast();
+  const location = useLocation();
   
   const menuItems = [
     { title: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
@@ -65,12 +66,15 @@ export const AdminSidebar = ({ isCollapsed, setIsCollapsed }: AdminSidebarProps)
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link 
-                      to={item.path} 
-                      className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent transition-all duration-200 group"
+                      to={item.path}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent transition-all duration-200 group ${
+                        location.pathname === item.path ? 'bg-accent' : ''
+                      }`}
                       onClick={() => {
                         toast({
                           title: `Navegando para ${item.title}`,
                           description: "Carregando página...",
+                          duration: 1500,
                         });
                       }}
                     >
