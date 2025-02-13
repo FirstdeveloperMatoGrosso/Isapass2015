@@ -50,15 +50,15 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <React.StrictMode>
         <TooltipProvider>
           <Toaster />
           <Sonner />
           <RouterProvider router={router} />
         </TooltipProvider>
-      </QueryClientProvider>
-    </React.StrictMode>
+      </React.StrictMode>
+    </QueryClientProvider>
   );
 }
 
