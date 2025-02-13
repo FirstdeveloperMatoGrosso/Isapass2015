@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -123,17 +124,25 @@ const SettingsPage = () => {
             </TabsContent>
 
             <TabsContent value="pagarme" className="space-y-4">
-              <div className="space-y-2">
-                <Label>API Key</Label>
-                <Input type="password" placeholder="ak_test_00000000000000000000000000000000" />
+              <div className="space-y-1">
+                <Label>Chave da API</Label>
+                <Input 
+                  type="password" 
+                  placeholder="sk_test_..." 
+                />
+                <p className="text-xs text-muted-foreground">
+                  Chave secreta utilizada para integração com a API do Pagar.me
+                </p>
               </div>
-              <div className="space-y-2">
-                <Label>Chave de Criptografia</Label>
-                <Input type="password" placeholder="ek_test_00000000000000000000000000000000" />
-              </div>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <Label>Chave Pública</Label>
-                <Input type="password" placeholder="pk_test_00000000000000000000000000000000" />
+                <Input 
+                  type="text" 
+                  placeholder="pk_test_..." 
+                />
+                <p className="text-xs text-muted-foreground">
+                  Chave pública utilizada para testes na API
+                </p>
               </div>
               <div className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
