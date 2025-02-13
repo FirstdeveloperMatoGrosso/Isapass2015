@@ -39,8 +39,14 @@ const router = createBrowserRouter([
     element: <Dashboard />,
   },
   {
-    path: "/admin/*",
+    path: "/admin",
     element: <AdminPanel />,
+    children: [
+      {
+        path: "*",
+        element: <AdminPanel />
+      }
+    ]
   },
   {
     path: "*",
@@ -51,13 +57,13 @@ const router = createBrowserRouter([
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <React.StrictMode>
-        <TooltipProvider>
+      <TooltipProvider>
+        <React.StrictMode>
           <Toaster />
           <Sonner />
           <RouterProvider router={router} />
-        </TooltipProvider>
-      </React.StrictMode>
+        </React.StrictMode>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }
