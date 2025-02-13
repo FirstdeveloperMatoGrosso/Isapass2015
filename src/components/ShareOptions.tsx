@@ -40,15 +40,12 @@ export const ShareOptions = ({ data = [], title = 'Relatório' }: ShareOptionsPr
         const body = encodeURIComponent(`Confira este conteúdo: ${window.location.href}`);
         window.location.href = `mailto:?subject=${subject}&body=${body}`;
       }
-
-      // Adicionando toast de sucesso
+      
       toast({
         title: "Compartilhado com sucesso!",
         description: `Conteúdo compartilhado via ${method}`,
       });
     } catch (error) {
-      console.error('Erro ao compartilhar:', error);
-      // Adicionando toast de erro
       toast({
         title: "Erro ao compartilhar",
         description: "Não foi possível compartilhar o conteúdo",
@@ -90,13 +87,17 @@ export const ShareOptions = ({ data = [], title = 'Relatório' }: ShareOptionsPr
       // Adiciona os dados
       if (data && data.length > 0) {
         const headers = Object.keys(data[0]);
+        
+        // Configura as colunas
         let yPosition = startY + 20;
         const margin = 20;
         
+        // Adiciona cabeçalho da tabela
         doc.setFontSize(12);
         doc.setFont('helvetica', 'normal');
         doc.text(headers.join(' | '), margin, yPosition);
         
+        // Adiciona linhas de dados
         data.forEach((row) => {
           yPosition += 10;
           const rowData = headers.map(header => String(row[header]));
@@ -104,16 +105,14 @@ export const ShareOptions = ({ data = [], title = 'Relatório' }: ShareOptionsPr
         });
       }
       
+      // Salva o PDF
       doc.save(`${title}.pdf`);
       
-      // Adicionando toast de sucesso
       toast({
         title: "Download concluído",
         description: "PDF baixado com sucesso",
       });
     } catch (error) {
-      console.error('Erro ao gerar PDF:', error);
-      // Adicionando toast de erro
       toast({
         title: "Erro ao baixar",
         description: "Não foi possível gerar o arquivo PDF",
@@ -124,42 +123,48 @@ export const ShareOptions = ({ data = [], title = 'Relatório' }: ShareOptionsPr
 
   const handleDownloadExcel = () => {
     try {
-      if (!data || data.length === 0) {
+      if (data && data.length > 0) {
+        // Cria uma nova planilha
+        const wb = XLSX.utils.book_new();
+        
+        // Adiciona as informações da empresa no topo
+        const headerData = [
+          [COMPANY_INFO.name],
+          [`Email: ${COMPANY_INFO.email}`],
+          [`Telefone: ${COMPANY_INFO.phone}`],
+          [`Website: ${COMPANY_INFO.website}`],
+          [], // Linha em branco para separação
+          [title],
+          [], // Linha em branco para separação
+        ];
+        
+        // Converte os dados para o formato do Excel
+        const ws = XLSX.utils.json_to_sheet(data);
+        
+        // Adiciona o cabeçalho antes dos dados
+        XLSX.utils.sheet_add_aoa(ws, headerData, { origin: 'A1' });
+        
+        // Ajusta a largura das colunas
+        const maxWidth = Math.max(...headerData.map(row => row[0]?.length || 0));
+        ws['!cols'] = [{ wch: maxWidth }];
+        
+        // Adiciona a planilha ao workbook
+        XLSX.utils.book_append_sheet(wb, ws, "Dados");
+        
+        // Salva o arquivo
+        XLSX.writeFile(wb, `${title}.xlsx`);
+        
+        toast({
+          title: "Download concluído",
+          description: "Excel baixado com sucesso",
+        });
+      } else {
         throw new Error("Sem dados para exportar");
       }
-
-      const wb = XLSX.utils.book_new();
-      
-      const headerData = [
-        [COMPANY_INFO.name],
-        [`Email: ${COMPANY_INFO.email}`],
-        [`Telefone: ${COMPANY_INFO.phone}`],
-        [`Website: ${COMPANY_INFO.website}`],
-        [], // Linha em branco para separação
-        [title],
-        [], // Linha em branco para separação
-      ];
-      
-      const ws = XLSX.utils.json_to_sheet(data);
-      XLSX.utils.sheet_add_aoa(ws, headerData, { origin: 'A1' });
-      
-      const maxWidth = Math.max(...headerData.map(row => row[0]?.length || 0));
-      ws['!cols'] = [{ wch: maxWidth }];
-      
-      XLSX.utils.book_append_sheet(wb, ws, "Dados");
-      XLSX.writeFile(wb, `${title}.xlsx`);
-      
-      // Adicionando toast de sucesso
-      toast({
-        title: "Download concluído",
-        description: "Excel baixado com sucesso",
-      });
     } catch (error) {
-      console.error('Erro ao gerar Excel:', error);
-      // Adicionando toast de erro
       toast({
         title: "Erro ao baixar",
-        description: error instanceof Error ? error.message : "Não foi possível gerar o arquivo Excel",
+        description: "Não foi possível gerar o arquivo Excel",
         variant: "destructive",
       });
     }

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,7 +9,6 @@ import { toast } from "sonner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Share2, Mail, MessageCircle } from "lucide-react";
 import { DigitalTicket } from "@/components/DigitalTicket";
-import CustomerChat from "@/components/CustomerChat";
 
 const Dashboard = () => {
   const [userData, setUserData] = useState<any>(null);
@@ -99,7 +99,6 @@ const Dashboard = () => {
           <TabsList>
             <TabsTrigger value="profile">Perfil</TabsTrigger>
             <TabsTrigger value="purchases">Compras</TabsTrigger>
-            <TabsTrigger value="chat">Chat</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile">
@@ -214,10 +213,6 @@ const Dashboard = () => {
                 ))}
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="chat">
-            <CustomerChat />
           </TabsContent>
         </Tabs>
       </main>
