@@ -8,10 +8,81 @@ import { ShareOptions } from "@/components/ShareOptions";
 import { CreditCard, QrCode, Receipt } from "lucide-react";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useEffect } from "react";
+
+interface PaymentConfig {
+  stone: {
+    clientId: string;
+    clientSecret: string;
+    acceptCredit: boolean;
+    acceptBoleto: boolean;
+    acceptPix: boolean;
+  };
+  mercadopago: {
+    accessToken: string;
+    publicKey: string;
+    acceptCredit: boolean;
+    acceptBoleto: boolean;
+    acceptPix: boolean;
+  };
+  pagarme: {
+    apiKey: string;
+    publicKey: string;
+    acceptCredit: boolean;
+    acceptBoleto: boolean;
+    acceptPix: boolean;
+  };
+}
 
 const SettingsPage = () => {
+  const [paymentConfig, setPaymentConfig] = useState<PaymentConfig>({
+    stone: {
+      clientId: '',
+      clientSecret: '',
+      acceptCredit: false,
+      acceptBoleto: false,
+      acceptPix: false
+    },
+    mercadopago: {
+      accessToken: '',
+      publicKey: '',
+      acceptCredit: false,
+      acceptBoleto: false,
+      acceptPix: false
+    },
+    pagarme: {
+      apiKey: '',
+      publicKey: '',
+      acceptCredit: false,
+      acceptBoleto: false,
+      acceptPix: false
+    }
+  });
+
+  useEffect(() => {
+    const savedConfig = localStorage.getItem('paymentConfig');
+    if (savedConfig) {
+      setPaymentConfig(JSON.parse(savedConfig));
+    }
+  }, []);
+
   const handleSavePaymentSettings = () => {
+    localStorage.setItem('paymentConfig', JSON.stringify(paymentConfig));
     toast.success("Configurações de pagamento salvas com sucesso!");
+  };
+
+  const handleChangePaymentConfig = (
+    gateway: keyof PaymentConfig,
+    field: string,
+    value: string | boolean
+  ) => {
+    setPaymentConfig(prev => ({
+      ...prev,
+      [gateway]: {
+        ...prev[gateway],
+        [field]: value
+      }
+    }));
   };
 
   return (
@@ -74,52 +145,90 @@ const SettingsPage = () => {
             <TabsContent value="stone" className="space-y-4">
               <div className="space-y-2">
                 <Label>Stone Client ID</Label>
-                <Input type="password" placeholder="•••••••••••••••••" />
+                <Input 
+                  type="password" 
+                  placeholder="•••••••••••••••••"
+                  value={paymentConfig.stone.clientId}
+                  onChange={(e) => handleChangePaymentConfig('stone', 'clientId', e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Stone Client Secret</Label>
-                <Input type="password" placeholder="•••••••••••••••••" />
+                <Input 
+                  type="password" 
+                  placeholder="•••••••••••••••••"
+                  value={paymentConfig.stone.clientSecret}
+                  onChange={(e) => handleChangePaymentConfig('stone', 'clientSecret', e.target.value)}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 <Label>Aceitar Cartão de Crédito</Label>
-                <Switch />
+                <Switch 
+                  checked={paymentConfig.stone.acceptCredit}
+                  onCheckedChange={(checked) => handleChangePaymentConfig('stone', 'acceptCredit', checked)}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <Receipt className="h-4 w-4" />
                 <Label>Aceitar Boleto</Label>
-                <Switch />
+                <Switch 
+                  checked={paymentConfig.stone.acceptBoleto}
+                  onCheckedChange={(checked) => handleChangePaymentConfig('stone', 'acceptBoleto', checked)}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <QrCode className="h-4 w-4" />
                 <Label>Aceitar PIX</Label>
-                <Switch />
+                <Switch 
+                  checked={paymentConfig.stone.acceptPix}
+                  onCheckedChange={(checked) => handleChangePaymentConfig('stone', 'acceptPix', checked)}
+                />
               </div>
             </TabsContent>
 
             <TabsContent value="mercadopago" className="space-y-4">
               <div className="space-y-2">
                 <Label>Access Token</Label>
-                <Input type="password" placeholder="TEST-0000000000000000-000000-000000000000000000000000" />
+                <Input 
+                  type="password" 
+                  placeholder="TEST-0000000000000000-000000-000000000000000000000000"
+                  value={paymentConfig.mercadopago.accessToken}
+                  onChange={(e) => handleChangePaymentConfig('mercadopago', 'accessToken', e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <Label>Public Key</Label>
-                <Input type="password" placeholder="TEST-0000000-0000000000000" />
+                <Input 
+                  type="password" 
+                  placeholder="TEST-0000000-0000000000000"
+                  value={paymentConfig.mercadopago.publicKey}
+                  onChange={(e) => handleChangePaymentConfig('mercadopago', 'publicKey', e.target.value)}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 <Label>Aceitar Cartão de Crédito</Label>
-                <Switch />
+                <Switch 
+                  checked={paymentConfig.mercadopago.acceptCredit}
+                  onCheckedChange={(checked) => handleChangePaymentConfig('mercadopago', 'acceptCredit', checked)}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <Receipt className="h-4 w-4" />
                 <Label>Aceitar Boleto</Label>
-                <Switch />
+                <Switch 
+                  checked={paymentConfig.mercadopago.acceptBoleto}
+                  onCheckedChange={(checked) => handleChangePaymentConfig('mercadopago', 'acceptBoleto', checked)}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <QrCode className="h-4 w-4" />
                 <Label>Aceitar PIX</Label>
-                <Switch />
+                <Switch 
+                  checked={paymentConfig.mercadopago.acceptPix}
+                  onCheckedChange={(checked) => handleChangePaymentConfig('mercadopago', 'acceptPix', checked)}
+                />
               </div>
             </TabsContent>
 
@@ -129,6 +238,8 @@ const SettingsPage = () => {
                 <Input 
                   type="password" 
                   placeholder="sk_test_..." 
+                  value={paymentConfig.pagarme.apiKey}
+                  onChange={(e) => handleChangePaymentConfig('pagarme', 'apiKey', e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
                   Chave secreta utilizada para integração com a API do Pagar.me
@@ -139,6 +250,8 @@ const SettingsPage = () => {
                 <Input 
                   type="text" 
                   placeholder="pk_test_..." 
+                  value={paymentConfig.pagarme.publicKey}
+                  onChange={(e) => handleChangePaymentConfig('pagarme', 'publicKey', e.target.value)}
                 />
                 <p className="text-xs text-muted-foreground">
                   Chave pública utilizada para testes na API
@@ -147,17 +260,26 @@ const SettingsPage = () => {
               <div className="flex items-center gap-2">
                 <CreditCard className="h-4 w-4" />
                 <Label>Aceitar Cartão de Crédito</Label>
-                <Switch />
+                <Switch 
+                  checked={paymentConfig.pagarme.acceptCredit}
+                  onCheckedChange={(checked) => handleChangePaymentConfig('pagarme', 'acceptCredit', checked)}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <Receipt className="h-4 w-4" />
                 <Label>Aceitar Boleto</Label>
-                <Switch />
+                <Switch 
+                  checked={paymentConfig.pagarme.acceptBoleto}
+                  onCheckedChange={(checked) => handleChangePaymentConfig('pagarme', 'acceptBoleto', checked)}
+                />
               </div>
               <div className="flex items-center gap-2">
                 <QrCode className="h-4 w-4" />
                 <Label>Aceitar PIX</Label>
-                <Switch />
+                <Switch 
+                  checked={paymentConfig.pagarme.acceptPix}
+                  onCheckedChange={(checked) => handleChangePaymentConfig('pagarme', 'acceptPix', checked)}
+                />
               </div>
             </TabsContent>
           </Tabs>
