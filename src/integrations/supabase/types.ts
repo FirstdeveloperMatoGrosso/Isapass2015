@@ -54,6 +54,54 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_settings: {
+        Row: {
+          accept_boleto: boolean | null
+          accept_credit_card: boolean | null
+          accept_pix: boolean | null
+          access_token: string | null
+          api_key: string | null
+          client_id: string | null
+          client_secret: string | null
+          created_at: string
+          encryption_key: string | null
+          gateway: string
+          id: string
+          public_key: string | null
+          updated_at: string
+        }
+        Insert: {
+          accept_boleto?: boolean | null
+          accept_credit_card?: boolean | null
+          accept_pix?: boolean | null
+          access_token?: string | null
+          api_key?: string | null
+          client_id?: string | null
+          client_secret?: string | null
+          created_at?: string
+          encryption_key?: string | null
+          gateway: string
+          id?: string
+          public_key?: string | null
+          updated_at?: string
+        }
+        Update: {
+          accept_boleto?: boolean | null
+          accept_credit_card?: boolean | null
+          accept_pix?: boolean | null
+          access_token?: string | null
+          api_key?: string | null
+          client_id?: string | null
+          client_secret?: string | null
+          created_at?: string
+          encryption_key?: string | null
+          gateway?: string
+          id?: string
+          public_key?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       sales: {
         Row: {
           amount: number
