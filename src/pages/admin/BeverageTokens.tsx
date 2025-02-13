@@ -441,65 +441,60 @@ const BeverageTokensPage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="border rounded-lg p-6 bg-white">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4 border-b pb-4">
-                    <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-                      <Upload className="h-6 w-6 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold">Nome do Evento/Empresa</h3>
-                      <p className="text-sm text-muted-foreground">CNPJ: 00.000.000/0000-00</p>
-                      <p className="text-sm text-muted-foreground">Endereço Completo, Cidade - UF</p>
-                    </div>
+              {/* Nova prévia no formato 54mm */}
+              <div className="w-[204px] mx-auto border rounded-none bg-white p-2 text-[10px] leading-tight space-y-2">
+                <div className="text-center border-b pb-2">
+                  <div className="w-12 h-12 mx-auto bg-muted rounded-lg flex items-center justify-center mb-1">
+                    <Upload className="h-4 w-4 text-muted-foreground" />
                   </div>
+                  <p className="font-bold text-[12px]">Nome do Evento/Empresa</p>
+                  <p>CNPJ: 00.000.000/0000-00</p>
+                  <p className="text-[9px]">Endereço Completo, Cidade - UF</p>
+                </div>
 
-                  <div className="space-y-2 text-center">
-                    <h4 className="font-bold text-xl">FICHA DE CONSUMAÇÃO</h4>
-                    <div className="text-2xl font-bold text-primary">R$ 10,00</div>
-                    <p className="text-sm">Válida para todas as bebidas</p>
-                    <div className="text-xs text-muted-foreground space-y-1">
-                      <p>NSU: {nsu}</p>
-                      <p>Data: {formattedDate}</p>
-                      <p>Hora: {formattedTime}</p>
-                    </div>
-                  </div>
+                <div className="text-center space-y-1 py-1">
+                  <p className="font-bold text-[12px]">FICHA DE CONSUMAÇÃO</p>
+                  <p className="font-bold text-[14px]">R$ 10,00</p>
+                  <p>Válida para todas as bebidas</p>
+                </div>
 
-                  <div className="flex justify-center gap-4 pt-4 border-t">
-                    <div className="text-center">
-                      <div className="w-20 h-20 bg-white rounded-lg flex items-center justify-center mb-2">
-                        <QRCodeSVG 
-                          value={JSON.stringify(qrCodeData)}
-                          size={80}
-                          level="H"
-                          includeMargin={true}
-                        />
-                      </div>
-                      <span className="text-xs text-muted-foreground">QR Code</span>
-                    </div>
-                    <div className="text-center">
-                      <div className="w-auto h-20 bg-white rounded-lg flex items-center justify-center mb-2 px-2">
-                        <BarcodeGenerator 
-                          value={securityCode}
-                          height={60}
-                          width={1.5}
-                          fontSize={12}
-                          margin={0}
-                        />
-                      </div>
-                      <span className="text-xs text-muted-foreground">Código de Segurança: {securityCode}</span>
-                    </div>
-                  </div>
+                <div className="text-center space-y-0.5 text-[9px]">
+                  <p>NSU: {nsu}</p>
+                  <p>Data: {formattedDate}</p>
+                  <p>Hora: {formattedTime}</p>
+                </div>
 
-                  <div className="text-center text-xs text-muted-foreground pt-4 border-t">
-                    <p>Venda e consumo proibidos para menores de 18 anos</p>
-                    <p>Válido até: 31/12/2024</p>
+                <div className="flex flex-col items-center gap-2 pt-2 border-t">
+                  <div>
+                    <QRCodeSVG 
+                      value={JSON.stringify(qrCodeData)}
+                      size={120}
+                      level="H"
+                      includeMargin={false}
+                    />
+                    <p className="text-center text-[9px] mt-1">QR Code</p>
                   </div>
+                  <div>
+                    <BarcodeGenerator 
+                      value={securityCode}
+                      height={40}
+                      width={1}
+                      fontSize={8}
+                      margin={0}
+                      textMargin={2}
+                    />
+                    <p className="text-center text-[9px] mt-1">Código: {securityCode}</p>
+                  </div>
+                </div>
+
+                <div className="text-center border-t pt-2 mt-2">
+                  <p className="text-[8px]">Venda e consumo proibidos para menores de 18 anos</p>
+                  <p className="text-[8px]">Válido até: 31/12/2024</p>
                 </div>
               </div>
 
               <div className="mt-4 text-sm text-muted-foreground text-center">
-                Esta é uma prévia de como sua ficha ficará após a impressão.
+                Esta é uma prévia da ficha no formato 54mm para impressora térmica.
                 As informações serão atualizadas conforme você fizer alterações nas configurações acima.
               </div>
             </CardContent>
