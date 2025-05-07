@@ -2,6 +2,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/masked-input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -113,15 +114,15 @@ const Login = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                   />
-                  <Input 
-                    type="text" 
+                  <MaskedInput 
+                    mask="999.999.999-99"
                     placeholder="CPF" 
                     name="cpf"
                     value={formData.cpf}
                     onChange={handleInputChange}
                   />
-                  <Input 
-                    type="tel" 
+                  <MaskedInput 
+                    mask="(99) 99999-9999"
                     placeholder="Telefone" 
                     name="phone"
                     value={formData.phone}
@@ -159,7 +160,7 @@ const Login = () => {
                   onChange={handleInputChange}
                 />
               )}
-              <Button type="submit" variant="default" className="w-full">
+              <Button type="submit" variant="default" className="w-full bg-purple-500 hover:bg-purple-600">
                 {isLogin ? "Entrar" : "Cadastrar"}
               </Button>
             </form>

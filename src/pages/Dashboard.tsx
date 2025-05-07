@@ -5,16 +5,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { MaskedInput } from "@/components/ui/masked-input";
 import { toast } from "sonner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Share2, Mail, MessageCircle, Upload } from "lucide-react";
+import { Share2, Mail, MessageCircle, Upload, UserRound, Phone, MapPin } from "lucide-react";
 import { DigitalTicket } from "@/components/DigitalTicket";
 import { UserCredential } from "@/components/UserCredential";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [userData, setUserData] = useState<any>(null);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [purchases, setPurchases] = useState<any[]>([]);
@@ -254,10 +257,10 @@ const Dashboard = () => {
         <h1 className="text-3xl font-bold mb-8">Minha Conta</h1>
         
         <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="profile">Perfil</TabsTrigger>
-            <TabsTrigger value="purchases">Compras</TabsTrigger>
-            <TabsTrigger value="credential">Credencial</TabsTrigger>
+          <TabsList className="w-full sm:w-auto flex">
+            <TabsTrigger value="profile" className="flex-1 sm:flex-initial">Perfil</TabsTrigger>
+            <TabsTrigger value="purchases" className="flex-1 sm:flex-initial">Compras</TabsTrigger>
+            <TabsTrigger value="credential" className="flex-1 sm:flex-initial">Credencial</TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile">
@@ -293,39 +296,70 @@ const Dashboard = () => {
                       </div>
                     </div>
                     
-                    <Input
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder="Nome completo"
-                    />
-                    <Input
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder="Email"
-                    />
-                    <Input
-                      name="cpf"
-                      value={formData.cpf}
-                      onChange={handleInputChange}
-                      placeholder="CPF"
-                    />
-                    <Input
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="Telefone"
-                    />
-                    <Input
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      placeholder="Endereço"
-                    />
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="flex items-center gap-2">
+                        <UserRound className="text-muted-foreground h-5 w-5 flex-shrink-0" />
+                        <Input
+                          name="name"
+                          value={formData.name}
+                          onChange={handleInputChange}
+                          placeholder="Nome completo"
+                          className="flex-grow"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <Mail className="text-muted-foreground h-5 w-5 flex-shrink-0" />
+                        <Input
+                          name="email"
+                          type="email"
+                          value={formData.email}
+                          onChange={handleInputChange}
+                          placeholder="Email"
+                          className="flex-grow"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <UserRound className="text-muted-foreground h-5 w-5 flex-shrink-0" />
+                        <MaskedInput
+                          name="cpf"
+                          mask="999.999.999-99"
+                          value={formData.cpf}
+                          onChange={handleInputChange}
+                          placeholder="CPF"
+                          className="flex-grow"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <Phone className="text-muted-foreground h-5 w-5 flex-shrink-0" />
+                        <MaskedInput
+                          name="phone"
+                          mask="(99) 99999-9999"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          placeholder="Telefone"
+                          className="flex-grow"
+                        />
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <MapPin className="text-muted-foreground h-5 w-5 flex-shrink-0" />
+                        <Input
+                          name="address"
+                          value={formData.address}
+                          onChange={handleInputChange}
+                          placeholder="Endereço"
+                          className="flex-grow"
+                        />
+                      </div>
+                    </div>
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Input
+                      <MaskedInput
                         name="zip_code"
+                        mask="99999-999"
                         value={formData.zip_code}
                         onChange={handleInputChange}
                         placeholder="CEP"
@@ -337,6 +371,7 @@ const Dashboard = () => {
                         placeholder="Bairro"
                       />
                     </div>
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Input
                         name="state"
@@ -351,30 +386,92 @@ const Dashboard = () => {
                         placeholder="PIX"
                       />
                     </div>
-                    <div className="flex gap-4">
-                      <Button onClick={handleSaveProfile}>Salvar</Button>
-                      <Button variant="outline" onClick={() => setEditMode(false)}>Cancelar</Button>
+                    
+                    <div className="flex flex-col xs:flex-row gap-4 pt-4">
+                      <Button onClick={handleSaveProfile} className="w-full xs:w-auto bg-purple-500 hover:bg-purple-600">
+                        Salvar
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setEditMode(false)}
+                        className="w-full xs:w-auto"
+                      >
+                        Cancelar
+                      </Button>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {userProfile?.photo_url && (
-                      <div className="flex justify-center mb-6">
-                        <div className="w-32 h-32 rounded-full overflow-hidden">
+                    <div className="flex flex-col items-center mb-6">
+                      {userProfile?.photo_url ? (
+                        <div className="w-32 h-32 rounded-full overflow-hidden mb-4">
                           <img src={userProfile.photo_url} alt="Foto de perfil" className="w-full h-full object-cover" />
                         </div>
+                      ) : (
+                        <div className="w-32 h-32 rounded-full overflow-hidden bg-muted mb-4 flex items-center justify-center">
+                          <span className="text-4xl font-bold text-muted-foreground">
+                            {userProfile?.name?.charAt(0).toUpperCase() || "U"}
+                          </span>
+                        </div>
+                      )}
+                      <h2 className="text-xl font-bold text-center">
+                        {userProfile?.name || "Usuário"}
+                      </h2>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                      <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground">NOME COMPLETO</h3>
+                        <p className="text-lg">{userProfile?.name || "Não informado"}</p>
                       </div>
-                    )}
-                    <p><strong>Nome:</strong> {userProfile?.name}</p>
-                    <p><strong>Email:</strong> {userProfile?.email}</p>
-                    <p><strong>CPF:</strong> {userProfile?.cpf}</p>
-                    <p><strong>Telefone:</strong> {userProfile?.phone}</p>
-                    <p><strong>Endereço:</strong> {userProfile?.address}</p>
-                    <p><strong>CEP:</strong> {userProfile?.zip_code}</p>
-                    <p><strong>Bairro:</strong> {userProfile?.neighborhood}</p>
-                    <p><strong>Estado:</strong> {userProfile?.state}</p>
-                    <p><strong>PIX:</strong> {userProfile?.pix}</p>
-                    <Button onClick={() => setEditMode(true)}>Editar Perfil</Button>
+                      
+                      <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground">EMAIL</h3>
+                        <p className="text-lg break-all">{userProfile?.email || "Não informado"}</p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground">CPF</h3>
+                        <p className="text-lg">{userProfile?.cpf || "Não informado"}</p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground">TELEFONE</h3>
+                        <p className="text-lg">{userProfile?.phone || "Não informado"}</p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground">ENDEREÇO</h3>
+                        <p className="text-lg">{userProfile?.address || "Não informado"}</p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground">CEP</h3>
+                        <p className="text-lg">{userProfile?.zip_code || "Não informado"}</p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground">BAIRRO</h3>
+                        <p className="text-lg">{userProfile?.neighborhood || "Não informado"}</p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground">ESTADO</h3>
+                        <p className="text-lg">{userProfile?.state || "Não informado"}</p>
+                      </div>
+                      
+                      <div>
+                        <h3 className="text-sm font-semibold text-muted-foreground">PIX</h3>
+                        <p className="text-lg">{userProfile?.pix || "Não informado"}</p>
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      onClick={() => setEditMode(true)} 
+                      className="mt-6 bg-purple-500 hover:bg-purple-600"
+                    >
+                      Editar Perfil
+                    </Button>
                   </div>
                 )}
               </CardContent>
@@ -384,52 +481,96 @@ const Dashboard = () => {
           <TabsContent value="purchases">
             <Card>
               <CardContent className="pt-6">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Evento</TableHead>
-                      <TableHead>Data</TableHead>
-                      <TableHead>Valor</TableHead>
-                      <TableHead>Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {purchases.map((purchase) => (
-                      <TableRow key={purchase.id}>
-                        <TableCell>{purchase.id}</TableCell>
-                        <TableCell>{purchase.eventTitle}</TableCell>
-                        <TableCell>{purchase.date}</TableCell>
-                        <TableCell>R$ {purchase.price.toFixed(2)}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleShareTicket(purchase.ticket, 'email')}
-                            >
-                              <Mail className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleShareTicket(purchase.ticket, 'whatsapp')}
-                            >
-                              <MessageCircle className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleShareTicket(purchase.ticket, 'telegram')}
-                            >
-                              <Share2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                {!isMobile ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Evento</TableHead>
+                        <TableHead>Data</TableHead>
+                        <TableHead>Valor</TableHead>
+                        <TableHead>Ações</TableHead>
                       </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {purchases.map((purchase) => (
+                        <TableRow key={purchase.id}>
+                          <TableCell>{purchase.id}</TableCell>
+                          <TableCell>{purchase.eventTitle}</TableCell>
+                          <TableCell>{purchase.date}</TableCell>
+                          <TableCell>R$ {purchase.price.toFixed(2)}</TableCell>
+                          <TableCell>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleShareTicket(purchase.ticket, 'email')}
+                              >
+                                <Mail className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleShareTicket(purchase.ticket, 'whatsapp')}
+                              >
+                                <MessageCircle className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleShareTicket(purchase.ticket, 'telegram')}
+                              >
+                                <Share2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="space-y-4">
+                    {purchases.map((purchase) => (
+                      <Card key={purchase.id} className="overflow-hidden">
+                        <CardContent className="p-4">
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <h3 className="font-semibold">{purchase.eventTitle}</h3>
+                              <span className="text-sm text-muted-foreground">{purchase.date}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span>ID: {purchase.id}</span>
+                              <span className="font-medium">R$ {purchase.price.toFixed(2)}</span>
+                            </div>
+                            <div className="flex gap-2 justify-end pt-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleShareTicket(purchase.ticket, 'email')}
+                              >
+                                <Mail className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleShareTicket(purchase.ticket, 'whatsapp')}
+                              >
+                                <MessageCircle className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleShareTicket(purchase.ticket, 'telegram')}
+                              >
+                                <Share2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
                     ))}
-                  </TableBody>
-                </Table>
+                  </div>
+                )}
 
                 {purchases.map((purchase) => (
                   <div key={purchase.id} className="mt-8">

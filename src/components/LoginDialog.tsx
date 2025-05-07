@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Ticket } from "lucide-react";
+import { Ticket, Upload } from "lucide-react";
 
 import {
   Dialog,
@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MaskedInput } from "@/components/ui/masked-input";
 
 interface LoginDialogProps {
   isOpen: boolean;
@@ -194,15 +194,15 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
                 value={formData.name}
                 onChange={handleInputChange}
               />
-              <Input 
-                type="text" 
+              <MaskedInput 
+                mask="999.999.999-99"
                 placeholder="CPF *" 
                 name="cpf"
                 value={formData.cpf}
                 onChange={handleInputChange}
               />
-              <Input 
-                type="tel" 
+              <MaskedInput 
+                mask="(99) 99999-9999"
                 placeholder="Telefone" 
                 name="phone"
                 value={formData.phone}
@@ -216,8 +216,8 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
                 onChange={handleInputChange}
               />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Input 
-                  type="text" 
+                <MaskedInput 
+                  mask="99999-999"
                   placeholder="CEP" 
                   name="zip_code"
                   value={formData.zip_code}
@@ -272,7 +272,7 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
               onChange={handleInputChange}
             />
           )}
-          <Button type="submit" variant="default" className="w-full">
+          <Button type="submit" variant="default" className="w-full bg-purple-500 hover:bg-purple-600">
             {isLogin ? "Entrar" : "Cadastrar"}
           </Button>
         </form>
