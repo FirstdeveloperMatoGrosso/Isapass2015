@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { Ticket } from "lucide-react";
 
 import {
   Dialog,
@@ -169,8 +170,16 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
       if (!open) onClose();
     }}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center">
+        <DialogHeader className="flex flex-col items-center">
+          {/* Logo adicionado aqui */}
+          <div className="flex flex-col items-center mb-4">
+            <Ticket className="h-12 w-12 text-[#0EA5E9] mb-2" />
+            <div className="flex text-2xl font-bold">
+              <span className="text-[#D946EF]">Isa</span>
+              <span className="text-[#0EA5E9]">Pass</span>
+            </div>
+          </div>
+          <DialogTitle className="text-xl font-bold text-center">
             {isAdmin ? "Login Administrativo" : (isLogin ? "Login" : "Cadastro")}
           </DialogTitle>
         </DialogHeader>

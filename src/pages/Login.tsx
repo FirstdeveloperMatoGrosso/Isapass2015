@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Ticket } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -88,7 +89,15 @@ const Login = () => {
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-12 flex justify-center">
         <Card className="w-full max-w-md">
-          <CardHeader>
+          <CardHeader className="flex flex-col items-center">
+            {/* Logo adicionado aqui */}
+            <div className="flex flex-col items-center mb-4">
+              <Ticket className="h-12 w-12 text-[#0EA5E9] mb-2" />
+              <div className="flex text-2xl font-bold">
+                <span className="text-[#D946EF]">Isa</span>
+                <span className="text-[#0EA5E9]">Pass</span>
+              </div>
+            </div>
             <CardTitle className="text-2xl font-bold text-center">
               {isAdmin ? "Login Administrativo" : (isLogin ? "Login" : "Cadastro")}
             </CardTitle>
