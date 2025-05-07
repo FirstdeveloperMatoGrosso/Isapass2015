@@ -320,34 +320,52 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           cpf: string | null
           created_at: string | null
           email: string | null
           id: string
           name: string | null
+          neighborhood: string | null
           phone: string | null
+          photo_url: string | null
+          pix: string | null
           role: string | null
+          state: string | null
           updated_at: string | null
+          zip_code: string | null
         }
         Insert: {
+          address?: string | null
           cpf?: string | null
           created_at?: string | null
           email?: string | null
           id: string
           name?: string | null
+          neighborhood?: string | null
           phone?: string | null
+          photo_url?: string | null
+          pix?: string | null
           role?: string | null
+          state?: string | null
           updated_at?: string | null
+          zip_code?: string | null
         }
         Update: {
+          address?: string | null
           cpf?: string | null
           created_at?: string | null
           email?: string | null
           id?: string
           name?: string | null
+          neighborhood?: string | null
           phone?: string | null
+          photo_url?: string | null
+          pix?: string | null
           role?: string | null
+          state?: string | null
           updated_at?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }
