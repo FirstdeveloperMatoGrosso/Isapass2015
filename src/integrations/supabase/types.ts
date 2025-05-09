@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      colors: {
+        Row: {
+          created_at: string | null
+          hex_code: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          hex_code?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          hex_code?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           address: string | null
@@ -61,44 +85,80 @@ export type Database = {
         Row: {
           address: string | null
           city: string | null
-          cpf: string | null
+          cpf_cnpj: string | null
           created_at: string | null
           email: string
           id: string
           is_blocked: boolean | null
           name: string
+          neighborhood: string | null
           phone: string | null
           state: string | null
+          state_uf: string | null
           updated_at: string | null
           zip_code: string | null
         }
         Insert: {
           address?: string | null
           city?: string | null
-          cpf?: string | null
+          cpf_cnpj?: string | null
           created_at?: string | null
           email: string
           id?: string
           is_blocked?: boolean | null
           name: string
+          neighborhood?: string | null
           phone?: string | null
           state?: string | null
+          state_uf?: string | null
           updated_at?: string | null
           zip_code?: string | null
         }
         Update: {
           address?: string | null
           city?: string | null
-          cpf?: string | null
+          cpf_cnpj?: string | null
           created_at?: string | null
           email?: string
           id?: string
           is_blocked?: boolean | null
           name?: string
+          neighborhood?: string | null
           phone?: string | null
           state?: string | null
+          state_uf?: string | null
           updated_at?: string | null
           zip_code?: string | null
+        }
+        Relationships: []
+      }
+      embroidery_types: {
+        Row: {
+          complexity_level: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          complexity_level?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          complexity_level?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -198,6 +258,158 @@ export type Database = {
         }
         Relationships: []
       }
+      fabric_types: {
+        Row: {
+          composition: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          composition?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          composition?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      measure_patterns: {
+        Row: {
+          created_at: string | null
+          default_value: string | null
+          description: string | null
+          id: string
+          name: string
+          unit: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          default_value?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          default_value?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          unit?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          additional_values: number | null
+          created_at: string | null
+          customer_id: string | null
+          delivery_date: string | null
+          discount: number | null
+          down_payment: number | null
+          id: string
+          items: Json | null
+          order_date: string
+          payment_details: Json | null
+          payment_status: string | null
+          remaining_value: number | null
+          special_instructions: string | null
+          status: string | null
+          total_value: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          additional_values?: number | null
+          created_at?: string | null
+          customer_id?: string | null
+          delivery_date?: string | null
+          discount?: number | null
+          down_payment?: number | null
+          id?: string
+          items?: Json | null
+          order_date: string
+          payment_details?: Json | null
+          payment_status?: string | null
+          remaining_value?: number | null
+          special_instructions?: string | null
+          status?: string | null
+          total_value?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          additional_values?: number | null
+          created_at?: string | null
+          customer_id?: string | null
+          delivery_date?: string | null
+          discount?: number | null
+          down_payment?: number | null
+          id?: string
+          items?: Json | null
+          order_date?: string
+          payment_details?: Json | null
+          payment_status?: string | null
+          remaining_value?: number | null
+          special_instructions?: string | null
+          status?: string | null
+          total_value?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_methods: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          requires_details: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          requires_details?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          requires_details?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       playlists: {
         Row: {
           active: boolean | null
@@ -225,6 +437,30 @@ export type Database = {
           title?: string
           updated_at?: string | null
           url?: string
+        }
+        Relationships: []
+      }
+      product_categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -440,6 +676,60 @@ export type Database = {
           status?: string
           technician?: string
           total_value?: number
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      sizes: {
+        Row: {
+          abbreviation: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          abbreviation?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          abbreviation?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      sleeve_types: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
           updated_at?: string | null
         }
         Relationships: []
