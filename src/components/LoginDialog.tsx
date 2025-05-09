@@ -136,6 +136,7 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
         toast.success("Login realizado com sucesso!");
         onClose();
         
+        // Here's the key change - if isAdmin is true, always navigate to admin panel
         if (isAdmin) {
           navigate("/admin/dashboard");
         } else {
