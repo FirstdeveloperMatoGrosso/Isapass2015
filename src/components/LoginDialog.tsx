@@ -81,7 +81,7 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
         if (authError) throw authError;
 
         if (authData.user) {
-          // Atualizar o perfil com as informações adicionais
+          // Update the user's profile information
           const { error: profileError } = await supabase
             .from('profiles')
             .update({

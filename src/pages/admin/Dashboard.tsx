@@ -1,35 +1,81 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Calendar, CreditCard, AlertTriangle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const DashboardPage = () => {
+  const [statsData, setStatsData] = useState({
+    totalCustomers: "0",
+    activeEvents: "0",
+    totalSales: "0",
+    pendingOrders: "0"
+  });
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        // Fetch profiles count
+        const { count: profilesCount, error: profilesError } = await supabase
+          .from('profiles')
+          .select('*', { count: 'exact', head: true });
+        
+        // Fetch active events
+        const { data: events, error: eventsError } = await supabase
+          .from('events')
+          .select('*')
+          .gte('date', new Date().toISOString());
+        
+        // Fetch tickets for total sales
+        const { data: tickets, error: ticketsError } = await supabase
+          .from('tickets')
+          .select('price');
+        
+        // Calculate total sales
+        const totalSales = tickets?.reduce((sum, ticket) => sum + (ticket.price || 0), 0) || 0;
+        
+        // Set dashboard data
+        setStatsData({
+          totalCustomers: profilesCount?.toString() || "0",
+          activeEvents: events?.length?.toString() || "0",
+          totalSales: `R$ ${totalSales.toFixed(2)}`,
+          pendingOrders: "0" // We don't have pending orders in our current schema
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
   const stats = [
     {
       title: "Total de Clientes",
-      value: "1,234",
+      value: statsData.totalCustomers,
       icon: Users,
-      description: "↗︎ 12% desde o último mês",
+      description: "Usuários registrados",
       color: "bg-purple-100 text-purple-600"
     },
     {
       title: "Eventos Ativos",
-      value: "23",
+      value: statsData.activeEvents,
       icon: Calendar,
-      description: "12 eventos este mês",
+      description: "Eventos futuros",
       color: "bg-blue-100 text-blue-600"
     },
     {
       title: "Vendas Totais",
-      value: "R$ 45,231",
+      value: statsData.totalSales,
       icon: CreditCard,
-      description: "↗︎ 7% desde o último mês",
+      description: "Vendas de ingressos",
       color: "bg-green-100 text-green-600"
     },
     {
       title: "Pedidos Pendentes",
-      value: "45",
+      value: statsData.pendingOrders,
       icon: AlertTriangle,
-      description: "20 aguardando pagamento",
+      description: "Aguardando processamento",
       color: "bg-orange-100 text-orange-600"
     }
   ];

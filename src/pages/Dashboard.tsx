@@ -45,9 +45,9 @@ const Dashboard = () => {
       }
 
       try {
-        // Buscar dados do perfil
+        // Fetch profile data
         const { data: profile, error: profileError } = await supabase
-          .from("profiles")
+          .from('profiles')
           .select("*")
           .eq("id", session.user.id)
           .single();
@@ -70,9 +70,9 @@ const Dashboard = () => {
           });
         }
 
-        // Buscar compras (tickets)
+        // Fetch tickets
         const { data: tickets, error: ticketsError } = await supabase
-          .from("tickets")
+          .from('tickets')
           .select(`
             *,
             events(*)
@@ -106,7 +106,7 @@ const Dashboard = () => {
           
           setPurchases(formattedPurchases);
         } else {
-          // Mock purchase data se não houver compras
+          // Mock purchase data if no purchases exist
           const mockPurchases = [
             {
               id: "TK123456",
@@ -158,7 +158,7 @@ const Dashboard = () => {
     try {
       setIsUploading(true);
 
-      // Verificar se existe o bucket, se não existir, criar
+      // Check if bucket exists, create if it doesn't
       const { data: bucketExists, error: bucketCheckError } = await supabase.storage.getBucket('profile-photos');
       if (bucketCheckError && bucketCheckError.message.includes('does not exist')) {
         await supabase.storage.createBucket('profile-photos', {
@@ -166,21 +166,21 @@ const Dashboard = () => {
         });
       }
 
-      // Upload do arquivo
+      // Upload file
       const { error: uploadError } = await supabase.storage
         .from('profile-photos')
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
-      // Obter URL pública do arquivo
+      // Get public URL
       const { data: publicUrlData } = supabase.storage
         .from('profile-photos')
         .getPublicUrl(fileName);
 
       if (!publicUrlData) throw new Error('Falha ao obter URL pública');
 
-      // Atualizar o formData com a nova URL da foto
+      // Update formData with new photo URL
       setFormData({
         ...formData,
         photo_url: publicUrlData.publicUrl
@@ -221,7 +221,7 @@ const Dashboard = () => {
 
       if (error) throw error;
 
-      // Atualizar o estado do perfil
+      // Update profile state
       setUserProfile({
         ...userProfile,
         ...formData

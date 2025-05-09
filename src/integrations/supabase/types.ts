@@ -186,6 +186,45 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          capacity: number | null
+          created_at: string | null
+          date: string
+          description: string | null
+          id: string
+          image_url: string | null
+          location: string | null
+          price: number
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          capacity?: number | null
+          created_at?: string | null
+          date: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          price: number
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          capacity?: number | null
+          created_at?: string | null
+          date?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          location?: string | null
+          price?: number
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       fabrics: {
         Row: {
           created_at: string | null
@@ -510,6 +549,54 @@ export type Database = {
           },
         ]
       }
+      profiles: {
+        Row: {
+          address: string | null
+          cpf: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string | null
+          neighborhood: string | null
+          phone: string | null
+          photo_url: string | null
+          pix: string | null
+          state: string | null
+          updated_at: string | null
+          zip_code: string | null
+        }
+        Insert: {
+          address?: string | null
+          cpf?: string | null
+          created_at?: string | null
+          email?: string | null
+          id: string
+          name?: string | null
+          neighborhood?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          pix?: string | null
+          state?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Update: {
+          address?: string | null
+          cpf?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+          neighborhood?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          pix?: string | null
+          state?: string | null
+          updated_at?: string | null
+          zip_code?: string | null
+        }
+        Relationships: []
+      }
       service_order_payments: {
         Row: {
           created_at: string | null
@@ -823,6 +910,53 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      tickets: {
+        Row: {
+          area: string | null
+          created_at: string | null
+          event_id: string | null
+          price: number
+          purchase_date: string | null
+          security_code: string | null
+          status: string | null
+          ticket_id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          area?: string | null
+          created_at?: string | null
+          event_id?: string | null
+          price: number
+          purchase_date?: string | null
+          security_code?: string | null
+          status?: string | null
+          ticket_id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          area?: string | null
+          created_at?: string | null
+          event_id?: string | null
+          price?: number
+          purchase_date?: string | null
+          security_code?: string | null
+          status?: string | null
+          ticket_id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
