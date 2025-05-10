@@ -1,57 +1,50 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { User, Ticket, Search } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoginDialog } from "./LoginDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
 export const Navbar = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [showAdminLoginDialog, setShowAdminLoginDialog] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-
   useEffect(() => {
     // Verificar se o usuário está logado
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: {
+          session
+        }
+      } = await supabase.auth.getSession();
       if (session) {
         setIsLoggedIn(true);
         setUserId(session.user.id);
       }
     };
-
     checkUser();
 
     // Configurar o listener para mudanças de autenticação
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          setIsLoggedIn(true);
-          setUserId(session.user.id);
-        } else if (event === 'SIGNED_OUT') {
-          setIsLoggedIn(false);
-          setUserId(null);
-        }
+    const {
+      data: authListener
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        setIsLoggedIn(true);
+        setUserId(session.user.id);
+      } else if (event === 'SIGNED_OUT') {
+        setIsLoggedIn(false);
+        setUserId(null);
       }
-    );
-
+    });
     return () => {
       authListener.subscription.unsubscribe();
     };
   }, []);
-
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -64,9 +57,7 @@ export const Navbar = () => {
       toast.error("Erro ao fazer logout");
     }
   };
-
-  return (
-    <>
+  return <>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 flex-1">
@@ -80,18 +71,12 @@ export const Navbar = () => {
             
             <div className="relative flex-1 max-w-md hidden md:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Buscar eventos..."
-                className="w-full pl-10 bg-background border-muted"
-              />
+              <Input type="search" placeholder="Buscar eventos..." className="w-full pl-10 bg-background border-muted" />
             </div>
           </div>
           
           <div className="flex items-center gap-4">
-            <Link to="/events" className="text-sm font-medium hover:text-primary transition-colors">
-              Eventos
-            </Link>
+            
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -100,25 +85,19 @@ export const Navbar = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                {isLoggedIn ? (
-                  <>
+                {isLoggedIn ? <>
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard">Minha Conta</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleLogout}>
                       Sair
                     </DropdownMenuItem>
-                  </>
-                ) : (
-                  <DropdownMenuItem onClick={() => setShowLoginDialog(true)}>
+                  </> : <DropdownMenuItem onClick={() => setShowLoginDialog(true)}>
                     Login
-                  </DropdownMenuItem>
-                )}
-                {!isLoggedIn && (
-                  <DropdownMenuItem onClick={() => setShowAdminLoginDialog(true)}>
+                  </DropdownMenuItem>}
+                {!isLoggedIn && <DropdownMenuItem onClick={() => setShowAdminLoginDialog(true)}>
                     Painel Admin
-                  </DropdownMenuItem>
-                )}
+                  </DropdownMenuItem>}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -127,28 +106,15 @@ export const Navbar = () => {
         <div className="md:hidden container mx-auto px-4 pb-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Buscar eventos..."
-              className="w-full pl-10 bg-background border-muted"
-            />
+            <Input type="search" placeholder="Buscar eventos..." className="w-full pl-10 bg-background border-muted" />
           </div>
         </div>
       </nav>
 
       {/* Diálogo de Login */}
-      <LoginDialog 
-        isOpen={showLoginDialog} 
-        onClose={() => setShowLoginDialog(false)}
-        isAdmin={false}
-      />
+      <LoginDialog isOpen={showLoginDialog} onClose={() => setShowLoginDialog(false)} isAdmin={false} />
 
       {/* Diálogo de Login Admin */}
-      <LoginDialog 
-        isOpen={showAdminLoginDialog} 
-        onClose={() => setShowAdminLoginDialog(false)}
-        isAdmin={true}
-      />
-    </>
-  );
+      <LoginDialog isOpen={showAdminLoginDialog} onClose={() => setShowAdminLoginDialog(false)} isAdmin={true} />
+    </>;
 };
