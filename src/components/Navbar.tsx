@@ -1,6 +1,7 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { User, Ticket, Search } from "lucide-react";
+import { User, Ticket, Search, LogIn } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
@@ -69,6 +70,17 @@ export const Navbar = () => {
               </div>
             </Link>
             
+            {/* Botão Login ao lado do nome do evento */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="hidden md:flex items-center gap-2 ml-2"
+              onClick={() => setShowLoginDialog(true)}
+            >
+              <LogIn className="h-4 w-4" />
+              <span>Login</span>
+            </Button>
+            
             <div className="relative flex-1 max-w-md hidden md:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input type="search" placeholder="Buscar eventos..." className="w-full pl-10 bg-background border-muted" />
@@ -104,6 +116,17 @@ export const Navbar = () => {
         </div>
         
         <div className="md:hidden container mx-auto px-4 pb-3">
+          <div className="flex items-center gap-2 mb-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="w-full flex items-center justify-center gap-2"
+              onClick={() => setShowLoginDialog(true)}
+            >
+              <LogIn className="h-4 w-4" />
+              <span>Login</span>
+            </Button>
+          </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input type="search" placeholder="Buscar eventos..." className="w-full pl-10 bg-background border-muted" />
