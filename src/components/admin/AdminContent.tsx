@@ -19,7 +19,7 @@ interface AdminContentProps {
 
 export const AdminContent = ({ isCollapsed }: AdminContentProps) => {
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className={`flex-1 overflow-y-auto ${isCollapsed ? 'md:ml-20' : 'md:ml-64'} transition-all duration-300`}>
       <div className="w-full">
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />

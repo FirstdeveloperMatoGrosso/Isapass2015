@@ -38,33 +38,48 @@ export const EventCard = ({
     navigate(`/events/${id}/buy`);
   };
 
+  // Extrair o dia e mês da data para exibição no formato do design
+  const formatDateParts = () => {
+    try {
+      const dateParts = date.split(' ');
+      if (dateParts.length >= 2) {
+        const day = dateParts[0];
+        const month = dateParts[1].substring(0, 3).toUpperCase();
+        return { day, month };
+      }
+      return { day: date, month: "" };
+    } catch (error) {
+      return { day: date, month: "" };
+    }
+  };
+
+  const { day, month } = formatDateParts();
+
   return (
     <>
-      <Card className="event-card cursor-pointer" onClick={() => setShowDetails(true)}>
+      <Card className="event-card cursor-pointer hover:shadow-lg transition-shadow duration-300" onClick={() => setShowDetails(true)}>
         <CardContent className="p-0">
-          <div className="relative h-48 overflow-hidden">
+          <div className="relative h-48 overflow-hidden rounded-t-lg">
             <img
               src={imageUrl}
               alt={title}
               className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-              <h3 className="text-white font-semibold text-lg">{title}</h3>
+            <div className="absolute top-2 left-2 bg-white rounded-lg shadow-md p-1 flex flex-col items-center justify-center min-w-14 text-center">
+              <span className="text-[#e91e63] text-xl font-bold leading-tight">{day}</span>
+              <span className="text-[#e91e63] text-xs font-medium leading-tight">{month}</span>
             </div>
           </div>
         </CardContent>
-        <CardFooter className="grid gap-2 p-4">
+        <CardFooter className="flex flex-col items-start p-4 gap-2">
+          <h3 className="font-semibold text-lg line-clamp-2">{title}</h3>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            <span>{date}</span>
+            <MapPin className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{location}</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <MapPin className="h-4 w-4" />
-            <span>{location}</span>
-          </div>
-          <div className="flex items-center justify-between mt-2">
+          <div className="w-full flex items-center justify-between mt-2">
             <span className="font-semibold">R$ {price.toFixed(2)}</span>
-            <Button size="sm" onClick={handleBuyClick}>Comprar</Button>
+            <Button size="sm" className="bg-[#e91e63] hover:bg-[#d81b60]" onClick={handleBuyClick}>Comprar</Button>
           </div>
         </CardFooter>
       </Card>
@@ -124,7 +139,7 @@ export const EventCard = ({
                   <p className="text-sm text-muted-foreground">Preço por ingresso</p>
                   <p className="text-2xl font-bold">R$ {price.toFixed(2)}</p>
                 </div>
-                <Button onClick={handleBuyClick}>
+                <Button onClick={handleBuyClick} className="bg-[#e91e63] hover:bg-[#d81b60]">
                   Comprar Ingresso
                 </Button>
               </div>

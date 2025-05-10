@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -38,9 +39,26 @@
 
 .event-card {
   @apply relative overflow-hidden rounded-lg transition-all duration-300 hover:shadow-xl;
-  background: linear-gradient(135deg, hsl(var(--primary)/0.1) 0%, hsl(var(--secondary)/0.1) 100%);
+  background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(245,245,245,1) 100%);
 }
 
 .event-card:hover {
   transform: translateY(-5px);
+}
+
+/* Adicionando responsividade específica para os cards de eventos */
+@media (max-width: 640px) {
+  .event-card .event-date {
+    @apply text-sm;
+  }
+}
+
+@media (max-width: 480px) {
+  .event-card h3 {
+    @apply text-base;
+  }
+  
+  .event-card .location {
+    @apply text-xs;
+  }
 }
