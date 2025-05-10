@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { User, Ticket, Search, LogIn } from "lucide-react";
@@ -15,6 +14,7 @@ export const Navbar = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [showAdminLoginDialog, setShowAdminLoginDialog] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  
   useEffect(() => {
     // Verificar se o usuário está logado
     const checkUser = async () => {
@@ -46,6 +46,7 @@ export const Navbar = () => {
       authListener.subscription.unsubscribe();
     };
   }, []);
+  
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -58,6 +59,7 @@ export const Navbar = () => {
       toast.error("Erro ao fazer logout");
     }
   };
+  
   return <>
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
@@ -70,25 +72,24 @@ export const Navbar = () => {
               </div>
             </Link>
             
-            {/* Botão Login ao lado do nome do evento */}
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="hidden md:flex items-center gap-2 ml-2"
-              onClick={() => setShowLoginDialog(true)}
-            >
-              <LogIn className="h-4 w-4" />
-              <span>Login</span>
-            </Button>
-            
             <div className="relative flex-1 max-w-md hidden md:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input type="search" placeholder="Buscar eventos..." className="w-full pl-10 bg-background border-muted" />
             </div>
           </div>
           
-          <div className="flex items-center gap-4">
-            
+          <div className="flex items-center gap-3">
+            {!isLoggedIn && (
+              <Button 
+                onClick={() => setShowLoginDialog(true)}
+                variant="default"
+                size="sm"
+                className="bg-gradient-to-r from-[#D946EF] to-[#0EA5E9] hover:opacity-90 text-white font-medium rounded-full px-4 shadow-md transition-all duration-300"
+              >
+                <LogIn className="h-4 w-4 mr-1" />
+                <span>Login</span>
+              </Button>
+            )}
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -117,15 +118,17 @@ export const Navbar = () => {
         
         <div className="md:hidden container mx-auto px-4 pb-3">
           <div className="flex items-center gap-2 mb-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="w-full flex items-center justify-center gap-2"
-              onClick={() => setShowLoginDialog(true)}
-            >
-              <LogIn className="h-4 w-4" />
-              <span>Login</span>
-            </Button>
+            {!isLoggedIn && (
+              <Button 
+                onClick={() => setShowLoginDialog(true)}
+                variant="default"
+                size="sm"
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#D946EF] to-[#0EA5E9] hover:opacity-90 text-white font-medium rounded-full shadow-md transition-all duration-300"
+              >
+                <LogIn className="h-4 w-4" />
+                <span>Login</span>
+              </Button>
+            )}
           </div>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
