@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { User, Ticket, Search, LogIn } from "lucide-react";
@@ -84,16 +85,16 @@ export const Navbar = () => {
                 onClick={() => setShowLoginDialog(true)}
                 variant="default"
                 size="sm"
-                className="bg-gradient-to-r from-[#D946EF] to-[#0EA5E9] hover:opacity-90 text-white font-medium rounded-full px-4 shadow-md transition-all duration-300"
+                className="bg-gradient-to-r from-[#D946EF] to-[#0EA5E9] hover:opacity-90 text-white font-medium rounded-full px-4 shadow-md transition-all duration-300 flex items-center"
               >
-                <LogIn className="h-4 w-4 mr-1" />
+                <LogIn className="h-4 w-4 mr-2 animate-pulse" />
                 <span>Login</span>
               </Button>
             )}
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="rounded-full bg-gray-100/50 hover:bg-gray-100">
                   <User className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
@@ -125,7 +126,7 @@ export const Navbar = () => {
                 size="sm"
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#D946EF] to-[#0EA5E9] hover:opacity-90 text-white font-medium rounded-full shadow-md transition-all duration-300"
               >
-                <LogIn className="h-4 w-4" />
+                <LogIn className="h-4 w-4 animate-pulse" />
                 <span>Login</span>
               </Button>
             )}
