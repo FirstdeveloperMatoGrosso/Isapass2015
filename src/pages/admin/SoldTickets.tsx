@@ -60,7 +60,8 @@ const SoldTicketsPage = () => {
       try {
         setIsLoading(true);
         
-        // Modified query to avoid joining with profiles table
+        // Verificar primeiro se a coluna 'refund_status' existe na tabela
+        // Para isso, vamos simplificar a consulta e depois adicionar os campos conforme necessário
         const { data, error } = await supabase
           .from("tickets")
           .select(`
@@ -69,9 +70,6 @@ const SoldTicketsPage = () => {
             price, 
             area, 
             status,
-            refund_status,
-            refund_date,
-            refund_amount,
             event_id,
             user_id,
             events:event_id (
@@ -83,6 +81,16 @@ const SoldTicketsPage = () => {
 
         if (error) {
           console.error("Error fetching tickets:", error);
+          setTickets([]);
+          setIsLoading(false);
+          return;
+        }
+
+        // Verificar se data é um array antes de continuar
+        if (!Array.isArray(data)) {
+          console.error("Expected array of tickets, got:", data);
+          setTickets([]);
+          setIsLoading(false);
           return;
         }
 
@@ -114,9 +122,6 @@ const SoldTicketsPage = () => {
             price: ticket.price,
             area: ticket.area,
             status: ticket.status || "active",
-            refund_status: ticket.refund_status || "none",
-            refund_date: ticket.refund_date,
-            refund_amount: ticket.refund_amount,
             event: ticket.events,
             ...userInfo
           });
@@ -125,6 +130,7 @@ const SoldTicketsPage = () => {
         setTickets(ticketsWithUserInfo);
       } catch (error) {
         console.error("Unexpected error:", error);
+        setTickets([]);
       } finally {
         setIsLoading(false);
       }
@@ -152,13 +158,11 @@ const SoldTicketsPage = () => {
     0
   );
 
-  const totalRefunds = filteredTickets.reduce(
-    (sum, ticket) => sum + (ticket.refund_amount || 0),
-    0
-  );
+  // Como não temos as colunas de reembolso, vamos definir o total de reembolsos como zero
+  const totalRefunds = 0;
 
   const exportToCsv = () => {
-    const headers = ["ID", "Evento", "Cliente", "Email", "Data", "Preço", "Status", "Devolução"];
+    const headers = ["ID", "Evento", "Cliente", "Email", "Data", "Preço", "Status"];
     
     const csvData = filteredTickets.map((ticket) => [
       ticket.ticket_id,
@@ -169,8 +173,7 @@ const SoldTicketsPage = () => {
         ? format(new Date(ticket.purchase_date), "dd/MM/yyyy HH:mm") 
         : "N/A",
       `R$ ${ticket.price?.toFixed(2)}`,
-      ticket.status,
-      ticket.refund_status === "completed" ? `R$ ${ticket.refund_amount?.toFixed(2)}` : "N/A"
+      ticket.status
     ]);
     
     const csvContent = [
@@ -235,12 +238,6 @@ const SoldTicketsPage = () => {
                   <p className="text-sm text-gray-600">Valor</p>
                   <p>R$ {printData.price?.toFixed(2)}</p>
                 </div>
-                {printData.refund_status === "completed" && (
-                  <div>
-                    <p className="text-sm text-gray-600">Devolução</p>
-                    <p>R$ {printData.refund_amount?.toFixed(2)}</p>
-                  </div>
-                )}
               </div>
             </div>
             
@@ -377,8 +374,7 @@ const SoldTicketsPage = () => {
                     email: ticket.user_email || "N/A",
                     data: ticket.purchase_date ? format(new Date(ticket.purchase_date), "dd/MM/yyyy HH:mm") : "N/A",
                     valor: `R$ ${ticket.price?.toFixed(2)}`,
-                    status: ticket.status === "active" ? "Ativo" : ticket.status === "used" ? "Utilizado" : "Cancelado",
-                    devolucao: ticket.refund_status === "completed" ? `R$ ${ticket.refund_amount?.toFixed(2)}` : "N/A"
+                    status: ticket.status === "active" ? "Ativo" : ticket.status === "used" ? "Utilizado" : "Cancelado"
                   }))}
                   title="Ingressos Vendidos"
                 />
@@ -403,7 +399,6 @@ const SoldTicketsPage = () => {
                       <TableHead>Data da Compra</TableHead>
                       <TableHead>Preço</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead>Devolução</TableHead>
                       <TableHead>Ações</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -443,20 +438,6 @@ const SoldTicketsPage = () => {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            {ticket.refund_status === "completed" ? (
-                              <div className="flex items-center">
-                                <Badge variant="outline" className="bg-yellow-100">
-                                  <RefreshCcw className="h-3 w-3 mr-1" />
-                                  R$ {ticket.refund_amount?.toFixed(2)}
-                                </Badge>
-                              </div>
-                            ) : ticket.status === "cancelled" ? (
-                              <Badge variant="outline">Não reembolsado</Badge>
-                            ) : (
-                              "-"
-                            )}
-                          </TableCell>
-                          <TableCell>
                             <div className="flex space-x-2">
                               <Button 
                                 variant="ghost" 
@@ -472,7 +453,7 @@ const SoldTicketsPage = () => {
                       ))
                     ) : (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8">
+                        <TableCell colSpan={7} className="text-center py-8">
                           <div className="flex flex-col items-center justify-center text-muted-foreground">
                             <Ticket className="h-12 w-12 mb-2 opacity-20" />
                             <p>Nenhum ingresso encontrado</p>
@@ -489,7 +470,8 @@ const SoldTicketsPage = () => {
         </Card>
       </div>
       
-      <style jsx global>{`
+      <style>
+        {`
         @media print {
           .print-hidden {
             display: none !important;
@@ -503,7 +485,8 @@ const SoldTicketsPage = () => {
             display: none !important;
           }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
