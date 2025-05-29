@@ -8,7 +8,7 @@ import { Calendar, MapPin, CreditCard, Scan, DollarSign, Copy, Check } from "luc
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DigitalTicket } from "@/components/DigitalTicket";
 import { supabase } from "@/integrations/supabase/client";
-import QRCode from "qrcode.react";
+import { QRCodeSVG } from "qrcode.react";
 
 // Mock events data - In a real app this would come from an API
 const mockEvents = [
@@ -258,7 +258,7 @@ const BuyTicket = () => {
               <div className="flex flex-col items-center space-y-4">
                 {pixData.qrCode && (
                   <div className="p-4 bg-white rounded-lg border">
-                    <QRCode value={pixData.qrCode} size={200} />
+                    <QRCodeSVG value={pixData.qrCode} size={200} />
                   </div>
                 )}
                 
