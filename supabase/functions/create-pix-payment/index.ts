@@ -49,6 +49,9 @@ serve(async (req) => {
     const amountInCents = Math.round(total * 100);
     logStep("💰 Valor em centavos", amountInCents);
 
+    // URL do webhook para confirmação automática
+    const webhookUrl = `${req.headers.get('origin') || 'https://your-app.lovable.app'}/supabase/functions/v1/pagarme-webhook`;
+
     // Montar payload
     const payload = {
       amount: amountInCents,
@@ -78,10 +81,13 @@ serve(async (req) => {
           }
         }
       ],
+      // Configurar webhook para confirmação automática
+      notification_urls: [webhookUrl],
       metadata: {
         source: "drink-token-system",
         integration: "supabase-pagarme",
         timestamp: new Date().toISOString(),
+        webhook_url: webhookUrl,
         ...metadata
       }
     };
@@ -135,7 +141,8 @@ serve(async (req) => {
       qrCodeUrl: transaction?.qr_code_url,
       expiresAt: transaction?.expires_at,
       amount: responseData.amount,
-      currency: responseData.currency
+      currency: responseData.currency,
+      webhookConfigured: true
     };
 
     logStep("✅ PIX gerado com sucesso!", result);
