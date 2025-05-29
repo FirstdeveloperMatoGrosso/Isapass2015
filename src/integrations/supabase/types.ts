@@ -9,951 +9,285 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      additional_options: {
+      auditoria_erros: {
         Row: {
-          created_at: string | null
-          description: string | null
-          id: number
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      company_settings: {
-        Row: {
-          address: string | null
-          city: string | null
-          cnpj: string | null
-          created_at: string | null
-          email: string | null
-          footer_text: string | null
+          criado_em: string
+          dados_erro: Json | null
+          descricao: string
           id: string
-          logo: string | null
-          name: string
-          phone: string | null
-          state: string | null
-          updated_at: string | null
-          website: string | null
-          zipcode: string | null
+          resolvido: boolean | null
+          tipo_erro: string
+          veiculo_id: string | null
         }
         Insert: {
-          address?: string | null
-          city?: string | null
-          cnpj?: string | null
-          created_at?: string | null
-          email?: string | null
-          footer_text?: string | null
+          criado_em?: string
+          dados_erro?: Json | null
+          descricao: string
           id?: string
-          logo?: string | null
-          name: string
-          phone?: string | null
-          state?: string | null
-          updated_at?: string | null
-          website?: string | null
-          zipcode?: string | null
+          resolvido?: boolean | null
+          tipo_erro: string
+          veiculo_id?: string | null
         }
         Update: {
-          address?: string | null
-          city?: string | null
-          cnpj?: string | null
-          created_at?: string | null
-          email?: string | null
-          footer_text?: string | null
+          criado_em?: string
+          dados_erro?: Json | null
+          descricao?: string
           id?: string
-          logo?: string | null
-          name?: string
-          phone?: string | null
-          state?: string | null
-          updated_at?: string | null
-          website?: string | null
-          zipcode?: string | null
-        }
-        Relationships: []
-      }
-      customers: {
-        Row: {
-          address: string | null
-          chest_measurement: string | null
-          city: string | null
-          cnpj: string | null
-          company: string | null
-          cpf: string | null
-          created_at: string | null
-          email: string | null
-          hip_measurement: string | null
-          id: number
-          length_measurement: string | null
-          mobile: string | null
-          name: string
-          neck_measurement: string | null
-          neighborhood: string | null
-          notes: string | null
-          phone: string | null
-          shoulder_measurement: string | null
-          sleeve_measurement: string | null
-          state: string | null
-          updated_at: string | null
-          waist_measurement: string | null
-          zipcode: string | null
-        }
-        Insert: {
-          address?: string | null
-          chest_measurement?: string | null
-          city?: string | null
-          cnpj?: string | null
-          company?: string | null
-          cpf?: string | null
-          created_at?: string | null
-          email?: string | null
-          hip_measurement?: string | null
-          id?: number
-          length_measurement?: string | null
-          mobile?: string | null
-          name: string
-          neck_measurement?: string | null
-          neighborhood?: string | null
-          notes?: string | null
-          phone?: string | null
-          shoulder_measurement?: string | null
-          sleeve_measurement?: string | null
-          state?: string | null
-          updated_at?: string | null
-          waist_measurement?: string | null
-          zipcode?: string | null
-        }
-        Update: {
-          address?: string | null
-          chest_measurement?: string | null
-          city?: string | null
-          cnpj?: string | null
-          company?: string | null
-          cpf?: string | null
-          created_at?: string | null
-          email?: string | null
-          hip_measurement?: string | null
-          id?: number
-          length_measurement?: string | null
-          mobile?: string | null
-          name?: string
-          neck_measurement?: string | null
-          neighborhood?: string | null
-          notes?: string | null
-          phone?: string | null
-          shoulder_measurement?: string | null
-          sleeve_measurement?: string | null
-          state?: string | null
-          updated_at?: string | null
-          waist_measurement?: string | null
-          zipcode?: string | null
-        }
-        Relationships: []
-      }
-      embroidery_types: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: number
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      events: {
-        Row: {
-          capacity: number | null
-          created_at: string | null
-          date: string
-          description: string | null
-          id: string
-          image_url: string | null
-          location: string | null
-          price: number
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          capacity?: number | null
-          created_at?: string | null
-          date: string
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          location?: string | null
-          price: number
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          capacity?: number | null
-          created_at?: string | null
-          date?: string
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          location?: string | null
-          price?: number
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      fabrics: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: number
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      measurements: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: number
-          name: string
-          unit: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name: string
-          unit?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name?: string
-          unit?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      orders: {
-        Row: {
-          additional_fee: number | null
-          additional_fee_description: string | null
-          additional_options: Json | null
-          adjustments: Json | null
-          chest_measurement: string | null
-          created_at: string | null
-          customer_id: number | null
-          deadline: string | null
-          deposit_value: number | null
-          description: string | null
-          discount: number | null
-          hip_measurement: string | null
-          id: number
-          includes_logo: boolean | null
-          includes_pocket: boolean | null
-          length_measurement: string | null
-          logo_custom_height: string | null
-          logo_custom_width: string | null
-          logo_description: string | null
-          logo_positions: string[] | null
-          logo_size: string | null
-          neck_measurement: string | null
-          needs_logo_creation: boolean | null
-          order_name: string
-          order_number: string | null
-          payment_method: string | null
-          payment_methods: Json | null
-          payment_status: string
-          remaining_balance: number | null
-          shoulder_measurement: string | null
-          sleeve_measurement: string | null
-          special_instructions: string | null
-          status: string
-          total_price: number
-          updated_at: string | null
-          waist_measurement: string | null
-        }
-        Insert: {
-          additional_fee?: number | null
-          additional_fee_description?: string | null
-          additional_options?: Json | null
-          adjustments?: Json | null
-          chest_measurement?: string | null
-          created_at?: string | null
-          customer_id?: number | null
-          deadline?: string | null
-          deposit_value?: number | null
-          description?: string | null
-          discount?: number | null
-          hip_measurement?: string | null
-          id?: number
-          includes_logo?: boolean | null
-          includes_pocket?: boolean | null
-          length_measurement?: string | null
-          logo_custom_height?: string | null
-          logo_custom_width?: string | null
-          logo_description?: string | null
-          logo_positions?: string[] | null
-          logo_size?: string | null
-          neck_measurement?: string | null
-          needs_logo_creation?: boolean | null
-          order_name: string
-          order_number?: string | null
-          payment_method?: string | null
-          payment_methods?: Json | null
-          payment_status?: string
-          remaining_balance?: number | null
-          shoulder_measurement?: string | null
-          sleeve_measurement?: string | null
-          special_instructions?: string | null
-          status?: string
-          total_price?: number
-          updated_at?: string | null
-          waist_measurement?: string | null
-        }
-        Update: {
-          additional_fee?: number | null
-          additional_fee_description?: string | null
-          additional_options?: Json | null
-          adjustments?: Json | null
-          chest_measurement?: string | null
-          created_at?: string | null
-          customer_id?: number | null
-          deadline?: string | null
-          deposit_value?: number | null
-          description?: string | null
-          discount?: number | null
-          hip_measurement?: string | null
-          id?: number
-          includes_logo?: boolean | null
-          includes_pocket?: boolean | null
-          length_measurement?: string | null
-          logo_custom_height?: string | null
-          logo_custom_width?: string | null
-          logo_description?: string | null
-          logo_positions?: string[] | null
-          logo_size?: string | null
-          neck_measurement?: string | null
-          needs_logo_creation?: boolean | null
-          order_name?: string
-          order_number?: string | null
-          payment_method?: string | null
-          payment_methods?: Json | null
-          payment_status?: string
-          remaining_balance?: number | null
-          shoulder_measurement?: string | null
-          sleeve_measurement?: string | null
-          special_instructions?: string | null
-          status?: string
-          total_price?: number
-          updated_at?: string | null
-          waist_measurement?: string | null
+          resolvido?: boolean | null
+          tipo_erro?: string
+          veiculo_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "orders_customer_id_fkey"
-            columns: ["customer_id"]
+            foreignKeyName: "auditoria_erros_veiculo_id_fkey"
+            columns: ["veiculo_id"]
             isOneToOne: false
-            referencedRelation: "customers"
+            referencedRelation: "veiculos"
             referencedColumns: ["id"]
           },
         ]
       }
-      product_categories: {
+      clientes: {
         Row: {
-          created_at: string | null
-          description: string | null
-          id: number
-          name: string
-          updated_at: string | null
+          cpf: string
+          created_at: string
+          email: string
+          endereco: string | null
+          id: string
+          nome: string
+          telefone: string | null
+          updated_at: string
         }
         Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name: string
-          updated_at?: string | null
+          cpf: string
+          created_at?: string
+          email: string
+          endereco?: string | null
+          id?: string
+          nome: string
+          telefone?: string | null
+          updated_at?: string
         }
         Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name?: string
-          updated_at?: string | null
+          cpf?: string
+          created_at?: string
+          email?: string
+          endereco?: string | null
+          id?: string
+          nome?: string
+          telefone?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
-      product_size_quantities: {
+      configuracoes_estacionamento: {
         Row: {
-          color: string | null
-          created_at: string | null
+          capacidade_total: number
+          created_at: string
           id: string
-          product_id: string | null
-          quantity: number
-          size_id: string
-          size_name: string
-          updated_at: string | null
+          preco_por_hora: number
+          updated_at: string
+          valor_minimo: number
         }
         Insert: {
-          color?: string | null
-          created_at?: string | null
+          capacidade_total?: number
+          created_at?: string
           id?: string
-          product_id?: string | null
-          quantity?: number
-          size_id: string
-          size_name: string
-          updated_at?: string | null
+          preco_por_hora?: number
+          updated_at?: string
+          valor_minimo?: number
         }
         Update: {
-          color?: string | null
-          created_at?: string | null
+          capacidade_total?: number
+          created_at?: string
           id?: string
-          product_id?: string | null
-          quantity?: number
-          size_id?: string
-          size_name?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "product_size_quantities_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      products: {
-        Row: {
-          additional_option: string | null
-          chest_measurement: string | null
-          created_at: string | null
-          custom_measurements: Json | null
-          description: string | null
-          embroidery_type: string | null
-          fabric_type: string | null
-          hip_measurement: string | null
-          id: string
-          length_measurement: string | null
-          neck_measurement: string | null
-          order_id: number | null
-          product_type: string | null
-          quantity: number
-          shirt_color: string | null
-          shoulder_measurement: string | null
-          size: string | null
-          sleeve_measurement: string | null
-          sleeve_type: string | null
-          unit_cost: number
-          updated_at: string | null
-          waist_measurement: string | null
-        }
-        Insert: {
-          additional_option?: string | null
-          chest_measurement?: string | null
-          created_at?: string | null
-          custom_measurements?: Json | null
-          description?: string | null
-          embroidery_type?: string | null
-          fabric_type?: string | null
-          hip_measurement?: string | null
-          id?: string
-          length_measurement?: string | null
-          neck_measurement?: string | null
-          order_id?: number | null
-          product_type?: string | null
-          quantity?: number
-          shirt_color?: string | null
-          shoulder_measurement?: string | null
-          size?: string | null
-          sleeve_measurement?: string | null
-          sleeve_type?: string | null
-          unit_cost?: number
-          updated_at?: string | null
-          waist_measurement?: string | null
-        }
-        Update: {
-          additional_option?: string | null
-          chest_measurement?: string | null
-          created_at?: string | null
-          custom_measurements?: Json | null
-          description?: string | null
-          embroidery_type?: string | null
-          fabric_type?: string | null
-          hip_measurement?: string | null
-          id?: string
-          length_measurement?: string | null
-          neck_measurement?: string | null
-          order_id?: number | null
-          product_type?: string | null
-          quantity?: number
-          shirt_color?: string | null
-          shoulder_measurement?: string | null
-          size?: string | null
-          sleeve_measurement?: string | null
-          sleeve_type?: string | null
-          unit_cost?: number
-          updated_at?: string | null
-          waist_measurement?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "products_order_id_fkey"
-            columns: ["order_id"]
-            isOneToOne: false
-            referencedRelation: "orders"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          address: string | null
-          cpf: string | null
-          created_at: string | null
-          email: string | null
-          id: string
-          name: string | null
-          neighborhood: string | null
-          phone: string | null
-          photo_url: string | null
-          pix: string | null
-          state: string | null
-          updated_at: string | null
-          zip_code: string | null
-        }
-        Insert: {
-          address?: string | null
-          cpf?: string | null
-          created_at?: string | null
-          email?: string | null
-          id: string
-          name?: string | null
-          neighborhood?: string | null
-          phone?: string | null
-          photo_url?: string | null
-          pix?: string | null
-          state?: string | null
-          updated_at?: string | null
-          zip_code?: string | null
-        }
-        Update: {
-          address?: string | null
-          cpf?: string | null
-          created_at?: string | null
-          email?: string | null
-          id?: string
-          name?: string | null
-          neighborhood?: string | null
-          phone?: string | null
-          photo_url?: string | null
-          pix?: string | null
-          state?: string | null
-          updated_at?: string | null
-          zip_code?: string | null
+          preco_por_hora?: number
+          updated_at?: string
+          valor_minimo?: number
         }
         Relationships: []
       }
-      service_order_payments: {
+      extratos: {
         Row: {
-          created_at: string | null
-          description: string | null
+          criado_em: string
+          dados_pagamento: Json | null
           id: string
-          method: string
-          service_order_id: string | null
-          updated_at: string | null
-          value: number
+          metodo_pagamento: string | null
+          status_pagamento: string | null
+          tipo_transacao: string
+          valor: number
+          veiculo_id: string
         }
         Insert: {
-          created_at?: string | null
-          description?: string | null
+          criado_em?: string
+          dados_pagamento?: Json | null
           id?: string
-          method: string
-          service_order_id?: string | null
-          updated_at?: string | null
-          value: number
+          metodo_pagamento?: string | null
+          status_pagamento?: string | null
+          tipo_transacao: string
+          valor: number
+          veiculo_id: string
         }
         Update: {
-          created_at?: string | null
-          description?: string | null
+          criado_em?: string
+          dados_pagamento?: Json | null
           id?: string
-          method?: string
-          service_order_id?: string | null
-          updated_at?: string | null
-          value?: number
+          metodo_pagamento?: string | null
+          status_pagamento?: string | null
+          tipo_transacao?: string
+          valor?: number
+          veiculo_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "service_order_payments_service_order_id_fkey"
-            columns: ["service_order_id"]
+            foreignKeyName: "extratos_veiculo_id_fkey"
+            columns: ["veiculo_id"]
             isOneToOne: false
-            referencedRelation: "service_orders"
+            referencedRelation: "veiculos"
             referencedColumns: ["id"]
           },
         ]
-      }
-      service_order_products: {
-        Row: {
-          additional_option: string | null
-          chest_measurement: string | null
-          created_at: string | null
-          custom_measurements: Json | null
-          description: string | null
-          embroidery_type: string | null
-          fabric_type: string | null
-          hip_measurement: string | null
-          id: string
-          length_measurement: string | null
-          neck_measurement: string | null
-          product_type: string | null
-          quantity: number
-          service_order_id: string | null
-          shirt_color: string | null
-          shoulder_measurement: string | null
-          size: string | null
-          sleeve_measurement: string | null
-          sleeve_type: string | null
-          unit_cost: number
-          updated_at: string | null
-          waist_measurement: string | null
-        }
-        Insert: {
-          additional_option?: string | null
-          chest_measurement?: string | null
-          created_at?: string | null
-          custom_measurements?: Json | null
-          description?: string | null
-          embroidery_type?: string | null
-          fabric_type?: string | null
-          hip_measurement?: string | null
-          id?: string
-          length_measurement?: string | null
-          neck_measurement?: string | null
-          product_type?: string | null
-          quantity?: number
-          service_order_id?: string | null
-          shirt_color?: string | null
-          shoulder_measurement?: string | null
-          size?: string | null
-          sleeve_measurement?: string | null
-          sleeve_type?: string | null
-          unit_cost?: number
-          updated_at?: string | null
-          waist_measurement?: string | null
-        }
-        Update: {
-          additional_option?: string | null
-          chest_measurement?: string | null
-          created_at?: string | null
-          custom_measurements?: Json | null
-          description?: string | null
-          embroidery_type?: string | null
-          fabric_type?: string | null
-          hip_measurement?: string | null
-          id?: string
-          length_measurement?: string | null
-          neck_measurement?: string | null
-          product_type?: string | null
-          quantity?: number
-          service_order_id?: string | null
-          shirt_color?: string | null
-          shoulder_measurement?: string | null
-          size?: string | null
-          sleeve_measurement?: string | null
-          sleeve_type?: string | null
-          unit_cost?: number
-          updated_at?: string | null
-          waist_measurement?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_order_products_service_order_id_fkey"
-            columns: ["service_order_id"]
-            isOneToOne: false
-            referencedRelation: "service_orders"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      service_orders: {
-        Row: {
-          additional_fee: number | null
-          additional_fee_description: string | null
-          additional_options: Json | null
-          adjustments: Json | null
-          created_at: string | null
-          customer_id: number | null
-          deadline: string | null
-          deposit_value: number | null
-          description: string | null
-          discount: number | null
-          id: string
-          includes_logo: boolean | null
-          logo_custom_height: string | null
-          logo_custom_width: string | null
-          logo_description: string | null
-          logo_positions: string[] | null
-          logo_size: string | null
-          needs_logo_creation: boolean | null
-          payment_method: string | null
-          payment_methods: Json | null
-          payment_status: string
-          remaining_balance: number | null
-          service_name: string
-          service_number: string | null
-          special_instructions: string | null
-          status: string
-          total_price: number
-          updated_at: string | null
-        }
-        Insert: {
-          additional_fee?: number | null
-          additional_fee_description?: string | null
-          additional_options?: Json | null
-          adjustments?: Json | null
-          created_at?: string | null
-          customer_id?: number | null
-          deadline?: string | null
-          deposit_value?: number | null
-          description?: string | null
-          discount?: number | null
-          id?: string
-          includes_logo?: boolean | null
-          logo_custom_height?: string | null
-          logo_custom_width?: string | null
-          logo_description?: string | null
-          logo_positions?: string[] | null
-          logo_size?: string | null
-          needs_logo_creation?: boolean | null
-          payment_method?: string | null
-          payment_methods?: Json | null
-          payment_status?: string
-          remaining_balance?: number | null
-          service_name: string
-          service_number?: string | null
-          special_instructions?: string | null
-          status?: string
-          total_price?: number
-          updated_at?: string | null
-        }
-        Update: {
-          additional_fee?: number | null
-          additional_fee_description?: string | null
-          additional_options?: Json | null
-          adjustments?: Json | null
-          created_at?: string | null
-          customer_id?: number | null
-          deadline?: string | null
-          deposit_value?: number | null
-          description?: string | null
-          discount?: number | null
-          id?: string
-          includes_logo?: boolean | null
-          logo_custom_height?: string | null
-          logo_custom_width?: string | null
-          logo_description?: string | null
-          logo_positions?: string[] | null
-          logo_size?: string | null
-          needs_logo_creation?: boolean | null
-          payment_method?: string | null
-          payment_methods?: Json | null
-          payment_status?: string
-          remaining_balance?: number | null
-          service_name?: string
-          service_number?: string | null
-          special_instructions?: string | null
-          status?: string
-          total_price?: number
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_orders_customer_id_fkey"
-            columns: ["customer_id"]
-            isOneToOne: false
-            referencedRelation: "customers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      service_product_size_quantities: {
-        Row: {
-          color: string | null
-          created_at: string | null
-          id: string
-          product_id: string | null
-          quantity: number
-          size_id: string
-          size_name: string
-          updated_at: string | null
-        }
-        Insert: {
-          color?: string | null
-          created_at?: string | null
-          id?: string
-          product_id?: string | null
-          quantity?: number
-          size_id: string
-          size_name: string
-          updated_at?: string | null
-        }
-        Update: {
-          color?: string | null
-          created_at?: string | null
-          id?: string
-          product_id?: string | null
-          quantity?: number
-          size_id?: string
-          size_name?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "service_product_size_quantities_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "service_order_products"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      sizes: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: number
-          name: string
-          order_index: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name: string
-          order_index?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name?: string
-          order_index?: number | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      sleeve_types: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: number
-          name: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: number
-          name?: string
-          updated_at?: string | null
-        }
-        Relationships: []
       }
       tickets: {
         Row: {
-          area: string | null
-          created_at: string | null
-          event_id: string | null
-          price: number
-          purchase_date: string | null
-          security_code: string | null
-          status: string | null
-          ticket_id: string
-          updated_at: string | null
-          user_id: string | null
+          criado_em: string
+          dados_ticket: Json
+          id: string
+          qr_code: string | null
+          tipo: string
+          veiculo_id: string
         }
         Insert: {
-          area?: string | null
-          created_at?: string | null
-          event_id?: string | null
-          price: number
-          purchase_date?: string | null
-          security_code?: string | null
-          status?: string | null
-          ticket_id?: string
-          updated_at?: string | null
-          user_id?: string | null
+          criado_em?: string
+          dados_ticket: Json
+          id?: string
+          qr_code?: string | null
+          tipo: string
+          veiculo_id: string
         }
         Update: {
-          area?: string | null
-          created_at?: string | null
-          event_id?: string | null
-          price?: number
-          purchase_date?: string | null
-          security_code?: string | null
-          status?: string | null
-          ticket_id?: string
-          updated_at?: string | null
-          user_id?: string | null
+          criado_em?: string
+          dados_ticket?: Json
+          id?: string
+          qr_code?: string | null
+          tipo?: string
+          veiculo_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "tickets_event_id_fkey"
-            columns: ["event_id"]
+            foreignKeyName: "tickets_veiculo_id_fkey"
+            columns: ["veiculo_id"]
             isOneToOne: false
-            referencedRelation: "events"
+            referencedRelation: "veiculos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vagas_estacionamento: {
+        Row: {
+          ala: string
+          ativo: boolean | null
+          criado_em: string
+          id: string
+          numero: number
+          ocupada: boolean | null
+          tipo: string | null
+          veiculo_id: string | null
+        }
+        Insert: {
+          ala: string
+          ativo?: boolean | null
+          criado_em?: string
+          id?: string
+          numero: number
+          ocupada?: boolean | null
+          tipo?: string | null
+          veiculo_id?: string | null
+        }
+        Update: {
+          ala?: string
+          ativo?: boolean | null
+          criado_em?: string
+          id?: string
+          numero?: number
+          ocupada?: boolean | null
+          tipo?: string | null
+          veiculo_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vagas_estacionamento_veiculo_id_fkey"
+            columns: ["veiculo_id"]
+            isOneToOne: false
+            referencedRelation: "veiculos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      veiculos: {
+        Row: {
+          ativo: boolean
+          cor: string
+          cpf: string
+          created_at: string
+          descricao: string | null
+          email: string
+          endereco: string | null
+          hora_entrada: string
+          hora_saida: string | null
+          id: string
+          modelo: string
+          nome: string
+          placa: string
+          qr_code: string | null
+          telefone: string | null
+          vaga_id: string | null
+          valor_pago: number | null
+        }
+        Insert: {
+          ativo?: boolean
+          cor: string
+          cpf: string
+          created_at?: string
+          descricao?: string | null
+          email: string
+          endereco?: string | null
+          hora_entrada?: string
+          hora_saida?: string | null
+          id?: string
+          modelo: string
+          nome: string
+          placa: string
+          qr_code?: string | null
+          telefone?: string | null
+          vaga_id?: string | null
+          valor_pago?: number | null
+        }
+        Update: {
+          ativo?: boolean
+          cor?: string
+          cpf?: string
+          created_at?: string
+          descricao?: string | null
+          email?: string
+          endereco?: string | null
+          hora_entrada?: string
+          hora_saida?: string | null
+          id?: string
+          modelo?: string
+          nome?: string
+          placa?: string
+          qr_code?: string | null
+          telefone?: string | null
+          vaga_id?: string | null
+          valor_pago?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "veiculos_vaga_id_fkey"
+            columns: ["vaga_id"]
+            isOneToOne: false
+            referencedRelation: "vagas_estacionamento"
             referencedColumns: ["id"]
           },
         ]
