@@ -1,13 +1,14 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Navbar } from "@/components/Navbar";
 import { toast } from "sonner";
-import { Calendar, MapPin, CreditCard, Scan, DollarSign } from "lucide-react";
+import { Calendar, MapPin, CreditCard, Scan, DollarSign, Copy, Check } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DigitalTicket } from "@/components/DigitalTicket";
+import { supabase } from "@/integrations/supabase/client";
+import QRCode from "qrcode.react";
 
 // Mock events data - In a real app this would come from an API
 const mockEvents = [
@@ -45,6 +46,10 @@ const BuyTicket = () => {
   const [showTicket, setShowTicket] = useState(false);
   const [ticketData, setTicketData] = useState<any>(null);
   const [eventData, setEventData] = useState<any>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [pixData, setPixData] = useState<any>(null);
+  const [showPixPayment, setShowPixPayment] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     // Find the event in our mock data
@@ -99,13 +104,67 @@ const BuyTicket = () => {
     };
   };
 
-  const handlePurchase = () => {
+  const handlePixPayment = async () => {
+    setIsProcessingPayment(true);
+    
+    try {
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+      if (!userData.name || !userData.cpf) {
+        toast.error("Por favor, faça login novamente com seus dados completos");
+        navigate("/login");
+        return;
+      }
+
+      console.log("Iniciando pagamento PIX...");
+      
+      const { data, error } = await supabase.functions.invoke('create-pix-payment', {
+        body: {
+          customerData: {
+            name: userData.name,
+            email: userData.email || 'cliente@exemplo.com',
+            document: userData.cpf,
+            phone: userData.phone || '(11) 99999-9999'
+          },
+          total: eventData.price * quantity,
+          metadata: {
+            eventTitle: eventData.title,
+            eventId: eventData.id,
+            quantity: quantity,
+            customer_id: userData.cpf.replace(/\D/g, ''),
+            order_id: `order_${Date.now()}`
+          }
+        }
+      });
+
+      if (error) {
+        console.error("Erro na função PIX:", error);
+        throw new Error(error.message);
+      }
+
+      if (!data.success) {
+        throw new Error(data.error || "Erro ao gerar PIX");
+      }
+
+      console.log("PIX gerado com sucesso:", data);
+      setPixData(data);
+      setShowPixPayment(true);
+      toast.success("PIX gerado com sucesso! Escaneie o QR Code para pagar.");
+
+    } catch (error) {
+      console.error("Erro ao processar pagamento PIX:", error);
+      toast.error(`Erro ao gerar PIX: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  const handleCreditCardPayment = () => {
+    // Simular processamento do cartão
     const ticket = generateTicketData();
     if (ticket) {
       setTicketData(ticket);
       setShowTicket(true);
       
-      // Salvar a compra no localStorage
       const purchase = {
         id: ticket.ticketId,
         eventTitle: eventData.title,
@@ -122,7 +181,50 @@ const BuyTicket = () => {
     }
   };
 
-  const totalPrice = eventData.price * quantity;
+  const handlePurchase = () => {
+    if (paymentMethod === "pix") {
+      handlePixPayment();
+    } else {
+      handleCreditCardPayment();
+    }
+  };
+
+  const copyPixCode = () => {
+    if (pixData?.qrCode) {
+      navigator.clipboard.writeText(pixData.qrCode);
+      setCopied(true);
+      toast.success("Código PIX copiado!");
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const simulatePixPayment = () => {
+    // Simular que o pagamento foi confirmado
+    const ticket = generateTicketData();
+    if (ticket) {
+      setTicketData(ticket);
+      setShowTicket(true);
+      setShowPixPayment(false);
+      
+      const purchase = {
+        id: ticket.ticketId,
+        eventTitle: eventData.title,
+        date: eventData.date,
+        price: eventData.price,
+        ticket: ticket,
+        paymentMethod: 'PIX',
+        pixOrderId: pixData?.orderId
+      };
+      
+      const existingPurchases = JSON.parse(localStorage.getItem('purchases') || '[]');
+      const updatedPurchases = [...existingPurchases, purchase];
+      localStorage.setItem('purchases', JSON.stringify(updatedPurchases));
+      
+      toast.success("Pagamento PIX confirmado! Ingresso gerado.");
+    }
+  };
+
+  const totalPrice = eventData?.price * quantity || 0;
 
   if (showTicket && ticketData) {
     return (
@@ -133,6 +235,92 @@ const BuyTicket = () => {
           <div className="flex justify-center mt-6">
             <Button onClick={() => navigate("/")}>Voltar para Home</Button>
           </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (showPixPayment && pixData) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="container mx-auto px-4 pt-24 pb-12">
+          <Card className="max-w-2xl mx-auto">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl font-bold text-green-600">
+                PIX Gerado com Sucesso!
+              </CardTitle>
+              <p className="text-muted-foreground">
+                Escaneie o QR Code ou copie o código para realizar o pagamento
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex flex-col items-center space-y-4">
+                {pixData.qrCode && (
+                  <div className="p-4 bg-white rounded-lg border">
+                    <QRCode value={pixData.qrCode} size={200} />
+                  </div>
+                )}
+                
+                <div className="w-full space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium">Valor:</span>
+                    <span className="font-bold">R$ {(pixData.amount / 100).toFixed(2)}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-sm font-medium">Expira em:</span>
+                    <span className="text-sm">
+                      {pixData.expiresAt ? new Date(pixData.expiresAt).toLocaleString('pt-BR') : '15 minutos'}
+                    </span>
+                  </div>
+
+                  {pixData.qrCode && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">Código PIX:</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={pixData.qrCode}
+                          readOnly
+                          className="flex-1 p-2 text-xs border rounded font-mono bg-gray-50"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={copyPixCode}
+                          className="px-3"
+                        >
+                          {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="text-center space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Após realizar o pagamento, clique no botão abaixo para confirmar e gerar seu ingresso.
+                </p>
+                
+                <Button 
+                  onClick={simulatePixPayment}
+                  className="w-full bg-green-600 hover:bg-green-700"
+                >
+                  Confirmar Pagamento PIX
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowPixPayment(false)}
+                  className="w-full"
+                >
+                  Voltar
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </main>
       </div>
     );
@@ -212,6 +400,7 @@ const BuyTicket = () => {
                     PIX
                   </TabsTrigger>
                 </TabsList>
+                
                 <TabsContent value="credit" className="space-y-4">
                   <div className="grid gap-4">
                     <div className="grid gap-2">
@@ -242,16 +431,21 @@ const BuyTicket = () => {
                     </div>
                   </div>
                 </TabsContent>
+                
                 <TabsContent value="pix" className="space-y-4">
-                  <div className="flex flex-col items-center space-y-4">
-                    <img 
-                      src="/placeholder.svg" 
-                      alt="QR Code PIX"
-                      className="w-48 h-48 border rounded-lg"
-                    />
-                    <p className="text-sm text-muted-foreground text-center">
-                      Escaneie o QR Code acima com seu aplicativo de pagamento
-                    </p>
+                  <div className="flex flex-col items-center space-y-4 p-6 border rounded-lg bg-gradient-to-br from-green-50 to-blue-50">
+                    <Scan className="h-12 w-12 text-green-600" />
+                    <div className="text-center">
+                      <h4 className="font-semibold text-lg">Pagamento via PIX</h4>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Você receberá um QR Code para realizar o pagamento instantaneamente
+                      </p>
+                      <div className="mt-4 space-y-2">
+                        <p className="text-sm">✅ Aprovação instantânea</p>
+                        <p className="text-sm">✅ Sem taxas adicionais</p>
+                        <p className="text-sm">✅ Disponível 24h por dia</p>
+                      </div>
+                    </div>
                   </div>
                 </TabsContent>
               </Tabs>
@@ -272,8 +466,11 @@ const BuyTicket = () => {
             <Button variant="outline" onClick={() => navigate(-1)}>
               Voltar
             </Button>
-            <Button onClick={handlePurchase}>
-              Finalizar Compra
+            <Button 
+              onClick={handlePurchase}
+              disabled={isProcessingPayment}
+            >
+              {isProcessingPayment ? "Processando..." : "Finalizar Compra"}
             </Button>
           </CardFooter>
         </Card>
