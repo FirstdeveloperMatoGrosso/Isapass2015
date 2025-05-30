@@ -9,285 +9,184 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      auditoria_erros: {
+      events: {
         Row: {
-          criado_em: string
-          dados_erro: Json | null
-          descricao: string
+          areas: Json | null
+          attractions: Json | null
+          classification: string | null
+          created_at: string
+          current_sales: number | null
+          date: string
+          description: string | null
           id: string
-          resolvido: boolean | null
-          tipo_erro: string
-          veiculo_id: string | null
+          image_url: string | null
+          location: string | null
+          max_capacity: number | null
+          organizer_id: string | null
+          price: number
+          status: string | null
+          title: string
+          updated_at: string
         }
         Insert: {
-          criado_em?: string
-          dados_erro?: Json | null
-          descricao: string
+          areas?: Json | null
+          attractions?: Json | null
+          classification?: string | null
+          created_at?: string
+          current_sales?: number | null
+          date: string
+          description?: string | null
           id?: string
-          resolvido?: boolean | null
-          tipo_erro: string
-          veiculo_id?: string | null
+          image_url?: string | null
+          location?: string | null
+          max_capacity?: number | null
+          organizer_id?: string | null
+          price?: number
+          status?: string | null
+          title: string
+          updated_at?: string
         }
         Update: {
-          criado_em?: string
-          dados_erro?: Json | null
-          descricao?: string
+          areas?: Json | null
+          attractions?: Json | null
+          classification?: string | null
+          created_at?: string
+          current_sales?: number | null
+          date?: string
+          description?: string | null
           id?: string
-          resolvido?: boolean | null
-          tipo_erro?: string
-          veiculo_id?: string | null
+          image_url?: string | null
+          location?: string | null
+          max_capacity?: number | null
+          organizer_id?: string | null
+          price?: number
+          status?: string | null
+          title?: string
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "auditoria_erros_veiculo_id_fkey"
-            columns: ["veiculo_id"]
+            foreignKeyName: "events_organizer_id_fkey"
+            columns: ["organizer_id"]
             isOneToOne: false
-            referencedRelation: "veiculos"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
-      clientes: {
+      profiles: {
         Row: {
-          cpf: string
+          address: string | null
+          cpf: string | null
           created_at: string
-          email: string
-          endereco: string | null
+          email: string | null
           id: string
-          nome: string
-          telefone: string | null
+          name: string | null
+          neighborhood: string | null
+          phone: string | null
+          photo_url: string | null
+          pix: string | null
+          state: string | null
           updated_at: string
+          zip_code: string | null
         }
         Insert: {
-          cpf: string
+          address?: string | null
+          cpf?: string | null
           created_at?: string
-          email: string
-          endereco?: string | null
-          id?: string
-          nome: string
-          telefone?: string | null
+          email?: string | null
+          id: string
+          name?: string | null
+          neighborhood?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          pix?: string | null
+          state?: string | null
           updated_at?: string
+          zip_code?: string | null
         }
         Update: {
-          cpf?: string
+          address?: string | null
+          cpf?: string | null
           created_at?: string
-          email?: string
-          endereco?: string | null
+          email?: string | null
           id?: string
-          nome?: string
-          telefone?: string | null
+          name?: string | null
+          neighborhood?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          pix?: string | null
+          state?: string | null
           updated_at?: string
+          zip_code?: string | null
         }
         Relationships: []
-      }
-      configuracoes_estacionamento: {
-        Row: {
-          capacidade_total: number
-          created_at: string
-          id: string
-          preco_por_hora: number
-          updated_at: string
-          valor_minimo: number
-        }
-        Insert: {
-          capacidade_total?: number
-          created_at?: string
-          id?: string
-          preco_por_hora?: number
-          updated_at?: string
-          valor_minimo?: number
-        }
-        Update: {
-          capacidade_total?: number
-          created_at?: string
-          id?: string
-          preco_por_hora?: number
-          updated_at?: string
-          valor_minimo?: number
-        }
-        Relationships: []
-      }
-      extratos: {
-        Row: {
-          criado_em: string
-          dados_pagamento: Json | null
-          id: string
-          metodo_pagamento: string | null
-          status_pagamento: string | null
-          tipo_transacao: string
-          valor: number
-          veiculo_id: string
-        }
-        Insert: {
-          criado_em?: string
-          dados_pagamento?: Json | null
-          id?: string
-          metodo_pagamento?: string | null
-          status_pagamento?: string | null
-          tipo_transacao: string
-          valor: number
-          veiculo_id: string
-        }
-        Update: {
-          criado_em?: string
-          dados_pagamento?: Json | null
-          id?: string
-          metodo_pagamento?: string | null
-          status_pagamento?: string | null
-          tipo_transacao?: string
-          valor?: number
-          veiculo_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "extratos_veiculo_id_fkey"
-            columns: ["veiculo_id"]
-            isOneToOne: false
-            referencedRelation: "veiculos"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       tickets: {
         Row: {
-          criado_em: string
-          dados_ticket: Json
-          id: string
-          qr_code: string | null
-          tipo: string
-          veiculo_id: string
-        }
-        Insert: {
-          criado_em?: string
-          dados_ticket: Json
-          id?: string
-          qr_code?: string | null
-          tipo: string
-          veiculo_id: string
-        }
-        Update: {
-          criado_em?: string
-          dados_ticket?: Json
-          id?: string
-          qr_code?: string | null
-          tipo?: string
-          veiculo_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tickets_veiculo_id_fkey"
-            columns: ["veiculo_id"]
-            isOneToOne: false
-            referencedRelation: "veiculos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      vagas_estacionamento: {
-        Row: {
-          ala: string
-          ativo: boolean | null
-          criado_em: string
-          id: string
-          numero: number
-          ocupada: boolean | null
-          tipo: string | null
-          veiculo_id: string | null
-        }
-        Insert: {
-          ala: string
-          ativo?: boolean | null
-          criado_em?: string
-          id?: string
-          numero: number
-          ocupada?: boolean | null
-          tipo?: string | null
-          veiculo_id?: string | null
-        }
-        Update: {
-          ala?: string
-          ativo?: boolean | null
-          criado_em?: string
-          id?: string
-          numero?: number
-          ocupada?: boolean | null
-          tipo?: string | null
-          veiculo_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "vagas_estacionamento_veiculo_id_fkey"
-            columns: ["veiculo_id"]
-            isOneToOne: false
-            referencedRelation: "veiculos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      veiculos: {
-        Row: {
-          ativo: boolean
-          cor: string
-          cpf: string
+          area: string | null
           created_at: string
-          descricao: string | null
-          email: string
-          endereco: string | null
-          hora_entrada: string
-          hora_saida: string | null
+          event_id: string
           id: string
-          modelo: string
-          nome: string
-          placa: string
+          payment_data: Json | null
+          payment_method: string | null
+          payment_status: string | null
+          price: number
+          purchase_date: string
           qr_code: string | null
-          telefone: string | null
-          vaga_id: string | null
-          valor_pago: number | null
+          security_code: string | null
+          status: string | null
+          ticket_id: string
+          updated_at: string
+          user_id: string
         }
         Insert: {
-          ativo?: boolean
-          cor: string
-          cpf: string
+          area?: string | null
           created_at?: string
-          descricao?: string | null
-          email: string
-          endereco?: string | null
-          hora_entrada?: string
-          hora_saida?: string | null
+          event_id: string
           id?: string
-          modelo: string
-          nome: string
-          placa: string
+          payment_data?: Json | null
+          payment_method?: string | null
+          payment_status?: string | null
+          price: number
+          purchase_date?: string
           qr_code?: string | null
-          telefone?: string | null
-          vaga_id?: string | null
-          valor_pago?: number | null
+          security_code?: string | null
+          status?: string | null
+          ticket_id?: string
+          updated_at?: string
+          user_id: string
         }
         Update: {
-          ativo?: boolean
-          cor?: string
-          cpf?: string
+          area?: string | null
           created_at?: string
-          descricao?: string | null
-          email?: string
-          endereco?: string | null
-          hora_entrada?: string
-          hora_saida?: string | null
+          event_id?: string
           id?: string
-          modelo?: string
-          nome?: string
-          placa?: string
+          payment_data?: Json | null
+          payment_method?: string | null
+          payment_status?: string | null
+          price?: number
+          purchase_date?: string
           qr_code?: string | null
-          telefone?: string | null
-          vaga_id?: string | null
-          valor_pago?: number | null
+          security_code?: string | null
+          status?: string | null
+          ticket_id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "veiculos_vaga_id_fkey"
-            columns: ["vaga_id"]
+            foreignKeyName: "tickets_event_id_fkey"
+            columns: ["event_id"]
             isOneToOne: false
-            referencedRelation: "vagas_estacionamento"
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

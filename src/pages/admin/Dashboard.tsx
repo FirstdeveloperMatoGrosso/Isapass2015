@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Calendar, CreditCard, AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
