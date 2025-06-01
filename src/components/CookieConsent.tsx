@@ -2,18 +2,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
+
 
 export const CookieConsent = () => {
   const [showConsent, setShowConsent] = useState(true);
   const [showPreferences, setShowPreferences] = useState(false);
-  const { toast } = useToast();
+
   
   const handleAccept = () => {
     setShowConsent(false);
-    toast({
-      description: "Preferências de cookies salvas com sucesso!"
-    });
+
   };
   
   if (!showConsent) {

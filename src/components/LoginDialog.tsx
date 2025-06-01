@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+
 import { supabase } from "@/integrations/supabase/client";
 import { Ticket, Upload } from "lucide-react";
 
@@ -24,6 +24,7 @@ interface LoginDialogProps {
 export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogProps) => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -47,22 +48,23 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    setErrorMessage("");
     e.preventDefault();
 
     if (!isLogin) {
       // Verificar campos obrigatórios
       if (!formData.name || !formData.email || !formData.cpf || !formData.password || !formData.confirmPassword) {
-        toast.error("Por favor, preencha todos os campos obrigatórios");
+        setErrorMessage("Por favor, preencha todos os campos obrigatórios");
         return;
       }
 
       if (formData.password !== formData.confirmPassword) {
-        toast.error("As senhas não coincidem");
+        setErrorMessage("As senhas não conferem");
         return;
       }
 
       if (formData.password.length < 6) {
-        toast.error("A senha deve ter pelo menos 6 caracteres");
+        setErrorMessage("A senha deve ter pelo menos 6 caracteres");
         return;
       }
 
@@ -99,7 +101,6 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
           if (profileError) throw profileError;
         }
 
-        toast.success("Conta criada com sucesso! Verifique seu email para confirmar o cadastro.");
         setIsLogin(true);
         setFormData({
           name: "",
@@ -115,13 +116,12 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
           confirmPassword: ""
         });
       } catch (error: any) {
-        toast.error(`Erro ao criar conta: ${error.message}`);
-        console.error("Erro ao criar conta:", error);
+        setErrorMessage(error.message || "Erro ao criar conta");
       }
     } else {
       // Login
       if (!formData.email || !formData.password) {
-        toast.error("Por favor, preencha todos os campos");
+        setErrorMessage("Por favor, preencha email e senha");
         return;
       }
 
@@ -133,7 +133,6 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
 
         if (error) throw error;
 
-        toast.success("Login realizado com sucesso!");
         onClose();
         
         // Here's the key change - if isAdmin is true, always navigate to admin panel
@@ -143,8 +142,7 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
           navigate("/dashboard");
         }
       } catch (error: any) {
-        toast.error(`Erro ao fazer login: ${error.message}`);
-        console.error("Erro ao fazer login:", error);
+        setErrorMessage("Email ou senha incorretos");
       }
     }
   };
@@ -186,6 +184,11 @@ export const LoginDialog = ({ isOpen, onClose, isAdmin = false }: LoginDialogPro
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+          {errorMessage && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+              <span className="block sm:inline">{errorMessage}</span>
+            </div>
+          )}
           {!isLogin && (
             <>
               <Input 
