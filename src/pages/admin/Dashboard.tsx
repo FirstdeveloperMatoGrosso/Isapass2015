@@ -80,21 +80,21 @@ const DashboardPage = () => {
   ];
 
   return (
-    <div className="p-4">
-      <div className="flex flex-col gap-1 mb-4">
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Dashboard</h2>
+    <div className="p-6 bg-gradient-to-b from-background to-background/80 min-h-screen">
+      <div className="flex flex-col gap-4 mb-8">
+        <h2 className="text-3xl md:text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">Dashboard</h2>
         <p className="text-muted-foreground">
           Bem-vindo ao seu painel de controle
         </p>
       </div>
       
-      <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-4">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 mb-8">
         {stats.map((stat) => (
           <Card 
-            key={stat.title} 
-            className="overflow-hidden transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+            key={stat.title}
+            className="group hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 border-primary/10 hover:border-primary/20 backdrop-blur bg-background/60"
           >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 p-6">
               <CardTitle className="text-sm font-medium">
                 {stat.title}
               </CardTitle>
@@ -102,8 +102,8 @@ const DashboardPage = () => {
                 <stat.icon className="h-4 w-4" />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold mb-1">{stat.value}</div>
+            <CardContent className="p-6 pt-0">
+              <div className="text-2xl font-bold mb-1 group-hover:text-primary transition-colors">{stat.value}</div>
               <p className="text-xs text-muted-foreground">
                 {stat.description}
               </p>
@@ -112,19 +112,21 @@ const DashboardPage = () => {
         ))}
       </div>
 
-      <div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
-        <Card className="col-span-1">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+        <Card className="col-span-1 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 border-primary/10 hover:border-primary/20 backdrop-blur bg-background/60">
           <CardHeader>
-            <CardTitle>Atividade Recente</CardTitle>
+            <CardTitle className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">Atividade Recente</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-1">
               {[1, 2, 3].map((item) => (
                 <div 
                   key={item}
-                  className="flex items-center gap-4 p-3 rounded-lg border bg-card/50 transition-colors hover:bg-accent/50"
+                  className="flex items-center gap-6 p-5 rounded-lg border border-primary/10 bg-gradient-to-r from-background/80 to-background hover:from-primary/5 hover:to-background transition-all duration-300 hover:border-primary/20 hover:shadow-sm"
                 >
-                  <div className="h-2 w-2 rounded-full bg-primary" />
+                  <div className="rounded-full p-2 bg-gradient-to-br from-primary/20 to-primary/10 group-hover:from-primary/30 group-hover:to-primary/20 transition-all duration-300">
+                    <Calendar className="h-6 w-6 text-primary" />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">
                       Novo pedido realizado
@@ -139,18 +141,18 @@ const DashboardPage = () => {
           </CardContent>
         </Card>
 
-        <Card className="col-span-1">
+        <Card className="col-span-1 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 border-primary/10 hover:border-primary/20 backdrop-blur bg-background/60">
           <CardHeader>
-            <CardTitle>Próximos Eventos</CardTitle>
+            <CardTitle className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">Próximos Eventos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
+            <div className="space-y-1">
               {[1, 2, 3].map((item) => (
                 <div 
                   key={item}
-                  className="flex items-center gap-4 p-3 rounded-lg border bg-card/50 transition-colors hover:bg-accent/50"
+                  className="flex items-center gap-6 p-5 rounded-lg border border-primary/10 bg-gradient-to-r from-background/80 to-background hover:from-primary/5 hover:to-background transition-all duration-300 hover:border-primary/20 hover:shadow-sm"
                 >
-                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center transform group-hover:scale-105 transition-all duration-300">
                     <Calendar className="h-6 w-6 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">

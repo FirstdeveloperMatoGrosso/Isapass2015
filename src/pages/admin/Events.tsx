@@ -176,92 +176,67 @@ const EventsPage = () => {
       </div>
       
       {isCreating ? (
-        <Card className="shadow-lg">
-          <CardHeader>
-            <CardTitle>{isEditing ? "Editar Evento" : "Criar Novo Evento"}</CardTitle>
+        <Card className="w-full max-w-4xl mx-auto hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 border-primary/10 hover:border-primary/20 backdrop-blur bg-background/60">
+          <CardHeader className="p-6">
+            <CardTitle className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
+              {isEditing ? "Editar Evento" : "Novo Evento"}
+            </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-6 pt-0">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Nome do Evento</Label>
+                  <Label htmlFor="title" className="text-sm font-medium text-muted-foreground">Título do Evento</Label>
                   <Input
                     id="title"
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
+                    className="bg-background/50"
                     required
-                    className="transition-all duration-200 focus:ring-2 focus:ring-primary"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
-                  <Label htmlFor="date">Data</Label>
+                  <Label htmlFor="date" className="text-sm font-medium text-muted-foreground">Data</Label>
                   <Input
                     id="date"
                     name="date"
                     type="date"
                     value={formData.date}
                     onChange={handleInputChange}
+                    className="bg-background/50"
                     required
-                    className="transition-all duration-200 focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="time">Horário</Label>
+                  <Label htmlFor="time" className="text-sm font-medium text-muted-foreground">Horário</Label>
                   <Input
                     id="time"
                     name="time"
                     type="time"
                     value={formData.time}
                     onChange={handleInputChange}
+                    className="bg-background/50"
                     required
-                    className="transition-all duration-200 focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="location">Local</Label>
+                  <Label htmlFor="location" className="text-sm font-medium text-muted-foreground">Local</Label>
                   <Input
                     id="location"
                     name="location"
                     value={formData.location}
                     onChange={handleInputChange}
+                    className="bg-background/50"
                     required
-                    className="transition-all duration-200 focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="classification">Classificação</Label>
-                  <Input
-                    id="classification"
-                    name="classification"
-                    value={formData.classification}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Ex: 16 anos"
-                    className="transition-all duration-200 focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="imageUrl">URL da Imagem</Label>
-                  <Input
-                    id="imageUrl"
-                    name="imageUrl"
-                    type="url"
-                    value={formData.imageUrl}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="https://..."
-                    className="transition-all duration-200 focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="price">Preço</Label>
+                  <Label htmlFor="price" className="text-sm font-medium text-muted-foreground">Preço</Label>
                   <Input
                     id="price"
                     name="price"
@@ -270,13 +245,13 @@ const EventsPage = () => {
                     step="0.01"
                     value={formData.price}
                     onChange={handleInputChange}
+                    className="bg-background/50"
                     required
-                    className="transition-all duration-200 focus:ring-2 focus:ring-primary"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="capacity">Capacidade</Label>
+                  <Label htmlFor="capacity" className="text-sm font-medium text-muted-foreground">Capacidade</Label>
                   <Input
                     id="capacity"
                     name="capacity"
@@ -284,51 +259,77 @@ const EventsPage = () => {
                     min="1"
                     value={formData.capacity}
                     onChange={handleInputChange}
+                    className="bg-background/50"
                     required
-                    className="transition-all duration-200 focus:ring-2 focus:ring-primary"
                   />
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="classification" className="text-sm font-medium text-muted-foreground">Classificação Etária</Label>
+                  <Input
+                    id="classification"
+                    name="classification"
+                    value={formData.classification}
+                    onChange={handleInputChange}
+                    className="bg-background/50"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="imageUrl" className="text-sm font-medium text-muted-foreground">URL da Imagem</Label>
+                  <Input
+                    id="imageUrl"
+                    name="imageUrl"
+                    type="url"
+                    value={formData.imageUrl}
+                    onChange={handleInputChange}
+                    className="bg-background/50"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="description" className="text-sm font-medium text-muted-foreground">Descrição</Label>
+                  <Textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="min-h-[100px] bg-background/50"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="areas" className="text-sm font-medium text-muted-foreground">Áreas (separadas por vírgula)</Label>
+                  <Input
+                    id="areas"
+                    name="areas"
+                    value={formData.areas}
+                    onChange={handleInputChange}
+                    placeholder="Ex: Pista, VIP, Camarote"
+                    className="bg-background/50"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="attractions" className="text-sm font-medium text-muted-foreground">Atrações (separadas por vírgula)</Label>
+                  <Input
+                    id="attractions"
+                    name="attractions"
+                    value={formData.attractions}
+                    onChange={handleInputChange}
+                    placeholder="Ex: Artista 1, Banda 2"
+                    className="bg-background/50"
+                    required
+                  />
+                </div>
+
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="areas">Áreas (separadas por vírgula)</Label>
-                <Input
-                  id="areas"
-                  name="areas"
-                  value={formData.areas}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Pista, VIP, Camarote"
-                  className="transition-all duration-200 focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="attractions">Atrações (separadas por vírgula)</Label>
-                <Input
-                  id="attractions"
-                  name="attractions"
-                  value={formData.attractions}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="Artista 1, Artista 2, Banda 3"
-                  className="transition-all duration-200 focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Descrição</Label>
-                <Textarea
-                  id="description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  required
-                  className="min-h-[100px] transition-all duration-200 focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              <div className="flex justify-end space-x-2">
+              <div className="flex justify-end space-x-4">
                 <Button 
                   variant="outline" 
                   onClick={() => {
@@ -349,13 +350,13 @@ const EventsPage = () => {
                     });
                   }}
                   type="button"
-                  className="hover:bg-secondary/80 transition-colors"
+                  className="hover:bg-destructive/10 hover:text-destructive transition-colors"
                 >
                   Cancelar
                 </Button>
                 <Button 
                   type="submit"
-                  className="hover-scale"
+                  className="bg-primary/90 hover:bg-primary transition-colors"
                 >
                   {isEditing ? "Salvar Alterações" : "Criar Evento"}
                 </Button>
@@ -364,17 +365,17 @@ const EventsPage = () => {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
           {events.length > 0 ? (
             events.map((event) => (
-              <Card key={event.id} className="hover-scale transition-all duration-300 hover:shadow-lg">
-                <div className="relative h-48 overflow-hidden rounded-t-lg">
+              <Card key={event.id} className="group hover:scale-[1.02] transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 border-primary/10 hover:border-primary/20 backdrop-blur bg-background/60">
+                <div className="relative aspect-video overflow-hidden rounded-t-lg">
                   <img
                     src={event.imageUrl}
                     alt={event.title}
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   />
-                  <div className="absolute top-2 right-2 flex gap-2">
+                  <div className="absolute top-2 right-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <Button 
                       size="icon" 
                       variant="secondary" 
@@ -393,20 +394,38 @@ const EventsPage = () => {
                     </Button>
                   </div>
                 </div>
-                <CardContent className="p-4">
-                  <h3 className="font-semibold text-lg mb-2">{event.title}</h3>
+                <CardContent className="p-4 space-y-4">
+                  <h3 className="font-semibold text-lg bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">{event.title}</h3>
                   <div className="space-y-2 text-sm text-muted-foreground">
-                    <p>Data: {new Date(event.date).toLocaleDateString('pt-BR')}</p>
-                    <p>Horário: {event.time}</p>
-                    <p>Local: {event.location}</p>
-                    <p>Preço: R$ {event.price.toFixed(2)}</p>
-                    <p>Classificação: {event.classification}</p>
+                    <p className="flex items-center gap-2">
+                      <span className="font-medium">Data:</span>
+                      {new Date(event.date).toLocaleDateString('pt-BR')}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <span className="font-medium">Horário:</span>
+                      {event.time}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <span className="font-medium">Local:</span>
+                      {event.location}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <span className="font-medium">Preço:</span>
+                      R$ {event.price.toFixed(2)}
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <span className="font-medium">Classificação:</span>
+                      {event.classification}
+                    </p>
                   </div>
-                  <div className="mt-4">
-                    <p className="text-sm font-medium mb-2">Áreas:</p>
+                  <div className="pt-2">
+                    <p className="text-sm font-medium mb-2 text-primary/80">Áreas:</p>
                     <div className="flex flex-wrap gap-2">
                       {event.areas.map((area) => (
-                        <span key={area} className="px-2 py-1 bg-secondary/20 rounded-full text-xs">
+                        <span 
+                          key={area} 
+                          className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium hover:bg-primary/20 transition-colors"
+                        >
                           {area}
                         </span>
                       ))}
