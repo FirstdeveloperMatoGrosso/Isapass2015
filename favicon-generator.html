@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Favicon Generator</title>
+</head>
+<body>
+  <canvas id="canvas" width="32" height="32" style="border:1px solid #d3d3d3;"></canvas>
+  <div>
+    <button id="download">Download Favicon</button>
+  </div>
+
+  <script>
+    window.onload = function() {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Cor de fundo transparente
+      ctx.clearRect(0, 0, 32, 32);
+      
+      // Desenhar o ícone de ticket estilizado (baseado na logo)
+      ctx.fillStyle = '#00a8e8'; // Cor azul similar à da logo
+      
+      // Forma do ticket
+      ctx.beginPath();
+      // Desenhar um ticket estilizado
+      ctx.moveTo(8, 8);
+      ctx.lineTo(24, 8);
+      ctx.arc(24, 11, 3, 1.5 * Math.PI, 0.5 * Math.PI, false);
+      ctx.lineTo(8, 24);
+      ctx.arc(8, 21, 3, 0.5 * Math.PI, 1.5 * Math.PI, false);
+      ctx.closePath();
+      ctx.fill();
+      
+      // Adicionar detalhes internos (linha perfurada)
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(12, 12);
+      ctx.lineTo(20, 20);
+      ctx.stroke();
+      
+      // Configurar o botão de download
+      document.getElementById('download').addEventListener('click', function() {
+        // Converter o canvas para um data URL
+        const dataURL = canvas.toDataURL('image/png');
+        
+        // Criar um link para download
+        const link = document.createElement('a');
+        link.download = 'favicon.ico';
+        link.href = dataURL;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        console.log('Favicon gerado! Salve-o na pasta "public" do seu projeto.');
+      });
+    };
+  </script>
+</body>
+</html>
