@@ -4,6 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import type { Request, Response } from 'express';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -48,7 +49,7 @@ export default defineConfig(({ mode }) => {
         optionsSuccessStatus: 204
       },
       // Configuração de middleware para lidar com CORS
-      middleware: (req, res, next) => {
+      middleware: (req: Request, res: Response, next: () => void) => {
         // Configuração de CORS
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
