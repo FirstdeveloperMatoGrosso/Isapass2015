@@ -5,10 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "dev:admin": "vite --config admin/vite.config.ts",
+    "build": "vite build && npm run build:admin",
     "build:dev": "vite build --mode development",
+    "build:admin": "vite build --config admin/vite.config.ts",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "preview:admin": "vite preview --config admin/vite.config.ts"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",
