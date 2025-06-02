@@ -10,6 +10,23 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
   return {
+    define: {
+      'process.env': process.env,
+      global: {}
+    },
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, './src'),
+        buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6'
+      }
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        define: {
+          global: 'globalThis'
+        }
+      }
+    },
     server: {
       host: "::",
       port: 8080,
@@ -63,10 +80,6 @@ export default defineConfig(({ mode }) => {
       react(),
       mode === 'development' && componentTagger(),
     ].filter(Boolean),
-    resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "./src"),
-      },
-    },
+
   };
 });
