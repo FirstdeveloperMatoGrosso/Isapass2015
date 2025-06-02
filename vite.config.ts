@@ -21,11 +21,11 @@ export default defineConfig(({ mode }) => {
       host: "::",
       port: 8080,
       proxy: {
-        // Configuração do proxy para a API
         '/api': {
           target: 'http://localhost:8000',
           changeOrigin: true,
           secure: false,
+          ws: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
           configure: (proxy, _options) => {
             proxy.on('error', (err, _req, _res) => {
@@ -33,10 +33,12 @@ export default defineConfig(({ mode }) => {
             });
             proxy.on('proxyReq', (proxyReq, req, _res) => {
               console.log('Requisição sendo enviada para o backend:', req.method, req.url);
-              // Adiciona headers CORS manualmente
-              proxyReq.setHeader('Access-Control-Allow-Origin', '*');
-              proxyReq.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-              proxyReq.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+            });
+            proxy.on('proxyRes', (proxyRes, req, res) => {
+              res.setHeader('Access-Control-Allow-Origin', '*');
+              res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+              res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+              res.setHeader('Access-Control-Allow-Credentials', 'true');
             });
           }
         }
