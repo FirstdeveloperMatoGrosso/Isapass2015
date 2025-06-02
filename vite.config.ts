@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -10,21 +11,9 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   
   return {
-    define: {
-      'process.env': process.env,
-      global: {}
-    },
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
-        buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6'
-      }
-    },
-    optimizeDeps: {
-      esbuildOptions: {
-        define: {
-          global: 'globalThis'
-        }
+        '@': path.resolve(__dirname, './src')
       }
     },
     server: {
@@ -79,6 +68,9 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       mode === 'development' && componentTagger(),
+      nodePolyfills({
+        include: ['buffer', 'process']
+      })
     ].filter(Boolean),
 
   };
