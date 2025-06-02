@@ -26,7 +26,7 @@ export function PIXPaymentStatus({
 
     const checkStatus = async () => {
       try {
-        const response = await fetch('http://localhost:8000/check-pix-status', {
+        const response = await fetch('/api/payments/check-pix-status', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

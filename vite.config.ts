@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
-import { createProxyMiddleware } from 'http-proxy-middleware';
+import httpProxy from 'http-proxy';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import type { Request, Response } from 'express';
 
@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
       port: 8080,
       proxy: {
         '/api': {
-          target: 'http://localhost:8000',
+          target: 'https://api.isapass.shop',
           changeOrigin: true,
           secure: false,
           ws: true,

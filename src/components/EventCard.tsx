@@ -774,7 +774,7 @@ export const EventCard = ({
                     console.log('Enviando dados para PIX:', pixPayload);
                     
                     // Fazer requisição para a API de PIX
-                    const response = await fetch('http://localhost:8000/api/payments/pix', {
+                    const response = await fetch('/api/payments/pix', {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
