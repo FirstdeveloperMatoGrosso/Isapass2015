@@ -400,7 +400,7 @@ export const EventCard = ({
 
   // RETORNO DO COMPONENTE - ÚNICO BLOCO DE RETURN
   return (
-    <Card className="overflow-hidden rounded-xl shadow-md transition-all hover:shadow-lg w-full h-full flex flex-col bg-gradient-to-b from-white to-gray-50">
+    <Card className="overflow-hidden rounded-xl shadow-md transition-all hover:shadow-lg w-full h-full flex flex-col bg-gradient-to-b from-white to-gray-50 hover:scale-[1.02] hover:shadow-xl hover:z-10">
       <div className="relative">
         <img 
           src={imageUrl} 
@@ -415,8 +415,8 @@ export const EventCard = ({
       
       <CardContent className="flex-grow flex flex-col gap-3 p-4">
         <div>
-          <h2 className="text-xl font-bold truncate text-gray-800">{title}</h2>
-          <div className="flex items-center gap-1 text-indigo-500 text-sm">
+          <h2 className="text-base sm:text-lg font-bold truncate text-gray-800">{title}</h2>
+          <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
             <MapPin size={14} className="text-violet-500" />
             <span className="truncate">{location}</span>
           </div>
@@ -438,7 +438,7 @@ export const EventCard = ({
         </div>
         
         <div className="mt-auto pt-2">
-          <div className="text-lg font-bold bg-gradient-to-r from-pink-500 to-pink-600 text-transparent bg-clip-text">
+          <div className="text-sm sm:text-base font-bold bg-gradient-to-r from-pink-500 to-pink-600 text-transparent bg-clip-text">
             A partir de {formatCurrency(price)}
           </div>
         </div>
@@ -448,7 +448,7 @@ export const EventCard = ({
         <Button 
           variant="outline" 
           onClick={() => setShowDetails(true)}
-          className="flex-1 border-indigo-300 text-indigo-700 hover:bg-indigo-50"
+          className="flex-1 border-indigo-300 text-indigo-700 hover:bg-indigo-50 text-xs sm:text-sm px-2 sm:px-4"
         >
           Detalhes
         </Button>
@@ -974,7 +974,7 @@ export const EventCard = ({
               />
             </div>
             
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 mt-2">
               <div className="flex items-center space-x-2">
                 <input type="checkbox" id="remember" className="rounded border-gray-300" />
                 <Label htmlFor="remember" className="text-sm cursor-pointer">Lembrar de mim</Label>
