@@ -4,6 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import httpProxy from 'http-proxy';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import securityHeaders from './vite-security-headers';
 import type { Request, Response } from 'express';
 
 // https://vitejs.dev/config/
@@ -71,8 +72,9 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       mode === 'development' && componentTagger(),
+      securityHeaders(),
       nodePolyfills({
-        include: ['buffer', 'process']
+        protocolImports: true,
       })
     ].filter(Boolean),
 
