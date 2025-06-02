@@ -1,0 +1,11 @@
+{
+  "buildCommand": "npm run build:admin",
+  "outputDirectory": "dist/admin",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://api.isapass.shop/:path*"
+    }
+  ]
+}

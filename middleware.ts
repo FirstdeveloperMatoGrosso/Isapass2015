@@ -1,42 +1,76 @@
-import { Request, Response, NextFunction } from 'express';
-import { Redis } from '@upstash/redis';
-import rateLimit from 'express-rate-limit';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 // Lista de IPs bloqueados
 const BLOCKED_IPS = new Set([
   // Adicione IPs maliciosos aqui
 ]);
 
-// Rate limiter
-const limiter = rateLimit({
-  windowMs: 10 * 1000, // 10 segundos
-  max: 10, // limite de 10 requisições por janela
-  message: 'Muitas requisições, tente novamente mais tarde',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+// Rate limiting simples usando Map
+const rateLimiter = new Map<string, { count: number; timestamp: number }>();
+const WINDOW_MS = 10000; // 10 segundos
+const MAX_REQUESTS = 10;
 
-// Middleware de segurança
-export function securityMiddleware(req: Request, res: Response, next: NextFunction) {
-  const ip = req.ip || '127.0.0.1';
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const windowStart = now - WINDOW_MS;
+  
+  // Limpar entradas antigas
+  for (const [key, value] of rateLimiter.entries()) {
+    if (value.timestamp < windowStart) {
+      rateLimiter.delete(key);
+    }
+  }
+  
+  const current = rateLimiter.get(ip);
+  if (!current) {
+    rateLimiter.set(ip, { count: 1, timestamp: now });
+    return false;
+  }
+  
+  if (current.timestamp < windowStart) {
+    rateLimiter.set(ip, { count: 1, timestamp: now });
+    return false;
+  }
+  
+  if (current.count >= MAX_REQUESTS) {
+    return true;
+  }
+  
+  current.count++;
+  return false;
+}
+
+export function middleware(request: NextRequest) {
+  const ip = request.ip ?? '127.0.0.1';
+  const pathname = request.nextUrl.pathname;
 
   // Bloquear IPs maliciosos
   if (BLOCKED_IPS.has(ip)) {
-    return res.status(403).send('Acesso negado');
+    return new NextResponse('Acesso negado', { status: 403 });
   }
 
   // Aplicar rate limiting em rotas sensíveis
-  if (req.path.startsWith('/api/') || req.path.startsWith('/admin/')) {
-    return limiter(req, res, next);
+  if (pathname.startsWith('/api/') || pathname.startsWith('/admin/')) {
+    if (isRateLimited(ip)) {
+      return new NextResponse('Muitas requisições, tente novamente mais tarde', {
+        status: 429,
+        headers: {
+          'Retry-After': '10',
+        },
+      });
+    }
   }
 
   // Adicionar headers de segurança
-  res.setHeader('X-Frame-Options', 'DENY');
-  res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-  res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-
-  next();
+  const response = NextResponse.next();
+  
+  response.headers.set('X-Frame-Options', 'DENY');
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  
+  return response;
 }
