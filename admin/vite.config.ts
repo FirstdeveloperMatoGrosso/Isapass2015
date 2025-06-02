@@ -9,19 +9,17 @@ import type { Request, Response } from 'express';
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   return {
-    root: '../src',
+    root: path.resolve(__dirname, '../src'),
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '../src')
       }
     },
     build: {
-      outDir: '../dist/admin',
+      outDir: path.resolve(__dirname, '../dist/admin'),
       emptyOutDir: true,
       rollupOptions: {
-        input: {
-          admin: path.resolve(__dirname, '../src/admin.html')
-        }
+        input: path.resolve(__dirname, '../src/admin.html')
       }
     },
     server: {
