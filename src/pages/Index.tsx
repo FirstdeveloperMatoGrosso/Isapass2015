@@ -135,7 +135,7 @@ const Index = () => {
         <h1 className="text-4xl font-bold text-center mb-8 text-[#e91e63]">
           Encontre os melhores eventos
         </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
           {events.map((event) => (
             <EventCard key={event.id} {...event} />
           ))}

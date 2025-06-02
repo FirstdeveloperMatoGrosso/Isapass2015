@@ -400,7 +400,7 @@ export const EventCard = ({
 
   // RETORNO DO COMPONENTE - ÚNICO BLOCO DE RETURN
   return (
-    <Card className="overflow-hidden rounded-xl shadow-md transition-all hover:shadow-lg max-w-sm mx-auto h-full flex flex-col bg-gradient-to-b from-white to-gray-50">
+    <Card className="overflow-hidden rounded-xl shadow-md transition-all hover:shadow-lg w-full h-full flex flex-col bg-gradient-to-b from-white to-gray-50">
       <div className="relative">
         <img 
           src={imageUrl} 
