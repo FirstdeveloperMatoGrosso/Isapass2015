@@ -56,7 +56,6 @@
     "input-otp": "^1.2.4",
     "jspdf": "^2.5.2",
     "lucide-react": "^0.462.0",
-    "next": "^15.3.3",
     "next-themes": "^0.3.0",
     "pix-utils": "^2.8.1",
     "qrcode.react": "^4.2.0",
