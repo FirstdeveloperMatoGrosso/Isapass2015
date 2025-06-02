@@ -7,6 +7,5 @@
       "source": "/api/:path*",
       "destination": "https://api.isapass.shop/:path*"
     }
-  ],
-  "domains": ["isapass.shop", "www.isapass.shop"]
+  ]
 }
