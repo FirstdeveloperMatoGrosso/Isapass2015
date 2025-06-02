@@ -20,6 +20,7 @@ interface EventCardProps {
   location: string;
   imageUrl: string;
   price: number;
+  serviceFee?: number;
   classification: string;
   areas: string[];
   attractions: string[];
@@ -32,6 +33,7 @@ export const EventCard = ({
   location,
   imageUrl,
   price,
+  serviceFee = 10, // Valor padrão de 10% se não definido
   classification,
   areas,
   attractions
@@ -230,14 +232,15 @@ export const EventCard = ({
 
     // Calcular valores
     const subtotal = selectedAreaObj.price * quantity;
-    const serviceFee = subtotal * 0.1; // 10% de taxa de serviço
-    const totalAmount = subtotal + serviceFee;
+    // Calcular taxa de serviço
+    const serviceFeeAmount = subtotal * (serviceFee / 100);
+    const totalAmount = subtotal + serviceFeeAmount;
 
     // Preparar dados para o PIX
     const pixPayload = {
       amount: Math.round(totalAmount * 100), // Em centavos
       subtotal: Math.round(subtotal * 100),
-      serviceFee: Math.round(serviceFee * 100),
+      serviceFee: Math.round(serviceFeeAmount * 100), // Valor total da taxa de serviço em centavos
       customer: {
         name: customerFormData.name.trim(),
         email: customerFormData.email.trim(),

@@ -17,6 +17,7 @@ interface Event {
   location: string;
   description: string;
   price: number;
+  serviceFee?: number;
   capacity: number;
   imageUrl: string;
   classification: string;
@@ -32,6 +33,7 @@ interface FormData {
   location: string;
   description: string;
   price: string;
+  serviceFee: string;
   capacity: string;
   imageUrl: string;
   classification: string;
@@ -67,6 +69,7 @@ const EventsPage = () => {
     location: "",
     description: "",
     price: "",
+    serviceFee: "10",
     capacity: "",
     imageUrl: "",
     classification: "",
@@ -84,13 +87,14 @@ const EventsPage = () => {
 
   const handleEdit = (event: Event) => {
     setFormData({
-      id: event.id, // Agora incluímos o id ao editar
+      id: event.id,
       title: event.title,
       date: event.date,
       time: event.time,
       location: event.location,
       description: event.description,
       price: event.price.toString(),
+      serviceFee: event.serviceFee?.toString() || '10',
       capacity: event.capacity.toString(),
       imageUrl: event.imageUrl,
       classification: event.classification,
@@ -119,6 +123,7 @@ const EventsPage = () => {
       location: formData.location,
       description: formData.description,
       price: Number(formData.price),
+      serviceFee: Number(formData.serviceFee) || 0,
       capacity: Number(formData.capacity),
       imageUrl: formData.imageUrl,
       classification: formData.classification,
@@ -149,6 +154,7 @@ const EventsPage = () => {
       location: "",
       description: "",
       price: "",
+      serviceFee: "10",
       capacity: "",
       imageUrl: "",
       classification: "",
@@ -236,7 +242,7 @@ const EventsPage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="price" className="text-sm font-medium text-muted-foreground">Preço</Label>
+                  <Label htmlFor="price" className="text-sm font-medium text-muted-foreground">Preço (R$)</Label>
                   <Input
                     id="price"
                     name="price"
@@ -244,6 +250,24 @@ const EventsPage = () => {
                     min="0"
                     step="0.01"
                     value={formData.price}
+                    onChange={handleInputChange}
+                    className="bg-background/50"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="serviceFee" className="text-sm font-medium text-muted-foreground">
+                    Taxa de Serviço (%)
+                  </Label>
+                  <Input
+                    id="serviceFee"
+                    name="serviceFee"
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    value={formData.serviceFee}
                     onChange={handleInputChange}
                     className="bg-background/50"
                     required
@@ -342,6 +366,7 @@ const EventsPage = () => {
                       location: "",
                       description: "",
                       price: "",
+                      serviceFee: "10",
                       capacity: "",
                       imageUrl: "",
                       classification: "",
