@@ -228,11 +228,16 @@ export const EventCard = ({
       throw new Error('Erro ao encontrar a área selecionada');
     }
 
-    const totalAmount = selectedAreaObj.price * quantity;
+    // Calcular valores
+    const subtotal = selectedAreaObj.price * quantity;
+    const serviceFee = subtotal * 0.1; // 10% de taxa de serviço
+    const totalAmount = subtotal + serviceFee;
 
     // Preparar dados para o PIX
     const pixPayload = {
-      amount: totalAmount * 100, // Em centavos
+      amount: Math.round(totalAmount * 100), // Em centavos
+      subtotal: Math.round(subtotal * 100),
+      serviceFee: Math.round(serviceFee * 100),
       customer: {
         name: customerFormData.name.trim(),
         email: customerFormData.email.trim(),
@@ -400,12 +405,12 @@ export const EventCard = ({
 
   // RETORNO DO COMPONENTE - ÚNICO BLOCO DE RETURN
   return (
-    <Card className="overflow-hidden rounded-xl shadow-md transition-all hover:shadow-lg w-full h-full flex flex-col bg-gradient-to-b from-white to-gray-50 hover:scale-[1.02] hover:shadow-xl hover:z-10">
+    <Card className="overflow-hidden rounded-xl shadow-md transition-all hover:shadow-lg w-full h-full flex flex-col bg-gradient-to-b from-white to-gray-50 hover:scale-[1.02] hover:shadow-xl hover:z-10 h-full flex flex-col">
       <div className="relative">
         <img 
           src={imageUrl} 
           alt={title} 
-          className="w-full h-40 object-cover"
+          className="w-full h-full object-cover"
         />
         <div className="absolute top-0 left-0 bg-gradient-to-r from-pink-500 to-pink-600 p-1 m-2 rounded-md shadow text-center">
           <div className="text-2xl font-bold text-white">{day}</div>
@@ -415,8 +420,8 @@ export const EventCard = ({
       
       <CardContent className="flex-grow flex flex-col gap-3 p-4">
         <div>
-          <h2 className="text-base sm:text-lg font-bold truncate text-gray-800">{title}</h2>
-          <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
+          <h2 className="text-base sm:text-lg font-bold line-clamp-2 h-14 text-gray-800">{title}</h2>
+          <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500 min-h-5">
             <MapPin size={14} className="text-violet-500" />
             <span className="truncate">{location}</span>
           </div>
