@@ -260,23 +260,102 @@ export const EventCard = ({
     console.log('Enviando dados para processamento de PIX:', pixPayload);
 
     try {
-      // Fazer requisição para gerar PIX usando o proxy
-      const response = await fetch('/api/payments/pix', {
+      // Preparar metadados
+      const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+      const metadata = {
+        source: 'isapass',
+        integration: 'direct-pagarme',
+        timestamp,
+        partner_id: pixPayload.event.partnerId || '',
+        event_name: pixPayload.event.name || '',
+        event_date: pixPayload.event.date || '',
+        event_location: pixPayload.event.location || '',
+        ticket_type: pixPayload.event.ticketType || '',
+        section: '', // Propriedade não disponível no objeto de evento atual
+        row: '', // Propriedade não disponível no objeto de evento atual
+        seat: '', // Propriedade não disponível no objeto de evento atual
+        is_half_price: pixPayload.event.isHalfPrice?.toString() || 'false',
+        customer_name: pixPayload.customer.name || '',
+        customer_document: pixPayload.customer.document || '',
+        customer_email: pixPayload.customer.email || '',
+        customer_phone: pixPayload.customer.phone || ''
+      };
+      
+      // Preparar payload para o Pagar.me
+      const pagarmePayload = {
+        items: [
+          {
+            amount: pixPayload.amount,
+            description: `Ingresso ${pixPayload.event.ticketType || 'Standard'} - ${pixPayload.event.name || 'Evento'}`,
+            quantity: 1,
+            code: 'pix-payment'
+          }
+        ],
+        customer: {
+          name: pixPayload.customer.name,
+          email: pixPayload.customer.email,
+          type: 'individual',
+          document: pixPayload.customer.document,
+          phones: {
+            mobile_phone: {
+              country_code: '55',
+              area_code: (pixPayload.customer.phone || '11999999999').substring(0, 2),
+              number: (pixPayload.customer.phone || '11999999999').substring(2)
+            }
+          }
+        },
+        payments: [
+          {
+            payment_method: 'pix',
+            pix: {
+              expires_in: 60 * 15 // 15 minutos
+            }
+          }
+        ],
+        metadata
+      };
+      
+      console.log('Enviando requisição para o Pagar.me:', pagarmePayload);
+      
+      // Fazer requisição direta para a API do Pagar.me
+      // NOTA: Esta abordagem é apenas para testes em desenvolvimento.
+      // Em produção, NUNCA exponha sua chave de API no frontend.
+      const PAGARME_API_KEY = 'sk_59c7e1e30b5d45f7859fb7539a21a546';
+      const btoa = (str: string) => window.btoa(str);
+      
+      const response = await fetch('https://api.pagar.me/core/v5/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || 'test_token'}`
+          'Authorization': `Basic ${btoa(PAGARME_API_KEY + ':')}`
         },
-        body: JSON.stringify(pixPayload)
+        body: JSON.stringify(pagarmePayload)
       });
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error('Erro na resposta da API:', errorData);
+        console.error('Erro na resposta da API Pagar.me:', errorData);
         throw new Error(errorData.message || 'Erro ao gerar pagamento PIX');
       }
       
-      const responseData = await response.json();
+      const pagarmeData = await response.json();
+      console.log('Resposta do Pagar.me:', pagarmeData);
+      
+      // Extrair dados relevantes da resposta
+      const charge = pagarmeData.charges?.[0];
+      const transaction = charge?.last_transaction;
+      const qrCode = transaction?.qr_code;
+      const qrCodeUrl = transaction?.qr_code_url;
+      const expiresAt = transaction?.expires_at;
+      
+      // Formatar resposta no mesmo formato que o backend retornaria
+      const responseData = {
+        paymentId: pagarmeData.id,
+        status: pagarmeData.status,
+        qrCode: qrCode,
+        qrCodeUrl: qrCodeUrl,
+        expiresAt: expiresAt
+      };
       
       if (responseData.status === 'failed') {
         console.error('PIX não foi gerado:', responseData);
@@ -408,8 +487,8 @@ export const EventCard = ({
 
   // RETORNO DO COMPONENTE - ÚNICO BLOCO DE RETURN
   return (
-    <Card className="overflow-hidden rounded-xl shadow-md transition-all hover:shadow-lg w-full h-full flex flex-col bg-gradient-to-b from-white to-gray-50 hover:scale-[1.02] hover:shadow-xl hover:z-10 h-full flex flex-col">
-      <div className="relative">
+    <Card className="overflow-hidden rounded-xl shadow-md transition-all hover:shadow-lg w-full flex flex-col bg-gradient-to-b from-white to-gray-50 hover:scale-[1.02] hover:shadow-xl hover:z-10 h-full">
+      <div className="relative h-48 bg-gray-100">
         <img 
           src={imageUrl} 
           alt={title} 
@@ -421,48 +500,53 @@ export const EventCard = ({
         </div>
       </div>
       
-      <CardContent className="flex-grow flex flex-col gap-3 p-4">
-        <div>
-          <h2 className="text-base sm:text-lg font-bold line-clamp-2 h-14 text-gray-800">{title}</h2>
-          <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500 min-h-5">
-            <MapPin size={14} className="text-violet-500" />
+      <CardContent className="flex-grow flex flex-col gap-2 p-4">
+        <div className="min-h-[3.5rem]">
+          <h2 className="text-base sm:text-lg font-bold line-clamp-2 text-gray-800">{title}</h2>
+        </div>
+        
+        <div className="space-y-1.5 flex-grow">
+          <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-500">
+            <MapPin size={14} className="text-violet-500 flex-shrink-0" />
             <span className="truncate">{location}</span>
+          </div>
+          
+          <div className="flex items-center gap-1 text-indigo-500 text-xs sm:text-sm">
+            <Calendar size={14} className="text-violet-500 flex-shrink-0" />
+            <span className="truncate">{date}</span>
+          </div>
+          
+          <div className="flex items-center gap-1 text-indigo-500 text-xs sm:text-sm">
+            <Tag size={14} className="text-violet-500 flex-shrink-0" />
+            <span className="truncate">{classification}</span>
+          </div>
+          
+          <div className="flex items-start gap-1 text-indigo-500 text-xs sm:text-sm">
+            <Music size={14} className="text-violet-500 flex-shrink-0 mt-0.5" />
+            <span className="line-clamp-2">{attractions.join(', ')}</span>
           </div>
         </div>
         
-        <div className="flex items-center gap-1 text-indigo-500 text-sm">
-          <Calendar size={14} className="text-violet-500" />
-          <span>{date}</span>
-        </div>
-        
-        <div className="flex items-center gap-1 text-indigo-500 text-sm">
-          <Tag size={14} className="text-violet-500" />
-          <span>{classification}</span>
-        </div>
-        
-        <div className="flex items-center gap-1 text-indigo-500 text-sm">
-          <Music size={14} className="text-violet-500" />
-          <span className="truncate">{attractions.join(', ')}</span>
-        </div>
-        
-        <div className="mt-auto pt-2">
+        <div className="mt-2 pt-2 border-t border-gray-100">
           <div className="text-sm sm:text-base font-bold bg-gradient-to-r from-pink-500 to-pink-600 text-transparent bg-clip-text">
             A partir de {formatCurrency(price)}
           </div>
         </div>
       </CardContent>
       
-      <CardFooter className="flex justify-between gap-2 p-4 pt-0">
+      <CardFooter className="flex justify-between gap-2 p-4 pt-0 mt-auto border-t border-gray-100">
         <Button 
           variant="outline" 
+          size="sm"
           onClick={() => setShowDetails(true)}
-          className="flex-1 border-indigo-300 text-indigo-700 hover:bg-indigo-50 text-xs sm:text-sm px-2 sm:px-4"
+          className="flex-1 border-indigo-300 text-indigo-700 hover:bg-indigo-50 text-xs sm:text-sm px-2 sm:px-4 h-9"
         >
           Detalhes
         </Button>
         <Button 
+          size="sm"
           onClick={handleBuyClick}
-          className="flex-1 bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all"
+          className="flex-1 bg-gradient-to-r from-pink-500 to-pink-600 text-white hover:from-pink-600 hover:to-pink-700 transition-all h-9"
         >
           Comprar
         </Button>

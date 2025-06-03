@@ -22,18 +22,20 @@ export default defineConfig(({ mode }) => {
       host: "::",
       port: 8080,
       proxy: {
-        '/api': {
-          target: 'https://api.isapass.shop',
+        '/api/payments/pix': {
+          target: 'http://localhost:8090', // Usando o servidor Deno na porta 8090
           changeOrigin: true,
           secure: false,
           ws: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
+          rewrite: (path) => '/',
           configure: (proxy, _options) => {
             proxy.on('error', (err, _req, _res) => {
               console.log('Erro no proxy:', err);
             });
             proxy.on('proxyReq', (proxyReq, req, _res) => {
               console.log('Requisição sendo enviada para o backend:', req.method, req.url);
+              proxyReq.setHeader('apikey', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlieHB4bGVlY2djZmZjbmtmaGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTQ5MzIsImV4cCI6MjA2MzY3MDkzMn0.KvHq62hOngaoBOcc_pHAIoRO1fb6cVXoL3Ne3d0Wghk');
+              proxyReq.setHeader('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlieHB4bGVlY2djZmZjbmtmaGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgwOTQ5MzIsImV4cCI6MjA2MzY3MDkzMn0.KvHq62hOngaoBOcc_pHAIoRO1fb6cVXoL3Ne3d0Wghk');
             });
             proxy.on('proxyRes', (proxyRes, req, res) => {
               res.setHeader('Access-Control-Allow-Origin', '*');
