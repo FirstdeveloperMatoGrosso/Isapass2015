@@ -1,69 +1,40 @@
-# Welcome to your Lovable project
+# IsaPass 2015-2025
 
-## Project info
+## Sobre o Projeto
 
-**URL**: https://lovable.dev/projects/3414d489-8bcc-4b6b-b6a2-16554b7c70f8
+O IsaPass é um sistema de gerenciamento de ingressos e eventos, com suporte para pagamentos PIX via Pagar.me.
 
-## How can I edit this code?
+## Características Principais
 
-There are several ways of editing your application.
+- Integração com pagamentos PIX usando Pagar.me API
+- Servidor backend Deno para processamento seguro de pagamentos
+- Interface moderna em React com TypeScript
+- Integração com Supabase para autenticação e armazenamento
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/3414d489-8bcc-4b6b-b6a2-16554b7c70f8) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
+## Tecnologias Utilizadas
 
 - Vite
 - TypeScript
 - React
-- shadcn-ui
 - Tailwind CSS
+- Deno (backend)
+- Pagar.me API (processamento de pagamentos)
 
-## How can I deploy this project?
+## Como Executar o Projeto
 
-Simply open [Lovable](https://lovable.dev/projects/3414d489-8bcc-4b6b-b6a2-16554b7c70f8) and click on Share -> Publish.
+```sh
+# Instalar dependências
+npm install
 
-## I want to use a custom domain - is that possible?
+# Iniciar o servidor de desenvolvimento Vite
+npm run dev
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+# Iniciar o servidor Deno para processamento de pagamentos PIX
+cd supabase/functions/generate-pix
+export PAGARME_API_KEY=sua_chave_api
+deno run --allow-net --allow-env minimal_server.ts
+```
+
+## Integração PIX
+
+O projeto inclui uma integração completa com a API do Pagar.me para processamento de pagamentos PIX.
