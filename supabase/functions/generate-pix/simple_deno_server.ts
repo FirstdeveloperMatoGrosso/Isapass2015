@@ -34,9 +34,82 @@ function corsHeaders() {
   return {
     "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization"
   };
+}
+
+// Função para verificar o status do pagamento no Pagar.me
+async function checkPaymentStatus(orderId: string): Promise<Response> {
+  try {
+    console.log(`Consultando status do pedido ${orderId} no Pagar.me`);
+    
+    // Fazer requisição para a API do Pagar.me para verificar o status
+    const pagarmeResponse = await fetch(`https://api.pagar.me/core/v5/orders/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${btoa(PAGARME_API_KEY + ':')}`
+      }
+    });
+    
+    if (!pagarmeResponse.ok) {
+      const errorData = await pagarmeResponse.json();
+      console.error('Erro ao consultar status no Pagar.me:', errorData);
+      return new Response(JSON.stringify({ 
+        error: "Erro ao consultar status de pagamento",
+        details: errorData.message || "Erro desconhecido"
+      }), {
+        status: pagarmeResponse.status,
+        headers: corsHeaders()
+      });
+    }
+    
+    const pagarmeData = await pagarmeResponse.json();
+    console.log('Resposta de status do Pagar.me:', JSON.stringify(pagarmeData, null, 2));
+    
+    // Extrair informações relevantes da resposta
+    const status = pagarmeData.status;
+    const charge = pagarmeData.charges?.[0];
+    const chargeStatus = charge?.status;
+    const lastTransaction = charge?.last_transaction;
+    const transactionStatus = lastTransaction?.status;
+    
+    // Mapear os status para um formato mais simples para o frontend
+    let paymentStatus = "pending";
+    
+    // Se a ordem ou a transação estão com status de pagamento confirmado
+    if (status === "paid" || chargeStatus === "paid" || transactionStatus === "captured") {
+      paymentStatus = "paid";
+    } 
+    // Se a ordem foi cancelada ou falhou
+    else if (status === "canceled" || chargeStatus === "canceled" || transactionStatus === "failed") {
+      paymentStatus = "failed";
+    }
+    
+    return new Response(JSON.stringify({
+      order_id: orderId,
+      status: paymentStatus,
+      pagarme_status: {
+        order: status,
+        charge: chargeStatus,
+        transaction: transactionStatus
+      },
+      checked_at: new Date().toISOString()
+    }), {
+      status: 200,
+      headers: corsHeaders()
+    });
+  } catch (error) {
+    console.error('Erro ao verificar status do pagamento:', error);
+    return new Response(JSON.stringify({ 
+      error: "Erro ao verificar status do pagamento", 
+      details: String(error)
+    }), {
+      status: 500,
+      headers: corsHeaders()
+    });
+  }
 }
 
 // Manipulador de requisições
@@ -49,7 +122,20 @@ async function handleRequest(request: Request): Promise<Response> {
     });
   }
   
-  // Apenas permitir POST
+  // Verificar se é uma soliciação de status de pagamento
+  const url = new URL(request.url);
+  const pathParts = url.pathname.split('/');
+  
+  // Endpoint para verificar status: /api/payments/status/:order_id
+  if (request.method === "GET" && pathParts.length >= 4 && pathParts[1] === "api" && 
+      pathParts[2] === "payments" && pathParts[3] === "status" && pathParts[4]) {
+    
+    const orderId = pathParts[4];
+    console.log(`Verificando status do pagamento: ${orderId}`);
+    return await checkPaymentStatus(orderId);
+  }
+  
+  // Para as demais rotas, apenas permitir POST
   if (request.method !== "POST") {
     return new Response(JSON.stringify({ error: "Método não permitido" }), {
       status: 405,

@@ -125,7 +125,9 @@ serve(async (req) => {
     });
 
     if (!orderResponse.ok) {
-      throw new Error('Erro ao criar pedido');
+      const errorData = await orderResponse.text();
+      console.error('Erro do Pagar.me:', errorData);
+      throw new Error(`Erro ao criar pedido: ${errorData}`);
     }
 
     const order = await orderResponse.json();

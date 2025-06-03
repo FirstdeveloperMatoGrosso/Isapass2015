@@ -1,0 +1,62 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+
+serve(async (req) => {
+  try {
+    if (req.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
+      });
+    }
+
+    if (req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ error: 'Method not allowed' }),
+        { 
+          status: 405,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    const body = await req.json();
+    console.log('Received request:', JSON.stringify(body, null, 2));
+
+    // Simular resposta do Pagar.me
+    return new Response(
+      JSON.stringify({
+        order_id: `test_${Date.now()}`,
+        amount: body.amount,
+        status: 'pending',
+        pix: {
+          qr_code: 'TEST_QR_CODE',
+          qr_code_url: 'https://test.qr.code/url',
+          expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString()
+        }
+      }),
+      { 
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      }
+    );
+  } catch (error) {
+    console.error('Error:', error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      }
+    );
+  }
+});

@@ -1,0 +1,173 @@
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+
+const PAGARME_API_KEY = Deno.env.get('PAGARME_API_KEY');
+
+export {};
+
+const handler = async (req: Request): Promise<Response> => {
+  if (!PAGARME_API_KEY) {
+    console.error('PAGARME_API_KEY não definida');
+    return new Response(JSON.stringify({ error: 'Configuração inválida' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      }
+    });
+  }
+
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+
+  try {
+    const body = await req.json();
+    console.log('Received request:', JSON.stringify(body, null, 2));
+
+    // Preparar metadados
+    const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    const metadata = {
+      source: 'isapass',
+      integration: 'supabase-pagarme',
+      timestamp,
+      partner_id: body.event.partnerId,
+      event_name: body.event.name,
+      event_date: body.event.date,
+      event_location: body.event.location,
+      ticket_type: body.event.ticketType,
+      section: body.event.section || '',
+      row: body.event.row || '',
+      seat: body.event.seat || '',
+      is_half_price: body.event.isHalfPrice.toString(),
+      customer_name: body.customer.name,
+      customer_document: body.customer.document,
+      customer_email: body.customer.email,
+      customer_phone: body.customer.phone
+    };
+
+    // Preparar payload para o Pagar.me
+    const pagarmePayload = {
+      items: [
+        {
+          amount: body.amount,
+          description: `Ingresso ${body.event.ticketType} - ${body.event.name}`,
+          quantity: 1,
+          code: 'pix-payment'
+        }
+      ],
+      customer: {
+        name: body.customer.name,
+        email: body.customer.email,
+        type: 'individual',
+        document: body.customer.document,
+        phones: {
+          mobile_phone: {
+            country_code: '55',
+            area_code: body.customer.phone.substring(0, 2),
+            number: body.customer.phone.substring(2)
+          }
+        }
+      },
+      payments: [
+        {
+          payment_method: 'pix',
+          pix: {
+            expires_in: 60 * 15 // 15 minutos
+          }
+        }
+      ],
+      metadata
+    };
+    
+    try {
+      console.log('Enviando requisição para o Pagar.me:', JSON.stringify(pagarmePayload, null, 2));
+      
+      // Fazer requisição para a API do Pagar.me
+      const pagarmeResponse = await fetch('https://api.pagar.me/core/v5/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${btoa(PAGARME_API_KEY + ':')}`
+        },
+        body: JSON.stringify(pagarmePayload)
+      });
+      
+      const pagarmeData = await pagarmeResponse.json();
+      console.log('Resposta do Pagar.me:', JSON.stringify(pagarmeData, null, 2));
+      
+      if (!pagarmeResponse.ok) {
+        throw new Error(`Erro na API do Pagar.me: ${pagarmeData.message || 'Erro desconhecido'}`);
+      }
+      
+      // Extrair dados relevantes da resposta
+      const charge = pagarmeData.charges[0];
+      const transaction = charge.last_transaction;
+      const qrCode = transaction.qr_code;
+      const qrCodeUrl = transaction.qr_code_url;
+      const expiresAt = transaction.expires_at;
+    
+
+      // Formatar resposta para o cliente
+      return new Response(JSON.stringify({
+        order_id: pagarmeData.id,
+        amount: body.amount,
+        status: pagarmeData.status,
+        customer: {
+          name: body.customer.name,
+          email: body.customer.email,
+          document: body.customer.document,
+          phone: body.customer.phone
+        },
+        pix: {
+          qr_code: qrCode,
+          qr_code_url: qrCodeUrl,
+          expires_at: expiresAt
+        },
+        metadata
+      }), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+    } catch (apiError: unknown) {
+      console.error('Erro ao processar pagamento:', apiError);
+      return new Response(JSON.stringify({ 
+        error: apiError instanceof Error ? apiError.message : 'Erro ao processar pagamento',
+        details: apiError
+      }), {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
+  }
+};
+
+console.log('Starting server on http://localhost:8000');
+
+// Usando a API do Deno std para servir HTTP
+serve(handler, { port: 8000 });

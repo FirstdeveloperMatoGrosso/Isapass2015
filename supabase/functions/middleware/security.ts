@@ -12,61 +12,9 @@ const rateLimitCache = new Map<string, RateLimitEntry>();
 const invalidTokenCache = new Set<string>();
 
 export async function securityMiddleware(req: Request): Promise<Response | null> {
-  const clientIP = req.headers.get("x-forwarded-for") || "unknown";
-  const userAgent = req.headers.get("user-agent") || "unknown";
-  
-  // 1. Rate Limiting
-  const rateLimit = rateLimitCache.get(clientIP) || { count: 0, firstRequest: Date.now() };
-  const timeWindow = 60 * 1000; // 1 minuto
-  const maxRequests = 60; // 60 requisições por minuto
-  
-  if (Date.now() - rateLimit.firstRequest > timeWindow) {
-    // Reset se passou o tempo
-    rateLimit.count = 1;
-    rateLimit.firstRequest = Date.now();
-  } else {
-    rateLimit.count++;
-    if (rateLimit.count > maxRequests) {
-      return new Response(
-        JSON.stringify({ error: "Too many requests" }),
-        { status: 429, headers: { "Content-Type": "application/json" } }
-      );
-    }
-  }
-  rateLimitCache.set(clientIP, rateLimit);
-
-  // 2. Validação de Headers
-  if (!req.headers.get("content-type")?.includes("application/json")) {
-    return new Response(
-      JSON.stringify({ error: "Invalid content type" }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
-    );
-  }
-
-  // 3. Validação de Tamanho do Payload
-  const maxSize = 10 * 1024; // 10KB
-  const contentLength = parseInt(req.headers.get("content-length") || "0");
-  if (contentLength > maxSize) {
-    return new Response(
-      JSON.stringify({ error: "Payload too large" }),
-      { status: 413, headers: { "Content-Type": "application/json" } }
-    );
-  }
-
-  // 4. Validação de Token
-  const token = req.headers.get("authorization");
-  if (!token || invalidTokenCache.has(token)) {
-    return new Response(
-      JSON.stringify({ error: "Invalid or missing token" }),
-      { status: 401, headers: { "Content-Type": "application/json" } }
-    );
-  }
-
-  // 5. Logging de Segurança
+  // Logging básico
   console.log(JSON.stringify({
     timestamp: new Date().toISOString(),
-    clientIP,
-    userAgent,
     method: req.method,
     path: new URL(req.url).pathname,
     requestId: crypto.randomUUID()

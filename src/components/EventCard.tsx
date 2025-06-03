@@ -24,6 +24,7 @@ interface EventCardProps {
   classification: string;
   areas: string[];
   attractions: string[];
+  isFirst?: boolean;
 }
 
 export const EventCard = ({
@@ -36,7 +37,8 @@ export const EventCard = ({
   serviceFee = 10, // Valor padrão de 10% se não definido
   classification,
   areas,
-  attractions
+  attractions,
+  isFirst = false
 }: EventCardProps) => {
   // Extrair dia e mês da data
   const dateParts = date.split(' de ');
@@ -145,27 +147,29 @@ export const EventCard = ({
   
   // Controle de login e termos
   useEffect(() => {
-    // Verificar se os termos já foram aceitos
-    const termsAcceptedBefore = localStorage.getItem('isapass_terms_accepted');
-    if (termsAcceptedBefore) {
-      setTermsAccepted(true);
-    }
-    
-    // Verificar se já existe um login salvo
-    const savedEmail = localStorage.getItem('isapass_user_email');
-    const savedPassword = localStorage.getItem('isapass_user_password');
-    
-    // Dar um tempo para a página carregar completamente
-    setTimeout(() => {
-      if (savedEmail && savedPassword) {
-        // Usuário já logado anteriormente
-        handleAutoLogin(savedEmail, savedPassword);
-      } else {
-        // Se não há login salvo, mostrar a tela de login
-        setShowLoginDialog(true);
+    if (isFirst) {
+      // Verificar se os termos já foram aceitos
+      const termsAcceptedBefore = localStorage.getItem('isapass_terms_accepted');
+      if (termsAcceptedBefore) {
+        setTermsAccepted(true);
       }
-    }, 500);
-  }, []);
+      
+      // Verificar se já existe um login salvo
+      const savedEmail = localStorage.getItem('isapass_user_email');
+      const savedPassword = localStorage.getItem('isapass_user_password');
+      
+      // Dar um tempo para a página carregar completamente
+      setTimeout(() => {
+        if (savedEmail && savedPassword) {
+          // Usuário já logado anteriormente
+          handleAutoLogin(savedEmail, savedPassword);
+        } else {
+          // Se não há login salvo, mostrar a tela de login
+          setShowLoginDialog(true);
+        }
+      }, 500);
+    }
+  }, [isFirst]);
 
   // Função para gerar dados do ticket após pagamento
   const generateTicketData = () => {
@@ -1345,119 +1349,123 @@ export const EventCard = ({
       </Dialog>
       
       {/* Modal de Login */}
-      <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Entrar na sua conta</DialogTitle>
-          </DialogHeader>
-          
-          <form onSubmit={handleLoginSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="flex items-center gap-2">
-                <Mail size={16} /> E-mail
-              </Label>
-              <Input
-                id="email"
-                type="email" 
-                placeholder="seu@email.com"
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                required
-              />
-            </div>
+      {isFirst && (
+        <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Entrar na sua conta</DialogTitle>
+            </DialogHeader>
             
-            <div className="space-y-2">
-              <Label htmlFor="password" className="flex items-center gap-2">
-                <Lock size={16} /> Senha
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Sua senha"
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                required
-              />
-            </div>
-            
-            <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 mt-2">
-              <div className="flex items-center space-x-2">
-                <input type="checkbox" id="remember" className="rounded border-gray-300" />
-                <Label htmlFor="remember" className="text-sm cursor-pointer">Lembrar de mim</Label>
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="flex items-center gap-2">
+                  <Mail size={16} /> E-mail
+                </Label>
+                <Input
+                  id="email"
+                  type="email" 
+                  placeholder="seu@email.com"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  required
+                />
               </div>
-              <Link to="/forgot-password" className="text-sm text-primary hover:underline">Esqueceu a senha?</Link>
-            </div>
-            
-            <Button type="submit" className="w-full" disabled={loginProcessing}>
-              {loginProcessing ? "Entrando..." : "Entrar"}
-            </Button>
-            
-            <div className="text-center text-sm text-gray-500">
-              Não tem uma conta? <Link to="/register" className="text-primary hover:underline">Registre-se</Link>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-
+              
+              <div className="space-y-2">
+                <Label htmlFor="password" className="flex items-center gap-2">
+                  <Lock size={16} /> Senha
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Sua senha"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div className="flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 mt-2">
+                <div className="flex items-center space-x-2">
+                  <input type="checkbox" id="remember" className="rounded border-gray-300" />
+                  <Label htmlFor="remember" className="text-sm cursor-pointer">Lembrar de mim</Label>
+                </div>
+                <Link to="/forgot-password" className="text-sm text-primary hover:underline">Esqueceu a senha?</Link>
+              </div>
+              
+              <Button type="submit" className="w-full" disabled={loginProcessing}>
+                {loginProcessing ? "Entrando..." : "Entrar"}
+              </Button>
+              
+              <div className="text-center text-sm text-gray-500">
+                Não tem uma conta? <Link to="/register" className="text-primary hover:underline">Registre-se</Link>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
+      )}
+      
       {/* Modal de Termos de Uso */}
-      <Dialog open={showTermsModal} onOpenChange={(open) => {
-        // O usuário só pode fechar se aceitar os termos
-        if (!open && !termsAccepted) {
-          toast.warning("Você precisa aceitar os termos para continuar.");
-          return;
-        }
-        setShowTermsModal(open);
-      }}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Termos de Uso e Política de Privacidade</DialogTitle>
-          </DialogHeader>
-          
-          <div className="terms-content max-h-[60vh] overflow-y-auto p-4 border rounded-md">
-            <h4 className="text-xl font-semibold mb-4">Bem-vindo ao IsaPass!</h4>
-            <p className="mb-4">Ao utilizar nosso serviço de compra de ingressos, você concorda com os seguintes termos:</p>
+      {isFirst && (
+        <Dialog open={showTermsModal} onOpenChange={(open) => {
+          // O usuário só pode fechar se aceitar os termos
+          if (!open && !termsAccepted) {
+            toast.warning("Você precisa aceitar os termos para continuar.");
+            return;
+          }
+          setShowTermsModal(open);
+        }}>
+          <DialogContent className="max-w-3xl">
+            <DialogHeader>
+              <DialogTitle>Termos de Uso e Política de Privacidade</DialogTitle>
+            </DialogHeader>
             
-            <h5 className="text-lg font-semibold mt-4 mb-2">1. Uso do Serviço</h5>
-            <p className="mb-3">O IsaPass oferece um serviço de venda de ingressos para eventos. Ao utilizar nosso serviço, você concorda em fornecer informações precisas e completas.</p>
+            <div className="terms-content max-h-[60vh] overflow-y-auto p-4 border rounded-md">
+              <h4 className="text-xl font-semibold mb-4">Bem-vindo ao IsaPass!</h4>
+              <p className="mb-4">Ao utilizar nosso serviço de compra de ingressos, você concorda com os seguintes termos:</p>
+              
+              <h5 className="text-lg font-semibold mt-4 mb-2">1. Uso do Serviço</h5>
+              <p className="mb-3">O IsaPass oferece um serviço de venda de ingressos para eventos. Ao utilizar nosso serviço, você concorda em fornecer informações precisas e completas.</p>
+              
+              <h5 className="text-lg font-semibold mt-4 mb-2">2. Pagamentos</h5>
+              <p className="mb-3">Todos os pagamentos são processados de forma segura através de nossa plataforma. Nós oferecemos diferentes métodos de pagamento, incluindo PIX.</p>
+              
+              <h5 className="text-lg font-semibold mt-4 mb-2">3. Política de Privacidade</h5>
+              <p className="mb-3">Coletamos apenas as informações necessárias para processar sua compra e garantir uma experiência segura. Seus dados não serão compartilhados com terceiros.</p>
+            </div>
             
-            <h5 className="text-lg font-semibold mt-4 mb-2">2. Pagamentos</h5>
-            <p className="mb-3">Todos os pagamentos são processados de forma segura através de nossa plataforma. Nós oferecemos diferentes métodos de pagamento, incluindo PIX.</p>
-            
-            <h5 className="text-lg font-semibold mt-4 mb-2">3. Política de Privacidade</h5>
-            <p className="mb-3">Coletamos apenas as informações necessárias para processar sua compra e garantir uma experiência segura. Seus dados não serão compartilhados com terceiros.</p>
-          </div>
-          
-          <div className="flex justify-end mt-4">
-            <Button 
-              onClick={() => {
-                setTermsAccepted(true);
-                setShowTermsModal(false);
-                localStorage.setItem('isapass_terms_accepted', 'true');
-                // Se houver dados de login salvos, tenta fazer login automático
-                const savedEmail = localStorage.getItem('isapass_user_email');
-                const savedPassword = localStorage.getItem('isapass_user_password');
-                
-                if (savedEmail && savedPassword) {
-                  setLoginEmail(savedEmail);
-                  setLoginPassword(savedPassword);
-                  handleAutoLogin(savedEmail, savedPassword);
-                } else {
-                  // Se não há credenciais salvas, abrir o modal de login automaticamente
-                  setTimeout(() => {
-                    setShowLoginDialog(true);
-                  }, 500); // Pequeno atraso para garantir que o modal de termos se feche primeiro
-                }
-              }}
-              className="bg-primary text-white hover:bg-primary/90"
-            >
-              Aceitar e Continuar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+            <div className="flex justify-end mt-4">
+              <Button 
+                onClick={() => {
+                  setTermsAccepted(true);
+                  setShowTermsModal(false);
+                  localStorage.setItem('isapass_terms_accepted', 'true');
+                  // Se houver dados de login salvos, tenta fazer login automático
+                  const savedEmail = localStorage.getItem('isapass_user_email');
+                  const savedPassword = localStorage.getItem('isapass_user_password');
+                  
+                  if (savedEmail && savedPassword) {
+                    setLoginEmail(savedEmail);
+                    setLoginPassword(savedPassword);
+                    handleAutoLogin(savedEmail, savedPassword);
+                  } else {
+                    // Se não há credenciais salvas, abrir o modal de login automaticamente
+                    setTimeout(() => {
+                      setShowLoginDialog(true);
+                    }, 500); // Pequeno atraso para garantir que o modal de termos se feche primeiro
+                  }
+                }}
+                className="bg-primary text-white hover:bg-primary/90"
+              >
+                Aceitar e Continuar
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
       
       {/* Alerta de Pagamento Concluído */}
-      {showPaymentSuccessAlert && (
+      {isFirst && showPaymentSuccessAlert && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
           <div className="bg-white rounded-lg p-8 max-w-md w-full text-center shadow-lg animate-fade-in-up">
             <div className="mx-auto mb-4 h-20 w-20 flex items-center justify-center rounded-full bg-green-100">
@@ -1470,106 +1478,109 @@ export const EventCard = ({
       )}
       
       {/* Modal do PIX */}
-      <Dialog 
-        open={showPixPayment} 
-        onOpenChange={(open) => {
-          // Só permite fechar o modal se o pagamento foi concluído
-          if (!open && !isPaymentCompleted) {
-            toast.warning("Aguarde a confirmação do pagamento ou cancele a operação");
-            return;
-          }
-          setShowPixPayment(open);
-        }}
-      >
-        <DialogContent className="sm:max-w-[500px] w-[95%] bg-white p-6 rounded-lg shadow-xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-center">Pagamento PIX</DialogTitle>
-          </DialogHeader>
+      {isFirst && (
+        <Dialog 
+          open={showPixPayment} 
+          onOpenChange={(open) => {
+            // Só permite fechar o modal se o pagamento foi concluído
+            if (!open && !isPaymentCompleted) {
+              toast.warning("Aguarde a confirmação do pagamento ou cancele a operação");
+              return;
+            }
+            setShowPixPayment(open);
+          }}
+        >
+          <DialogContent className="sm:max-w-[500px] w-[95%] bg-white p-6 rounded-lg shadow-xl">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-center">Pagamento PIX</DialogTitle>
+            </DialogHeader>
 
-          {pixData && (
-            <div className="space-y-6">
-              <div className="text-center space-y-2">
-                <p className="text-lg font-medium">Valor a pagar:</p>
-                <p className="text-2xl font-bold text-pink-600">{formatCurrency(pixData.amount)}</p>
-              </div>
-
-              {paymentStatus === "approved" ? (
-                <div className="py-6 text-center">
-                  <div className="bg-green-100 text-green-700 p-4 rounded-lg mb-4">
-                    <Check size={40} className="mx-auto mb-2" />
-                    <h3 className="text-lg font-bold">Pagamento Aprovado!</h3>
-                    <p>Seu ingresso está sendo gerado...</p>
-                  </div>
+            {pixData && (
+              <div className="space-y-6">
+                <div className="text-center space-y-2">
+                  <p className="text-lg font-medium">Valor a pagar:</p>
+                  <p className="text-2xl font-bold text-pink-600">{formatCurrency(pixData.amount)}</p>
                 </div>
-              ) : (
-                <>
-                  <div className="bg-gray-50 p-4 rounded-lg flex flex-col items-center space-y-4">
-                    <QRCodeSVG value={pixData.qrCodeValue} size={200} />
-                    
-                    <Button
-                      onClick={copyPixCode}
-                      className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
-                    >
-                      {copied ? (
-                        <>
-                          <Check size={20} className="text-green-500" />
-                          <span>Código Copiado!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy size={20} />
-                          <span>Copiar Código PIX</span>
-                        </>
-                      )}
-                    </Button>
-                  </div>
 
-                  <div className="space-y-2 text-center text-sm text-gray-500">
-                    <p>Abra o app do seu banco e escaneie o QR Code ou cole o código PIX</p>
-                    <p>O pagamento será verificado automaticamente a cada 5 segundos</p>
-                    <div className="flex justify-center items-center gap-2">
-                      <p className="text-sm font-medium">Tempo restante:</p>
-                      <p className="text-sm font-bold text-pink-600">{remainingTime || formatExpirationTime(pixData.expiresAt)}</p>
-                      {isCheckingPayment && (
-                        <Loader2 className="h-4 w-4 animate-spin text-pink-600 ml-2" />
-                      )}
+                {paymentStatus === "approved" ? (
+                  <div className="py-6 text-center">
+                    <div className="bg-green-100 text-green-700 p-4 rounded-lg mb-4">
+                      <Check size={40} className="mx-auto mb-2" />
+                      <h3 className="text-lg font-bold">Pagamento Aprovado!</h3>
+                      <p>Seu ingresso está sendo gerado...</p>
                     </div>
                   </div>
-                  
-                  <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
-                    <Button 
-                      onClick={checkPaymentStatus}
-                      disabled={isCheckingPayment}
-                      className="w-full bg-green-100 hover:bg-green-200 text-green-700 flex items-center justify-center gap-2"
-                    >
-                      {isCheckingPayment ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          <span>Verificando...</span>
-                        </>
-                      ) : (
-                        <>
-                          <RefreshCw size={16} />
-                          <span>Verificar Pagamento</span>
-                        </>
-                      )}
-                    </Button>
+                ) : (
+                  <>
+                    <div className="bg-gray-50 p-4 rounded-lg flex flex-col items-center space-y-4">
+                      <QRCodeSVG value={pixData.qrCodeValue} size={200} />
+                      
+                      <Button
+                        onClick={copyPixCode}
+                        className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+                      >
+                        {copied ? (
+                          <>
+                            <Check size={20} className="text-green-500" />
+                            <span>Código Copiado!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy size={20} />
+                            <span>Copiar Código PIX</span>
+                          </>
+                        )}
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2 text-center text-sm text-gray-500">
+                      <p>Abra o app do seu banco e escaneie o QR Code ou cole o código PIX</p>
+                      <p>O pagamento será verificado automaticamente a cada 5 segundos</p>
+                      <div className="flex justify-center items-center gap-2">
+                        <p className="text-sm font-medium">Tempo restante:</p>
+                        <p className="text-sm font-bold text-pink-600">{remainingTime || formatExpirationTime(pixData.expiresAt)}</p>
+                        {isCheckingPayment && (
+                          <Loader2 className="h-4 w-4 animate-spin text-pink-600 ml-2" />
+                        )}
+                      </div>
+                    </div>
                     
-                    <Button 
-                      onClick={() => {
-                        setShowPixPayment(false);
-                        setIsProcessingPayment(false);
-                      }} 
-                      className="w-full bg-red-100 hover:bg-red-200 text-red-700">
-                      Cancelar Pagamento
-                    </Button>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+                    <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
+                      <Button 
+                        onClick={checkPaymentStatus}
+                        disabled={isCheckingPayment}
+                        className="w-full bg-green-100 hover:bg-green-200 text-green-700 flex items-center justify-center gap-2"
+                      >
+                        {isCheckingPayment ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>Verificando...</span>
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw size={16} />
+                            <span>Verificar Pagamento</span>
+                          </>
+                        )}
+                      </Button>
+                      
+                      <Button 
+                        onClick={() => {
+                          setShowPixPayment(false);
+                          setIsProcessingPayment(false);
+                        }} 
+                        className="w-full bg-red-100 hover:bg-red-200 text-red-700"
+                      >
+                        Cancelar Pagamento
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+      )}
     </Card>
   );
 };
