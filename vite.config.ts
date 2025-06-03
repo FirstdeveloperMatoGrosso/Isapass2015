@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
       port: 8080,
       proxy: {
         '/api/payments/pix': {
-          target: 'http://localhost:8090', // Usando o servidor Deno na porta 8090
+          target: 'http://localhost:8099', // Usando o servidor Deno na porta 8099
           changeOrigin: true,
           secure: false,
           ws: true,

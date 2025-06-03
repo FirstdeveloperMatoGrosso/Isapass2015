@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, MapPin, Users, Tag, Music, CreditCard, Minus, Plus, Copy, Check, X, Mail, Lock, User, Loader2, Phone } from "lucide-react";
+import { Calendar, MapPin, Users, Tag, Music, CreditCard, Minus, Plus, Copy, Check, X, Mail, Lock, User, Loader2, CheckCircle, Phone, Printer, Ticket as TicketIcon, RefreshCw } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/CustomDialogEventCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useRef, FormEvent, useEffect } from "react";
@@ -62,12 +62,23 @@ export const EventCard = ({
     cpf: string;
     phone?: string;
   }>({ name: "", email: "", cpf: "", phone: "" });
+  
+  // Estados para termos de uso e alertas
+  const [showTermsModal, setShowTermsModal] = useState(true); // Modal de termos aparece automaticamente
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [showPaymentSuccessAlert, setShowPaymentSuccessAlert] = useState(false);
   const [pixData, setPixData] = useState<{
     qrCodeValue: string;
     amount: number;
     expiresAt: string;
     orderId: string;
   } | null>(null);
+  
+  // Estados para controle de tempo e status do pagamento
+  const [remainingTime, setRemainingTime] = useState<string>("");
+  const [isPaymentCompleted, setIsPaymentCompleted] = useState(false);
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<"pending" | "approved" | "failed" | "paid">("pending");
   const [ticketData, setTicketData] = useState<any>(null);
   const [copied, setCopied] = useState(false);
   const [showLoginDialog, setShowLoginDialog] = useState(false);
@@ -85,6 +96,76 @@ export const EventCard = ({
     }));
     setEventAreas(areasList);
   }, [areas, price]);
+  
+  // Temporizador em tempo real para atualizar o tempo restante
+  useEffect(() => {
+    if (!pixData?.expiresAt) return;
+    
+    // Atualizar imediatamente
+    setRemainingTime(formatExpirationTime(pixData.expiresAt));
+    
+    // Configurar intervalo para atualizar a cada segundo
+    const timerInterval = setInterval(() => {
+      const timeLeft = formatExpirationTime(pixData.expiresAt);
+      setRemainingTime(timeLeft);
+      
+      // Se expirou, interromper o temporizador
+      if (timeLeft === "Expirado") {
+        clearInterval(timerInterval);
+      }
+    }, 1000);
+    
+    // Limpar o intervalo quando o componente for desmontado
+    return () => clearInterval(timerInterval);
+  }, [pixData]);
+  
+  // Verificar status do pagamento a cada 3 segundos
+  useEffect(() => {
+    if (!pixData?.orderId || isPaymentCompleted) return;
+    
+    // Verificar imediatamente
+    checkPaymentStatus();
+    
+    // Configurar intervalo para verificar a cada 3 segundos (mais frequente)
+    const statusInterval = setInterval(() => {
+      checkPaymentStatus();
+    }, 3000);
+    
+    // Limpar o intervalo quando o componente for desmontado ou quando o pagamento for concluído
+    return () => clearInterval(statusInterval);
+  }, [pixData, isPaymentCompleted]);
+  
+  // Persistir status do pagamento no localStorage para evitar perda de estado
+  useEffect(() => {
+    // Se o pagamento for concluído, salvar no localStorage
+    if (paymentStatus === 'paid') {
+      localStorage.setItem(`payment_status_${pixData?.orderId}`, 'paid');
+    }
+  }, [paymentStatus, pixData?.orderId]);
+  
+  // Controle de login e termos
+  useEffect(() => {
+    // Verificar se os termos já foram aceitos
+    const termsAcceptedBefore = localStorage.getItem('isapass_terms_accepted');
+    if (termsAcceptedBefore) {
+      setTermsAccepted(true);
+    }
+    
+    // Verificar se já existe um login salvo
+    const savedEmail = localStorage.getItem('isapass_user_email');
+    const savedPassword = localStorage.getItem('isapass_user_password');
+    
+    // Dar um tempo para a página carregar completamente
+    setTimeout(() => {
+      if (savedEmail && savedPassword) {
+        // Usuário já logado anteriormente
+        handleAutoLogin(savedEmail, savedPassword);
+      } else {
+        // Se não há login salvo, mostrar a tela de login
+        setShowLoginDialog(true);
+      }
+    }, 500);
+  }, []);
 
   // Função para gerar dados do ticket após pagamento
   const generateTicketData = () => {
@@ -128,6 +209,46 @@ export const EventCard = ({
     navigate('/dashboard');
   };
   
+  // Função para login automático
+  const handleAutoLogin = async (email: string, password: string) => {
+    try {
+      setLoginProcessing(true);
+      // Simulação de login - na vida real, seria uma chamada para API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Dados do usuário simulados
+      const userData = {
+        name: "Usuário IsaPass",
+        email: email,
+        cpf: "123.456.789-00",
+        phone: "(11) 98765-4321"
+      };
+      localStorage.setItem('userData', JSON.stringify(userData));
+      localStorage.setItem('isapass_user_email', email);
+      localStorage.setItem('isapass_user_password', password); // Apenas para testes
+      
+      // Fechar o diálogo de login se estiver aberto
+      setShowLoginDialog(false);
+      
+      // Verificar se os termos já foram aceitos, se não, mostrar após login
+      const termsAcceptedBefore = localStorage.getItem('isapass_terms_accepted');
+      if (!termsAcceptedBefore) {
+        // Mostrar os termos apenas após o login e apenas uma vez
+        setTimeout(() => {
+          setShowTermsModal(true);
+        }, 500);
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("Erro ao fazer login automático:", error);
+      toast.error("Erro ao fazer login automático.");
+      return false;
+    } finally {
+      setLoginProcessing(false);
+    }
+  };
+
   // Função para verificar se o usuário está logado
   const checkUserLoggedIn = () => {
     const userData = localStorage.getItem('userData');
@@ -139,41 +260,53 @@ export const EventCard = ({
     }
     return true;
   };
-  
-  // Função para lidar com o login no diálogo
-  const handleLoginSubmit = (e: FormEvent) => {
+
+  // Função para lidar com o envio do formulário de login
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!loginEmail || !loginPassword) {
+      toast.error("Por favor, preencha todos os campos");
+      return;
+    }
+    
     setLoginProcessing(true);
     
-    // Simulando verificação de credenciais
-    setTimeout(() => {
-      // Credenciais de teste para simular login bem-sucedido
-      if (loginEmail && loginPassword) {
-        // Salvar dados do usuário no localStorage
-        const userData = {
-          name: "Usuário Teste",
-          email: loginEmail,
-          cpf: "123.456.789-00",
-          phone: "(11) 98765-4321"
-        };
-        localStorage.setItem('userData', JSON.stringify(userData));
-        
-        toast.success("Login realizado com sucesso!");
-        setShowLoginDialog(false);
-        setLoginEmail("");
-        setLoginPassword("");
-        
-        // Executar a ação pendente (geração de PIX) que foi interrompida
-        if (pendingActionRef.current) {
-          pendingActionRef.current();
-        }
-      } else {
-        toast.error("Email ou senha inválidos!");
+    try {
+      // Simulação de login - na vida real, seria uma chamada para API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Dados do usuário simulados
+      const userData = {
+        name: "Usuário IsaPass",
+        email: loginEmail,
+        cpf: "123.456.789-00",
+        phone: "(11) 98765-4321"
+      };
+      localStorage.setItem('userData', JSON.stringify(userData));
+      localStorage.setItem('isapass_user_email', loginEmail);
+      localStorage.setItem('isapass_user_password', loginPassword); // Nunca armazene senhas no localStorage em produção
+      
+      toast.success("Login realizado com sucesso!");
+      
+      // Fechar o diálogo de login
+      setShowLoginDialog(false);
+      
+      // Verificar se os termos já foram aceitos
+      const termsAccepted = localStorage.getItem('isapass_terms_accepted');
+      if (!termsAccepted) {
+        // Mostrar os termos apenas após o login
+        setTimeout(() => {
+          setShowTermsModal(true);
+        }, 500);
       }
+    } catch (error) {
+      console.error("Erro ao fazer login:", error);
+      toast.error("Não foi possível realizar o login. Tente novamente.");
+    } finally {
       setLoginProcessing(false);
-    }, 1000);
+    }
   };
-
 
   // Função para lidar com a alteração nos campos do formulário
   const handleCustomerDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -221,8 +354,121 @@ export const EventCard = ({
   const cleanFormattedData = (value: string) => {
     return value.replace(/[^a-zA-Z0-9@._-]/g, ''); // Remove caracteres especiais como pontos, traços, parênteses
   };
+  
+  // Função para limpar CPF/telefone (apenas números)
+  const cleanNumericData = (value: string) => {
+    return value?.replace(/\D/g, '') || '';
+  };
 
-  // Função para gerar o pagamento PIX
+  // Função para formatar o tempo de expiração do PIX
+  const formatExpirationTime = (expiresAt: string) => {
+    try {
+      const expirationDate = new Date(expiresAt);
+      const now = new Date();
+      
+      // Calcula a diferença em milissegundos
+      const diffMs = expirationDate.getTime() - now.getTime();
+      
+      // Se já expirou
+      if (diffMs <= 0) {
+        return "Expirado";
+      }
+      
+      // Converte para minutos e segundos
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffSecs = Math.floor((diffMs % 60000) / 1000);
+      
+      // Formata os minutos e segundos com dois dígitos
+      const formattedMins = diffMins.toString().padStart(2, '0');
+      const formattedSecs = diffSecs.toString().padStart(2, '0');
+      
+      return `${formattedMins}:${formattedSecs}`;
+    } catch (error) {
+      console.error('Erro ao formatar tempo de expiração:', error);
+      return "--:--";
+    }
+  };
+
+  // Função para verificar o status do pagamento
+  const checkPaymentStatus = async () => {
+    if (isCheckingPayment || !pixData?.orderId) return;
+    
+    // Verificar primeiro no localStorage para evitar chamadas desnecessárias
+    const savedStatus = localStorage.getItem(`payment_status_${pixData.orderId}`);
+    if (savedStatus === 'paid') {
+      if (!isPaymentCompleted) {
+        setPaymentStatus('paid');
+        setIsPaymentCompleted(true);
+        setShowPixPayment(false); // Fecha o modal do PIX
+        setShowPaymentSuccessAlert(true);
+        setTimeout(() => {
+          setShowPaymentSuccessAlert(false);
+          generateTicketData(); // Gera os dados do ticket
+          setShowTicket(true); // Mostra o ticket
+        }, 3000);
+      }
+      return;
+    }
+    
+    try {
+      setIsCheckingPayment(true);
+      toast.info("Verificando pagamento...");
+      
+      // Adicionar timestamp para evitar cache no navegador
+      const response = await fetch(`/api/payments/status/${pixData.orderId}?_t=${Date.now()}`, {
+        method: 'GET',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store'
+        },
+        cache: 'no-store' // Garantir que não use cache
+      });
+      
+      if (!response.ok) {
+        throw new Error('Erro ao verificar status do pagamento');
+      }
+      
+      const data = await response.json();
+      console.log('Status do pagamento:', data); // Log para depuração
+      
+      // Forçar uma verificação mais ampla dos status possíveis
+      const paymentCompleted = 
+        data.status === "paid" || 
+        data.pagarme_status?.order === "paid" || 
+        data.pagarme_status?.charge === "paid" || 
+        data.pagarme_status?.transaction === "captured";
+      
+      // Verificar se o pagamento foi concluído baseado em qualquer indicação positiva
+      if (paymentCompleted) {
+        setPaymentStatus('paid');
+        // Salvar no localStorage para persistência
+        localStorage.setItem(`payment_status_${pixData.orderId}`, 'paid');
+        
+        toast.success("Pagamento confirmado!");
+        setIsPaymentCompleted(true);
+        setShowPixPayment(false); // Fecha o modal do PIX
+        
+        // Exibir alerta de pagamento concluído com sucesso
+        setShowPaymentSuccessAlert(true);
+        
+        // Após 3 segundos, fechar o alerta e mostrar o ingresso
+        setTimeout(() => {
+          setShowPaymentSuccessAlert(false);
+          generateTicketData(); // Gera os dados do ticket
+          setShowTicket(true); // Mostra o ticket
+        }, 3000);
+      } else if (data.status === "failed" || data.status === "canceled") {
+        setPaymentStatus("failed");
+        toast.error("Pagamento não aprovado ou cancelado.");
+      }
+    } catch (error) {
+      console.error("Erro ao verificar status de pagamento:", error);
+    } finally {
+      setIsCheckingPayment(false);
+    }
+  };
+
+  // Funcção para gerar o pagamento PIX
   const generatePixPayment = async () => {
     // Obter a área selecionada
     const selectedAreaObj = eventAreas.find((area) => area.id === selectedArea);
@@ -253,6 +499,9 @@ export const EventCard = ({
         date: date,
         location: location,
         ticketType: selectedAreaObj.name,
+        section: '', // Adicionado para compatibilidade com o backend
+        row: '', // Adicionado para compatibilidade com o backend
+        seat: '', // Adicionado para compatibilidade com o backend
         isHalfPrice: false
       }
     };
@@ -260,122 +509,56 @@ export const EventCard = ({
     console.log('Enviando dados para processamento de PIX:', pixPayload);
 
     try {
-      // Preparar metadados
-      const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19);
-      const metadata = {
-        source: 'isapass',
-        integration: 'direct-pagarme',
-        timestamp,
-        partner_id: pixPayload.event.partnerId || '',
-        event_name: pixPayload.event.name || '',
-        event_date: pixPayload.event.date || '',
-        event_location: pixPayload.event.location || '',
-        ticket_type: pixPayload.event.ticketType || '',
-        section: '', // Propriedade não disponível no objeto de evento atual
-        row: '', // Propriedade não disponível no objeto de evento atual
-        seat: '', // Propriedade não disponível no objeto de evento atual
-        is_half_price: pixPayload.event.isHalfPrice?.toString() || 'false',
-        customer_name: pixPayload.customer.name || '',
-        customer_document: pixPayload.customer.document || '',
-        customer_email: pixPayload.customer.email || '',
-        customer_phone: pixPayload.customer.phone || ''
-      };
-      
-      // Preparar payload para o Pagar.me
-      const pagarmePayload = {
-        items: [
-          {
-            amount: pixPayload.amount,
-            description: `Ingresso ${pixPayload.event.ticketType || 'Standard'} - ${pixPayload.event.name || 'Evento'}`,
-            quantity: 1,
-            code: 'pix-payment'
-          }
-        ],
-        customer: {
-          name: pixPayload.customer.name,
-          email: pixPayload.customer.email,
-          type: 'individual',
-          document: pixPayload.customer.document,
-          phones: {
-            mobile_phone: {
-              country_code: '55',
-              area_code: (pixPayload.customer.phone || '11999999999').substring(0, 2),
-              number: (pixPayload.customer.phone || '11999999999').substring(2)
-            }
-          }
-        },
-        payments: [
-          {
-            payment_method: 'pix',
-            pix: {
-              expires_in: 60 * 15 // 15 minutos
-            }
-          }
-        ],
-        metadata
-      };
-      
-      console.log('Enviando requisição para o Pagar.me:', pagarmePayload);
-      
-      // Fazer requisição direta para a API do Pagar.me
-      // NOTA: Esta abordagem é apenas para testes em desenvolvimento.
-      // Em produção, NUNCA exponha sua chave de API no frontend.
-      const PAGARME_API_KEY = 'sk_59c7e1e30b5d45f7859fb7539a21a546';
-      const btoa = (str: string) => window.btoa(str);
-      
-      const response = await fetch('https://api.pagar.me/core/v5/orders', {
+      // Fazer requisição para o servidor local que processa o pagamento PIX
+      // Este endpoint é processado pelo servidor Deno na porta 8099
+      const response = await fetch('/api/payments/pix', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${btoa(PAGARME_API_KEY + ':')}`
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(pagarmePayload)
+        body: JSON.stringify(pixPayload)
       });
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error('Erro na resposta da API Pagar.me:', errorData);
-        throw new Error(errorData.message || 'Erro ao gerar pagamento PIX');
+        console.error('Erro na resposta do servidor PIX:', errorData);
+        throw new Error(errorData.error || 'Erro ao gerar pagamento PIX');
       }
       
-      const pagarmeData = await response.json();
-      console.log('Resposta do Pagar.me:', pagarmeData);
+      const responseData = await response.json();
+      console.log('Resposta do servidor PIX:', responseData);
       
-      // Extrair dados relevantes da resposta
-      const charge = pagarmeData.charges?.[0];
-      const transaction = charge?.last_transaction;
-      const qrCode = transaction?.qr_code;
-      const qrCodeUrl = transaction?.qr_code_url;
-      const expiresAt = transaction?.expires_at;
+      console.log('Resposta completa do servidor:', responseData);
       
-      // Formatar resposta no mesmo formato que o backend retornaria
-      const responseData = {
-        paymentId: pagarmeData.id,
-        status: pagarmeData.status,
-        qrCode: qrCode,
-        qrCodeUrl: qrCodeUrl,
-        expiresAt: expiresAt
-      };
+      // Extrair dados relevantes da resposta usando o formato correto do servidor
+      const qrCode = responseData.pix?.qr_code;
+      const qrCodeUrl = responseData.pix?.qr_code_url;
+      const expiresAt = responseData.pix?.expires_at;
+      const orderId = responseData.order_id;
       
+      // Verificar status da resposta
       if (responseData.status === 'failed') {
         console.error('PIX não foi gerado:', responseData);
         throw new Error('Falha ao gerar PIX. Tente novamente.');
       }
-      
+
       // Verificar se temos o QR Code na resposta
-      if (!responseData.qrCode) {
-        throw new Error('QR Code não encontrado na resposta');
+      if (!qrCode) {
+        console.error('QR Code não retornado pelo servidor:', responseData);
+        throw new Error('QR Code PIX não foi gerado corretamente. Tente novamente.');
       }
       
-      console.log('PIX gerado com sucesso:', responseData);
-      
       // Configurar dados do PIX para exibição
-      setPixData({
-        qrCodeValue: responseData.qrCode,
+      const pixDataToShow = {
+        qrCodeValue: qrCode,
         amount: totalAmount,
-        expiresAt: responseData.expiresAt || new Date(Date.now() + 30 * 60000).toISOString(),
-        orderId: responseData.paymentId || `pix-${Date.now()}`
-      });
+        expiresAt: expiresAt || new Date(Date.now() + 30 * 60000).toISOString(),
+        orderId: orderId || `pix-${Date.now()}`
+      };
+      
+      console.log('Dados PIX processados com sucesso:', pixDataToShow);
+      setPixData(pixDataToShow);
+      setShowPixPayment(true);
       
       return true;
     } catch (error: any) {
@@ -400,7 +583,7 @@ export const EventCard = ({
       }
 
       // Validar formato de CPF (contando caracteres)
-      const cpfDigits = cleanFormattedData(customerFormData.cpf);
+      const cpfDigits = cleanNumericData(customerFormData.cpf);
       if (cpfDigits.length !== 11) {
         toast.error("Por favor, informe um CPF válido com 11 dígitos");
         return;
@@ -837,33 +1020,48 @@ export const EventCard = ({
                     
                     const totalAmount = selectedAreaObj.price * quantity;
                     
-                    // Preparar payload para o PIX
+                    // Validar dados do cliente antes de enviar
+                    if (!customerFormData.name || customerFormData.name.trim() === "") {
+                      throw new Error("Nome do cliente não pode estar vazio");
+                    }
+                    
+                    if (!customerFormData.email || !customerFormData.email.includes("@")) {
+                      throw new Error("Email do cliente inválido");
+                    }
+                    
+                    // Verificar novamente o CPF com o formato correto
+                    if (cleanNumericData(customerFormData.cpf).length !== 11) {
+                      throw new Error("CPF inválido, deve ter 11 dígitos");
+                    }
+                    
+                    // Limpar telefone - remover caracteres não numéricos
+                    const cleanedPhone = customerFormData.phone ? cleanNumericData(customerFormData.phone) : "";
+                    const phoneToSend = cleanedPhone.length >= 10 ? cleanedPhone : "11999999999";
+                    
+                    // Preparar os dados do pagamento com todos os dados do cliente
                     const pixPayload = {
-                      customerData: {
+                      amount: totalAmount,
+                      customer: {
                         name: customerFormData.name.trim(),
                         email: customerFormData.email.trim(),
-                        document: cpfDigits,
-                        phone: customerFormData.phone ? customerFormData.phone.replace(/\D/g, '') : null
+                        document: cleanNumericData(customerFormData.cpf),
+                        phone: phoneToSend
                       },
-                      total: totalAmount,
-                      metadata: {
-                        order_id: `order_${Date.now()}`,
-                        store_name: "IsaPass",
-                        customer_id: cpfDigits,
-                        product: `Ingresso - ${title} - ${selectedAreaObj.name}`,
-                        quantity: quantity,
-                        eventId: id,
-                        eventTitle: title,
-                        areaId: selectedArea,
-                        areaName: selectedAreaObj.name,
-                        userId: 'user-' + Date.now(),
-                        partnerId: '1',
-                        partnerName: 'IsaPass',
-                        paymentType: 'pix'
+                      event: {
+                        name: title || "Evento IsaPass", // Usando o título do evento disponível no componente
+                        date: date || new Date().toISOString(), // Usando a data do evento disponível no componente
+                        location: location || "Local do Evento", // Usando a localização do evento disponível no componente
+                        ticketType: selectedAreaObj.name, // Usando o nome da área como tipo de ingresso
+                        section: "", // Enviando string vazia já que o objeto não possui essa propriedade
+                        row: "", // Enviando string vazia já que o objeto não possui essa propriedade
+                        seat: "", // Enviando string vazia já que o objeto não possui essa propriedade
+                        partnerId: id || "isapass-" + Date.now(), // Usando o ID do evento como partnerId
+                        isHalfPrice: false // Por padrão, não é meia-entrada
                       }
                     };
                     
-                    console.log('Enviando dados para PIX:', pixPayload);
+                    console.log('Enviando dados completos para PIX:', JSON.stringify(pixPayload, null, 2));
+                    console.log('Detalhes do cliente:', JSON.stringify(pixPayload.customer, null, 2));
                     
                     // Fazer requisição para a API de PIX
                     const response = await fetch('/api/payments/pix', {
@@ -882,17 +1080,21 @@ export const EventCard = ({
                     
                     const data = await response.json();
                     
+                    console.log('Resposta completa do servidor PIX:', data);
+                    
                     // Verificar se o PIX foi gerado com sucesso
-                    if (!data.qrCode || !data.paymentId) {
+                    // Servidor Deno retorna o QR code em data.pix.qr_code e o ID em data.order_id
+                    if (!data.pix?.qr_code || !data.order_id) {
+                      console.error('Formato inválido na resposta PIX:', data);
                       throw new Error('Dados do PIX inválidos na resposta');
                     }
                     
-                    // Atualizar estado com os dados do PIX
+                    // Atualizar estado com os dados do PIX no formato correto
                     setPixData({
-                      qrCodeValue: data.qrCode,
+                      qrCodeValue: data.pix.qr_code,
                       amount: totalAmount,
-                      expiresAt: data.expiresAt || new Date(Date.now() + 30 * 60000).toISOString(),
-                      orderId: data.paymentId
+                      expiresAt: data.pix.expires_at || new Date(Date.now() + 30 * 60000).toISOString(),
+                      orderId: data.order_id
                     });
                     
                     // Fechar modal de dados e abrir modal de pagamento PIX
@@ -988,43 +1190,155 @@ export const EventCard = ({
       
       {/* Modal de Ingresso */}
       <Dialog open={showTicket} onOpenChange={setShowTicket}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Ingresso Confirmado</DialogTitle>
+        <DialogContent className="max-w-md md:max-w-lg">
+          <DialogHeader className="border-b pb-2">
+            <DialogTitle className="text-xl text-primary font-bold">Seu Ingresso está Pronto</DialogTitle>
           </DialogHeader>
           
           {ticketData && (
-            <div className="space-y-4">
-              <div className="text-center bg-gray-50 py-4 rounded-lg">
-                <div className="font-bold text-lg">{ticketData.eventTitle}</div>
-                <div className="text-sm text-gray-500 mb-4">{ticketData.eventDate} | {ticketData.eventLocation}</div>
-                <div className="bg-white p-4 rounded-lg inline-block mx-auto mb-2">
-                  <QRCodeSVG value={ticketData.qrCodeValue} size={150} />
+            <div className="space-y-6">
+              {/* Ticket Design - Baseado no modelo fornecido */}
+              <div className="ticket-container rounded-lg overflow-hidden shadow-lg border border-primary/20">
+                {/* Cabeçalho do Ticket */}
+                <div className="bg-gradient-to-r from-primary to-primary/80 text-white p-4">
+                  <h3 className="font-bold text-lg md:text-xl text-center">{ticketData.eventTitle}</h3>
+                  <p className="text-xs text-center text-white/90">Ingresso Digital</p>
                 </div>
-                <div className="text-xs font-mono text-gray-500">{ticketData.id}</div>
+                
+                {/* Informações do Evento */}
+                <div className="bg-white p-4 space-y-2">
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <p className="text-gray-500 font-medium">Data:</p>
+                      <p>{ticketData.eventDate.split(',')[0]}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-gray-500 font-medium">Hora:</p>
+                      <p>{ticketData.eventDate.split(',')[1]?.trim() || "20:00"}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 gap-2 text-sm">
+                    <div>
+                      <p className="text-gray-500 font-medium">Local:</p>
+                      <p>{ticketData.eventLocation}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <p className="text-gray-500 font-medium">Área:</p>
+                      <p className="font-medium">{ticketData.area}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-gray-500 font-medium">Qtd:</p>
+                      <p>{ticketData.quantity}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="border-t border-dashed border-gray-200 my-3 pt-3">
+                    <div className="grid grid-cols-1 gap-1 text-sm">
+                      <div>
+                        <p className="text-gray-500 font-medium">Nome:</p>
+                        <p>{JSON.parse(localStorage.getItem('userData') || '{}').name || "Cliente"}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <div>
+                        <p className="text-gray-500 font-medium">CPF:</p>
+                        <p>{JSON.parse(localStorage.getItem('userData') || '{}').cpf || "Não informado"}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-gray-500 font-medium">Tel:</p>
+                        <p>{JSON.parse(localStorage.getItem('userData') || '{}').phone || "Não informado"}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2 text-sm mt-2">
+                      <div>
+                        <p className="text-gray-500 font-medium">ID:</p>
+                        <p className="font-mono text-xs">{ticketData.id.substring(0, 8).toUpperCase()}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-gray-500 font-medium">Código:</p>
+                        <p className="font-mono text-xs">{btoa(ticketData.id).substring(0, 6).toUpperCase()}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="text-xs text-gray-500 mt-1">
+                      <p className="font-medium">Compra:</p>
+                      <p>{new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}</p>
+                    </div>
+                  </div>
+                  
+                  {/* QR Code */}
+                  <div className="flex justify-center items-center my-2">
+                    <div className="flex flex-col items-center">
+                      <div className="bg-white p-2 rounded-md border">
+                        <QRCodeSVG value={ticketData.qrCodeValue} size={150} />
+                      </div>
+                      <p className="text-xs text-center text-gray-500 mt-1">QR Code</p>
+                    </div>
+                  </div>
+                  
+                  {/* Código de Barras */}
+                  <div className="flex justify-center mt-2">
+                    <div className="flex flex-col items-center w-full">
+                      <svg 
+                        className="w-full h-16" 
+                        viewBox="0 0 100 30" 
+                        fill="none" 
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        {/* Simulação simplificada de código de barras */}
+                        {Array.from({length: 30}).map((_, i) => (
+                          <rect 
+                            key={i} 
+                            x={i * 3} 
+                            y="0" 
+                            width={Math.random() > 0.5 ? 2 : 1} 
+                            height="30" 
+                            fill="#000"
+                          />
+                        ))}
+                      </svg>
+                      <p className="text-xs text-center text-gray-500">Código de Barras</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-2xs text-center text-gray-400 mt-3">
+                    Este ingresso é pessoal e intransferível. Apresente este QR Code na entrada do evento.
+                  </p>
+                </div>
               </div>
               
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Área:</span>
-                  <span>{ticketData.area}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Quantidade:</span>
-                  <span>{ticketData.quantity}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500">Valor:</span>
-                  <span className="font-bold">{formatCurrency(ticketData.totalAmount)}</span>
-                </div>
+              <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                <Button 
+                  className="flex-1 bg-primary hover:bg-primary/90 text-white" 
+                  onClick={() => window.print()}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 mr-2">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                  </svg> 
+                  Imprimir Ingresso
+                </Button>
+                
+                <Button 
+                  className="flex-1 bg-secondary hover:bg-secondary/90 text-white" 
+                  onClick={goToDashboard}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 mr-2">
+                    <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path>
+                    <path d="M13 5v2"></path>
+                    <path d="M13 17v2"></path>
+                    <path d="M13 11v2"></path>
+                  </svg> 
+                  Meus Ingressos
+                </Button>
               </div>
-              
-              <Button 
-                className="w-full" 
-                onClick={goToDashboard}
-              >
-                Ver Meus Ingressos
-              </Button>
             </div>
           )}
         </DialogContent>
@@ -1056,7 +1370,7 @@ export const EventCard = ({
               <Label htmlFor="password" className="flex items-center gap-2">
                 <Lock size={16} /> Senha
               </Label>
-              <Input 
+              <Input
                 id="password"
                 type="password"
                 placeholder="Sua senha"
@@ -1085,8 +1399,88 @@ export const EventCard = ({
         </DialogContent>
       </Dialog>
 
+      {/* Modal de Termos de Uso */}
+      <Dialog open={showTermsModal} onOpenChange={(open) => {
+        // O usuário só pode fechar se aceitar os termos
+        if (!open && !termsAccepted) {
+          toast.warning("Você precisa aceitar os termos para continuar.");
+          return;
+        }
+        setShowTermsModal(open);
+      }}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Termos de Uso e Política de Privacidade</DialogTitle>
+          </DialogHeader>
+          
+          <div className="terms-content max-h-[60vh] overflow-y-auto p-4 border rounded-md">
+            <h4 className="text-xl font-semibold mb-4">Bem-vindo ao IsaPass!</h4>
+            <p className="mb-4">Ao utilizar nosso serviço de compra de ingressos, você concorda com os seguintes termos:</p>
+            
+            <h5 className="text-lg font-semibold mt-4 mb-2">1. Uso do Serviço</h5>
+            <p className="mb-3">O IsaPass oferece um serviço de venda de ingressos para eventos. Ao utilizar nosso serviço, você concorda em fornecer informações precisas e completas.</p>
+            
+            <h5 className="text-lg font-semibold mt-4 mb-2">2. Pagamentos</h5>
+            <p className="mb-3">Todos os pagamentos são processados de forma segura através de nossa plataforma. Nós oferecemos diferentes métodos de pagamento, incluindo PIX.</p>
+            
+            <h5 className="text-lg font-semibold mt-4 mb-2">3. Política de Privacidade</h5>
+            <p className="mb-3">Coletamos apenas as informações necessárias para processar sua compra e garantir uma experiência segura. Seus dados não serão compartilhados com terceiros.</p>
+          </div>
+          
+          <div className="flex justify-end mt-4">
+            <Button 
+              onClick={() => {
+                setTermsAccepted(true);
+                setShowTermsModal(false);
+                localStorage.setItem('isapass_terms_accepted', 'true');
+                // Se houver dados de login salvos, tenta fazer login automático
+                const savedEmail = localStorage.getItem('isapass_user_email');
+                const savedPassword = localStorage.getItem('isapass_user_password');
+                
+                if (savedEmail && savedPassword) {
+                  setLoginEmail(savedEmail);
+                  setLoginPassword(savedPassword);
+                  handleAutoLogin(savedEmail, savedPassword);
+                } else {
+                  // Se não há credenciais salvas, abrir o modal de login automaticamente
+                  setTimeout(() => {
+                    setShowLoginDialog(true);
+                  }, 500); // Pequeno atraso para garantir que o modal de termos se feche primeiro
+                }
+              }}
+              className="bg-primary text-white hover:bg-primary/90"
+            >
+              Aceitar e Continuar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Alerta de Pagamento Concluído */}
+      {showPaymentSuccessAlert && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full text-center shadow-lg animate-fade-in-up">
+            <div className="mx-auto mb-4 h-20 w-20 flex items-center justify-center rounded-full bg-green-100">
+              <CheckCircle className="h-10 w-10 text-green-600" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Pagamento Concluído!</h2>
+            <p className="mb-6">Seu ingresso já está disponível na sua área do cliente.</p>
+          </div>
+        </div>
+      )}
+      
       {/* Modal do PIX */}
-      <Dialog open={showPixPayment} onOpenChange={setShowPixPayment}>
+      <Dialog 
+        open={showPixPayment} 
+        onOpenChange={(open) => {
+          // Só permite fechar o modal se o pagamento foi concluído
+          if (!open && !isPaymentCompleted) {
+            toast.warning("Aguarde a confirmação do pagamento ou cancele a operação");
+            return;
+          }
+          setShowPixPayment(open);
+        }}
+      >
         <DialogContent className="sm:max-w-[500px] w-[95%] bg-white p-6 rounded-lg shadow-xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-center">Pagamento PIX</DialogTitle>
@@ -1099,32 +1493,79 @@ export const EventCard = ({
                 <p className="text-2xl font-bold text-pink-600">{formatCurrency(pixData.amount)}</p>
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg flex flex-col items-center space-y-4">
-                <QRCodeSVG value={pixData.qrCodeValue} size={200} />
-                
-                <Button
-                  onClick={copyPixCode}
-                  className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
-                >
-                  {copied ? (
-                    <>
-                      <Check size={20} className="text-green-500" />
-                      <span>Código Copiado!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={20} />
-                      <span>Copiar Código PIX</span>
-                    </>
-                  )}
-                </Button>
-              </div>
+              {paymentStatus === "approved" ? (
+                <div className="py-6 text-center">
+                  <div className="bg-green-100 text-green-700 p-4 rounded-lg mb-4">
+                    <Check size={40} className="mx-auto mb-2" />
+                    <h3 className="text-lg font-bold">Pagamento Aprovado!</h3>
+                    <p>Seu ingresso está sendo gerado...</p>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="bg-gray-50 p-4 rounded-lg flex flex-col items-center space-y-4">
+                    <QRCodeSVG value={pixData.qrCodeValue} size={200} />
+                    
+                    <Button
+                      onClick={copyPixCode}
+                      className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+                    >
+                      {copied ? (
+                        <>
+                          <Check size={20} className="text-green-500" />
+                          <span>Código Copiado!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy size={20} />
+                          <span>Copiar Código PIX</span>
+                        </>
+                      )}
+                    </Button>
+                  </div>
 
-              <div className="space-y-2 text-center text-sm text-gray-500">
-                <p>Abra o app do seu banco e escaneie o QR Code ou cole o código PIX</p>
-                <p>O pagamento será confirmado automaticamente</p>
-                <p className="text-xs">Expira em: {new Date(pixData.expiresAt).toLocaleTimeString()}</p>
-              </div>
+                  <div className="space-y-2 text-center text-sm text-gray-500">
+                    <p>Abra o app do seu banco e escaneie o QR Code ou cole o código PIX</p>
+                    <p>O pagamento será verificado automaticamente a cada 5 segundos</p>
+                    <div className="flex justify-center items-center gap-2">
+                      <p className="text-sm font-medium">Tempo restante:</p>
+                      <p className="text-sm font-bold text-pink-600">{remainingTime || formatExpirationTime(pixData.expiresAt)}</p>
+                      {isCheckingPayment && (
+                        <Loader2 className="h-4 w-4 animate-spin text-pink-600 ml-2" />
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 pt-4 border-t border-gray-200 space-y-3">
+                    <Button 
+                      onClick={checkPaymentStatus}
+                      disabled={isCheckingPayment}
+                      className="w-full bg-green-100 hover:bg-green-200 text-green-700 flex items-center justify-center gap-2"
+                    >
+                      {isCheckingPayment ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Verificando...</span>
+                        </>
+                      ) : (
+                        <>
+                          <RefreshCw size={16} />
+                          <span>Verificar Pagamento</span>
+                        </>
+                      )}
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => {
+                        setShowPixPayment(false);
+                        setIsProcessingPayment(false);
+                      }} 
+                      className="w-full bg-red-100 hover:bg-red-200 text-red-700">
+                      Cancelar Pagamento
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           )}
         </DialogContent>
